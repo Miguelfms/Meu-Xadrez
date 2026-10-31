@@ -1,7 +1,7 @@
 {
   "name": "Meu Xadrez Plus",
   "short_name": "Meu Xadrez",
-  "description": "Jogue, estude aberturas e gambitos, resolva puzzles e guarde suas partidas.",
+  "description": "Jogue, estude aberturas e gambitos, guarde suas partidas.",
   "lang": "pt-BR",
   "start_url": "./index.html",
   "scope": "./",

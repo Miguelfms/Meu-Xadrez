@@ -360,46 +360,6 @@ summary { cursor: pointer; font-weight: 700; min-height: 32px; }
 
 </style>
   <style>
-/* Puzzles e Meu Repertório */
-.sel { width: 100%; background: var(--bg-2); color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 10px; min-height: 44px; font: inherit; }
-.pz-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 8px; min-height: 28px; }
-.tag.nivel-facil { color: #9fd9b4; border-color: #2f5c40; }
-.tag.nivel-medio { color: var(--gold-2); border-color: #6f5c1c; }
-.tag.nivel-dificil { color: #ffb4b0; border-color: #6b2d2d; }
-.pz-side { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; font-size: .9rem; }
-.pz-side .dot { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold); display: inline-block; }
-.pz-side .dot.w { background: #f3eedd; } .pz-side .dot.b { background: #15191a; }
-.fb.info { border-color: #5b7fb5; background: rgba(91, 127, 181, .14); }
-.pz-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 8px 0; }
-.pz-actions .btn { min-height: 46px; }
-.pz-actions .primary { grid-column: 1 / -1; }
-#pz-explain:empty { display: none; }
-.board-col .explain { width: 100%; }
-
-.rp-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; margin-bottom: 10px; color: inherit; text-decoration: none; }
-.rp-card:hover { border-color: var(--gold); }
-.rp-card h3 { margin: 4px 0; }
-.rp-card p { margin: 4px 0; color: var(--muted); font-size: .9rem; overflow-wrap: anywhere; }
-.tag.cor-w { color: #f3eedd; border-color: #8a8570; } .tag.cor-b { color: #9aa; border-color: #444; background: rgba(0,0,0,.3); }
-.tag.etq { color: var(--gold-2); }
-.rp-var { border: 1px solid var(--line); border-radius: 12px; padding: 10px; margin: 10px 0; background: var(--bg-2); }
-.rp-var .field { margin: 6px 0; }
-.rp-form textarea { min-height: 70px; width: 100%; }
-.rp-form input[type="text"] { width: 100%; }
-.rp-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
-#rp-nav, #rp-train { width: min(100%, 76vh); margin: 10px auto 0; }
-.rp-io textarea { width: 100%; min-height: 160px; }
-
-/* 8 itens no menu inferior: letras um pouco menores para caber "Repertório" */
-.tabbar a { font-size: .58rem; letter-spacing: -.02em; padding: 0; }
-.tabbar .t-ico { width: 22px; height: 22px; }
-
-/* Catálogo ECO */
-.var-list.big { max-height: 340px; overflow-y: auto; padding-right: 4px; }
-#ac-vfilter { margin-bottom: 8px; }
-
-</style>
-  <style>
 /* Aparência: temas de tabuleiro e de peças, e opções de exibição (controlados por XD.Settings via data-* no <html>) */
 html[data-board="madeira"] { --sq-light: #f0d9b5; --sq-dark: #b58863; }
 html[data-board="azul"] { --sq-light: #dee3e6; --sq-dark: #8ca2ad; }
@@ -463,19 +423,76 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 .cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child { grid-column: 1 / -1; min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; border-color: var(--gold); }
 .cards.sec-jogar .card:first-child .ico, .cards.sec-aprender .card:first-child .ico { flex: none; width: 46px; height: 46px; }
 .cards.sec-jogar .card:first-child p, .cards.sec-aprender .card:first-child p { flex-basis: 100%; }
-.cards.sec-meu .card:last-child { grid-column: 1 / -1; min-height: 0; }
+.cards.sec-meu .card:last-child, .cards.sec-jogar .card:last-child { grid-column: 1 / -1; min-height: 0; }
 @media (min-width: 760px) {
   .cards.sec-jogar, .cards.sec-aprender, .cards.sec-meu { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child, .cards.sec-meu .card:last-child { grid-column: auto; min-height: 132px; flex-direction: column; align-items: flex-start; }
+  .cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child, .cards.sec-meu .card:last-child, .cards.sec-jogar .card:last-child { grid-column: auto; min-height: 132px; flex-direction: column; align-items: flex-start; }
 }
 
 /* Menu de baixo rolável: botões maiores, desliza para os lados */
 :root { --nav-h: 70px; }
-.tabbar { display: flex; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.tabbar { display: flex; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; touch-action: pan-x; will-change: scroll-position; -webkit-tap-highlight-color: transparent; }
 .tabbar::-webkit-scrollbar { display: none; }
-.tabbar a { flex: 0 0 78px; scroll-snap-align: center; font-size: .76rem; letter-spacing: 0; padding: 0; gap: 3px; }
+.tabbar a { flex: 0 0 78px; -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; font-size: .76rem; letter-spacing: 0; padding: 0; gap: 3px; }
 .tabbar .t-ico { width: 30px; height: 30px; }
 .tabbar a.on { background: linear-gradient(180deg, rgba(212,175,55,.14), transparent); box-shadow: inset 0 2px 0 var(--gold); }
+
+/* Setinhas do menu: garantem a rolagem mesmo quando o gesto de arrastar não funciona (ex.: dentro de uma página embutida) */
+.tb-arrow { position: fixed; bottom: env(safe-area-inset-bottom); z-index: 32; width: 34px; height: var(--nav-h); border: 0; padding: 0; color: var(--gold-2); font-size: 1.6rem; font-weight: 700; line-height: 1; cursor: pointer; display: none; align-items: center; justify-content: center; -webkit-tap-highlight-color: transparent; }
+.tb-arrow.show { display: flex; }
+.tb-arrow.l { left: 0; background: linear-gradient(90deg, rgba(15, 24, 20, .98) 40%, rgba(15, 24, 20, 0)); }
+.tb-arrow.r { right: 0; background: linear-gradient(270deg, rgba(15, 24, 20, .98) 40%, rgba(15, 24, 20, 0)); }
+@media (min-width: 760px) { .tb-arrow { display: none !important; } }
+
+</style>
+  <style>
+/* Dois jogadores (presencial) */
+.du-names { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.du-time { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+.du-wrap { display: grid; gap: 10px; max-width: 560px; margin: 0 auto; }
+.du-panel { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "name clock" "btns btns"; align-items: center; gap: 6px 12px; padding: 10px 12px; border: 2px solid var(--line); border-radius: 14px; background: var(--surface); transition: border-color .15s, background .15s; }
+.du-panel.turn { border-color: var(--gold); background: rgba(212, 175, 55, .1); }
+.du-panel.face { transform: rotate(180deg); }
+.du-name { grid-area: name; display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 1.05rem; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.du-name .dot { flex: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--gold); background: #f7f0dc; }
+.du-name .dot.b { background: #26272b; }
+.du-clock { grid-area: clock; font: 700 2rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; padding: 6px 12px; border-radius: 10px; background: var(--surface-2); color: var(--muted); min-width: 5.6ch; text-align: center; }
+.du-clock.run { color: var(--text); background: #0d1411; box-shadow: inset 0 0 0 2px var(--gold); }
+.du-clock.low { color: #ff8a80; }
+.du-clock.run.low { box-shadow: inset 0 0 0 2px #c0443f; }
+.du-btns { grid-area: btns; display: flex; gap: 8px; }
+.du-btns .btn { flex: 1; min-height: 44px; }
+#du-board.flipb .piece.b { transform: rotate(180deg); }
+.du-result { text-align: center; border-color: var(--gold); }
+.du-result .row { justify-content: center; }
+#du-game .toolbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+#du-game .toolbar .btn { padding-left: 4px; padding-right: 4px; white-space: nowrap; }
+@media (min-width: 760px) { .du-wrap { max-width: 520px; } }
+
+</style>
+  <style>
+/* Revisão de partidas com o motor */
+.an-bar { height: 10px; border-radius: 6px; background: var(--surface-2); overflow: hidden; margin: .5rem 0; }
+.an-bar i { display: block; height: 100%; background: var(--gold); transition: width .2s; }
+.an-acc { display: flex; gap: .75rem; margin-bottom: .25rem; }
+.an-acc > div { flex: 1; background: var(--surface-2); border-radius: 10px; padding: .5rem .75rem; display: flex; flex-direction: column; }
+.an-acc strong { font-size: 1.6rem; color: var(--gold); }
+.an-graph-wrap { margin: .5rem 0; }
+#an-graph { width: 100%; height: 80px; border-radius: 8px; cursor: pointer; display: block; touch-action: manipulation; }
+.an-bg { fill: #1b1f1d; } .an-fill { fill: #e8e2cf; } .an-mid { stroke: #888; stroke-width: 1; stroke-dasharray: 3 3; vector-effect: non-scaling-stroke; }
+.an-curline { stroke: var(--gold); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.an-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.an-table th, .an-table td { padding: 4px 6px; text-align: center; }
+.an-table th[scope=row] { text-align: left; font-weight: 600; }
+.an-h { font-size: 1rem; margin: .75rem 0 .35rem; }
+.an-crit { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.an-crit .btn { width: 100%; text-align: left; min-height: 44px; }
+.q { display: inline-block; min-width: 1.7em; text-align: center; border-radius: 6px; font-weight: 800; font-size: .8rem; padding: 1px 4px; color: #111; }
+.q-brilhante { background: #5fd6e6; } .q-excelente { background: #a7e3a1; } .q-melhor { background: #7fd18b; } .q-bom { background: #b9d9a0; } .q-imprecisao { background: #f0d36a; }
+.q-erro { background: #f0a25a; } .q-gafe { background: #e8625a; }
+button.mv.q-brilhante { box-shadow: inset 0 -3px 0 #5fd6e6; } button.mv.q-imprecisao { box-shadow: inset 0 -3px 0 #f0d36a; } button.mv.q-erro { box-shadow: inset 0 -3px 0 #f0a25a; }
+button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
+#gd-eval { margin: .25rem 0 .5rem; text-align: center; min-height: 1.4em; }
 
 </style>
 </head>
@@ -506,10 +523,10 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     </a>
     <nav class="topnav" aria-label="Seções">
       <a href="#/livre" data-nav="livre">Modo Livre</a>
+    <a href="#/dupla" data-nav="dupla">Dois jogadores</a>
       <a href="#/ia" data-nav="ia">Jogar contra a IA</a>
       <a href="#/academia" data-nav="academia">Academia de Aberturas</a>
       <a href="#/repertorio" data-nav="repertorio">Meu Repertório</a>
-      <a href="#/puzzles" data-nav="puzzles">Puzzles</a>
       <a href="#/partidas" data-nav="partidas">Minhas Partidas</a>
       <a href="#/laboratorio" data-nav="laboratorio">Laboratório</a>
       <a href="#/backup" data-nav="backup">Backup</a>
@@ -528,7 +545,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
         <p class="lead">Jogue, estude aberturas e gambitos e guarde tudo no seu aparelho.</p>
         <div class="hero-cta">
           <a class="btn primary" href="#/ia">♚ Jogar contra a IA</a>
-          <a class="btn" href="#/puzzles">♞ Puzzle rápido</a>
         </div>
       </div>
       <div id="home-resume"></div>
@@ -546,10 +562,16 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           <p>Tabuleiro completo com todas as regras oficiais. Mova brancas e pretas, desfaça, refaça e salve.</p>
           <span class="go">Jogar agora →</span>
         </a>
-<a class="card feature" href="#/laboratorio">
+<a class="card feature" href="#/dupla">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7 1a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14.2c2.7.2 5 1.8 5 4.8" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round"/></svg>
+          <h2>Dois jogadores</h2>
+          <p>Partida presencial no mesmo celular, com relógio e painel para cada lado.</p>
+          <span class="go">Jogar a dois →</span>
+        </a>
+        <a class="card feature" href="#/laboratorio">
           <svg class="ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-p" style="--pf:#d4af37;--ps:#0d1411"/></svg>
           <h2>Laboratório ♟</h2>
-          <p>Enfrente uma IA local, resolva um desafio, importe PGN e explore posições.</p>
+          <p>Importe e exporte partidas em PGN, monte posições personalizadas e veja estatísticas das suas partidas.</p>
           <span class="go">Explorar ferramentas →</span>
         </a>
       </div>
@@ -566,12 +588,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           <h2>Meu Repertório</h2>
           <p id="home-rp-count">Guarde suas próprias aberturas, variantes e anotações, e treine seus lances.</p>
           <span class="go">Abrir repertório →</span>
-        </a>
-<a class="card feature" href="#/puzzles">
-          <svg class="ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-n" style="--pf:#d4af37;--ps:#0d1411"/></svg>
-          <h2>Puzzles</h2>
-          <p id="home-pz-count">Táticas aleatórias com dica, solução e estatísticas.</p>
-          <span class="go">Resolver →</span>
         </a>
       </div>
 <h2 class="home-sec">Meu espaço <small>Suas coisas, do seu jeito</small></h2>
@@ -650,13 +666,12 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       <div class="page-head">
         <a class="back" href="#/">← Início</a>
         <h1>Laboratório de Xadrez</h1>
-        <p class="muted">Ferramentas extras para jogar, estudar e investigar posições.</p>
+        <p class="muted">Ferramentas extras: PGN (importar e exportar), editor de posição e estatísticas das suas partidas. Para revisar uma partida com o motor, abra-a em Partidas.</p>
       </div>
       <div class="lab-tabs" role="tablist" aria-label="Ferramentas do laboratório">
         <button class="btn primary" data-lab-tab="pgn" type="button">📄 PGN</button>
         <button class="btn" data-lab-tab="editor" type="button">🧩 Posição</button>
         <button class="btn" data-lab-tab="stats" type="button">📊 Estatísticas</button>
-        <button class="btn" data-lab-tab="analise" type="button">🔎 Análise</button>
       </div>
       <!-- Painel antigo da IA do Laboratório: substituído pela tela "Jogar contra a IA". Fica oculto (sem aba) só para o código antigo não quebrar. -->
       <section class="lab-pane" data-lab-pane="ia" hidden aria-hidden="true">
@@ -678,18 +693,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
             <button class="btn primary" id="lab-ai-save" type="button">✓ Salvar partida</button>
           </div>
           <div class="panel lab-inner"><h2>Lances</h2><div id="lab-ai-moves" class="move-box"></div></div>
-        </div>
-      </section>
-      <!-- Desafio antigo: agora faz parte da tela Puzzles (os 2 mates em 1 foram incluídos lá). -->
-      <section class="lab-pane" data-lab-pane="desafio" hidden aria-hidden="true">
-        <div class="panel">
-          <h2>Desafio tático: mate em 1</h2>
-          <p>As brancas jogam. Encontre o lance que dá xeque-mate em um movimento.</p>
-          <p class="muted small">Dica: procure uma casa onde a dama dê xeque e controle as fugas do rei.</p>
-          <div id="lab-puzzle-status" class="status" role="status">Encontre o mate!</div>
-          <div id="lab-puzzle-board"></div>
-          <div class="row"><button class="btn" id="lab-puzzle-reset" type="button">↻ Tentar de novo</button><button class="btn primary" id="lab-puzzle-hint" type="button">💡 Mostrar dica</button><button class="btn" id="lab-puzzle-next" type="button">Próximo desafio</button></div>
-          <p class="muted small" id="lab-puzzle-explain"></p>
         </div>
       </section>
       <section class="lab-pane" data-lab-pane="pgn">
@@ -723,32 +726,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           <p id="lab-editor-message" class="muted small" role="status"></p>
         </div>
       </section>
-      <section class="lab-pane" data-lab-pane="analise" hidden>
-        <div class="panel">
-          <h2>Análise com motor de xadrez</h2>
-          <p>Envie uma posição ao analisador online do Lichess, que oferece análise com Stockfish. O motor roda no serviço externo, não dentro deste arquivo.</p>
-          <div class="status" role="status">Dica: carregue a posição atual da partida ou cole uma FEN para investigar um momento específico.</div>
-          <label class="field"><span>Posição FEN para analisar</span><textarea id="lab-analysis-fen" rows="3" spellcheck="false">rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1</textarea></label>
-          <div class="row">
-            <button class="btn" id="lab-analysis-current" type="button">Usar posição atual da IA</button>
-            <button class="btn" id="lab-analysis-saved" type="button">Usar partida salva</button>
-            <button class="btn" id="lab-analysis-start" type="button">Posição inicial</button>
-          </div>
-          <div class="row">
-            <button class="btn primary" id="lab-analysis-game" type="button">Analisar partida inteira ↗</button>
-            <button class="btn" id="lab-analysis-open" type="button">Analisar posição ↗</button>
-            <button class="btn" id="lab-analysis-cloud" type="button">Consultar Stockfish</button>
-            <button class="btn" id="lab-analysis-explorer" type="button">Explorar lances</button>
-            <button class="btn" id="lab-analysis-copy" type="button">Copiar FEN</button>
-          </div>
-          <p id="lab-analysis-message" class="muted small" role="status" aria-live="polite">A consulta Stockfish usa avaliações em cache do Lichess. Se a posição não estiver em cache, abra a análise completa para calcular no site externo.</p>
-          <div id="lab-analysis-results" class="panel" aria-live="polite"><p class="muted small">As avaliações e os lances sugeridos aparecerão aqui.</p></div>
-          <hr class="lab-rule">
-          <h3>Análise da partida inteira</h3>
-          <p class="muted small">Escolha a partida na aba PGN e toque em “Analisar partida inteira”. O site prepara os lances e abre o Lichess para a análise com Stockfish. A análise do motor é feita no Lichess, não localmente neste site.</p>
-          <p class="muted small">A consulta Stockfish mostra avaliações em cache, quando disponíveis, e o explorador consulta estatísticas de partidas. A análise profunda completa continua no Lichess. Essas consultas precisam de internet e podem falhar se o navegador bloquear a conexão.</p>
-        </div>
-      </section>
       <section class="lab-pane" data-lab-pane="stats" hidden>
         <div class="panel">
           <h2>Suas estatísticas</h2>
@@ -759,6 +736,58 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       </section>
     </section>
 
+
+
+    <!-- ===================== DOIS JOGADORES (presencial) ===================== -->
+    <section id="view-dupla" class="view" hidden>
+      <div id="du-setup">
+        <div class="page-head">
+          <h1>Dois jogadores</h1>
+          <p class="muted">Partida presencial no mesmo celular, com relógio. Deixe o aparelho entre vocês.</p>
+        </div>
+        <div class="panel" id="du-resume-box" hidden><p id="du-resume-info"></p><div class="row"><button class="btn primary" id="du-resume" type="button">Continuar a partida</button></div></div>
+        <div class="panel"><h2>Jogadores</h2>
+          <div class="du-names">
+            <label class="field"><span>Brancas</span><input id="du-nb" type="text" maxlength="16" placeholder="Brancas" autocomplete="off"></label>
+            <label class="field"><span>Pretas</span><input id="du-np" type="text" maxlength="16" placeholder="Pretas" autocomplete="off"></label>
+          </div></div>
+        <div class="panel"><h2>Tempo por jogador</h2><p class="muted small">"3 + 2" = 3 minutos e 2 segundos a mais a cada lance. O relógio começa no primeiro lance.</p>
+          <div id="du-time" class="opts du-time" role="radiogroup" aria-label="Tempo"></div></div>
+        <div class="panel"><h2>Como vocês vão jogar</h2>
+          <div class="set-row"><div><b>Frente a frente</b><span class="d">O painel de cima fica de cabeça para baixo, para quem está do outro lado ler o relógio.</span></div><button class="toggle" id="du-face" role="switch" aria-checked="false" aria-label="Frente a frente" type="button"></button></div>
+          <div class="set-row"><div><b>Girar o tabuleiro a cada lance</b><span class="d">Use se vocês passam o celular de mão em mão.</span></div><button class="toggle" id="du-auto" role="switch" aria-checked="false" aria-label="Girar o tabuleiro a cada lance" type="button"></button></div>
+          <div class="set-row"><div><b>Peças pretas viradas</b><span class="d">As peças pretas ficam de cabeça para baixo, para quem joga de frente.</span></div><button class="toggle" id="du-flipb" role="switch" aria-checked="false" aria-label="Peças pretas viradas" type="button"></button></div>
+        </div>
+        <div class="row"><button class="btn primary big" id="du-start" type="button">▶ Começar a partida</button></div>
+      </div>
+      <div id="du-game" hidden>
+        <div class="du-wrap">
+          <div class="du-panel top" id="du-top">
+            <div class="du-name"></div>
+            <div class="du-clock" data-c="">0:00</div>
+            <div class="du-btns"><button class="btn sm" data-act="draw" type="button" aria-label="Propor empate">½ Empate</button><button class="btn sm danger" data-act="resign" type="button" aria-label="Desistir">⚑ Desistir</button></div>
+          </div>
+          <div id="du-status" class="status" role="status" aria-live="polite"></div>
+          <div id="du-board"></div>
+          <div class="du-panel bot" id="du-bot">
+            <div class="du-name"></div>
+            <div class="du-clock" data-c="">0:00</div>
+            <div class="du-btns"><button class="btn sm" data-act="draw" type="button" aria-label="Propor empate">½ Empate</button><button class="btn sm danger" data-act="resign" type="button" aria-label="Desistir">⚑ Desistir</button></div>
+          </div>
+          <div class="toolbar" role="toolbar" aria-label="Controles">
+            <button class="btn" id="du-pause" type="button">⏸ Pausar</button>
+            <button class="btn" id="du-undo" type="button"><span aria-hidden="true">↶</span> Desfazer</button>
+            <button class="btn" id="du-flip" type="button"><span aria-hidden="true">⇅</span> Girar</button>
+            <button class="btn" id="du-menu" type="button">☰ Menu</button>
+          </div>
+          <div class="panel du-result" id="du-result" hidden>
+            <h2 id="du-result-text"></h2>
+            <div class="row"><button class="btn primary" id="du-rematch" type="button">⟲ Revanche (trocar cores)</button><button class="btn" id="du-save" type="button">✓ Salvar partida</button><button class="btn" id="du-new" type="button">＋ Nova partida</button></div>
+          </div>
+          <div class="panel"><h2>Lances</h2><div id="du-moves" class="move-box" aria-label="Lista de lances"></div></div>
+        </div>
+      </div>
+    </section>
 
     <!-- ===================== MODO LIVRE ===================== -->
     <section id="view-livre" class="view" hidden>
@@ -783,6 +812,10 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           <div class="panel">
             <h2>Lances</h2>
             <div id="livre-moves" class="move-box" aria-label="Lista de lances"></div>
+          </div>
+          <div class="panel op-box" id="livre-op-panel">
+            <h2>Abertura</h2>
+            <div id="livre-op" aria-live="polite"></div>
           </div>
           <details class="panel fen-panel">
             <summary>Posição (FEN) e posição personalizada</summary>
@@ -877,54 +910,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       <div id="ac-detail"></div>
     </section>
 
-    <!-- ===================== PUZZLES ===================== -->
-    <section id="view-puzzles" class="view" hidden>
-      <div class="page-head">
-        <h1>Puzzles</h1>
-        <p class="muted">Um puzzle aleatório por vez, de posições verificadas. Resolva a sequência completa.</p>
-      </div>
-      <div class="filters">
-        <div class="chips" role="group" aria-label="Dificuldade">
-          <button class="chip on" data-pznivel="" type="button">Todas</button>
-          <button class="chip" data-pznivel="facil" type="button">Fácil</button>
-          <button class="chip" data-pznivel="medio" type="button">Médio</button>
-          <button class="chip" data-pznivel="dificil" type="button">Difícil</button>
-        </div>
-        <label class="field"><span>Categoria</span><select id="pz-cat" class="sel"></select></label>
-      </div>
-      <div class="detail-layout">
-        <div class="board-col">
-          <div id="pz-badges" class="pz-badges"></div>
-          <div id="pz-board"></div>
-          <div class="fb" id="pz-fb" role="status" aria-live="polite"></div>
-          <div class="pz-actions">
-            <button class="btn" id="pz-hint" type="button">💡 Dica</button>
-            <button class="btn" id="pz-show" type="button">👁 Mostrar solução</button>
-            <button class="btn" id="pz-retry" type="button">↺ Tentar de novo</button>
-            <button class="btn primary" id="pz-next" type="button">Próximo puzzle →</button>
-          </div>
-          <div class="explain" id="pz-explain" aria-live="polite"></div>
-        </div>
-        <aside class="side-col">
-          <div class="panel">
-            <h2>Suas estatísticas</h2>
-            <div class="lab-stats">
-              <div class="lab-stat"><strong id="pz-st-t">0</strong><span>Tentados</span></div>
-              <div class="lab-stat"><strong id="pz-st-r">0</strong><span>Resolvidos</span></div>
-              <div class="lab-stat"><strong id="pz-st-p">—</strong><span>Taxa de acerto</span></div>
-              <div class="lab-stat"><strong id="pz-st-s">0</strong><span>Sequência</span></div>
-            </div>
-            <p class="muted small">Melhor sequência: <b id="pz-st-m">0</b>. Fica salvo só neste navegador.</p>
-            <button class="btn danger sm" id="pz-reset-stats" type="button">Reiniciar estatísticas</button>
-          </div>
-          <div class="panel muted small">
-            <h2>Como contar</h2>
-            <p>“Resolvido” = sequência completa sem usar “Mostrar solução”. A sequência só continua se você não errar nenhum lance.</p>
-          </div>
-        </aside>
-      </div>
-    </section>
-
     <!-- ===================== MEU REPERTÓRIO ===================== -->
     <section id="view-repertorio" class="view" hidden>
       <div id="rp-list-box">
@@ -996,14 +981,13 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
         <div class="lab-stats">
           <div class="lab-stat"><strong id="bk-n-partidas">0</strong><span>Partidas salvas</span></div>
           <div class="lab-stat"><strong id="bk-n-rep">0</strong><span>Aberturas no repertório</span></div>
-          <div class="lab-stat"><strong id="bk-n-puz">0</strong><span>Puzzles tentados</span></div>
           <div class="lab-stat"><strong id="bk-n-rasc">—</strong><span>Rascunho do Modo Livre</span></div>
         </div>
         <p class="muted small" id="bk-ultimo"></p>
       </div>
       <div class="panel">
         <h2>1. Exportar (criar a cópia)</h2>
-        <p class="muted small">Gera um único arquivo com partidas, repertório, estatísticas de puzzles e o rascunho do Modo Livre.</p>
+        <p class="muted small">Gera um único arquivo com partidas, repertório, ajustes e o rascunho do Modo Livre.</p>
         <div class="row">
           <button class="btn primary" id="bk-down" type="button">⬇ Baixar arquivo</button>
           <button class="btn" id="bk-share" type="button">↗ Compartilhar</button>
@@ -1052,14 +1036,16 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     <a href="#/" data-nav="home"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V21h-6v-6H9v6H3z" fill="currentColor"/></svg><span>Início</span></a>
     <a href="#/livre" data-nav="livre"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-n" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Livre</span></a>
     <a href="#/ia" data-nav="ia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-k" style="--pf:currentColor;--ps:#0d1411"/></svg><span>IA</span></a>
+    <a href="#/dupla" data-nav="dupla" aria-label="Dois jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7 1a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14.2c2.7.2 5 1.8 5 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dupla</span></a>
     <a href="#/academia" data-nav="academia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-b" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Academia</span></a>
     <a href="#/repertorio" data-nav="repertorio" aria-label="Meu Repertório"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-q" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Repert.</span></a>
-    <a href="#/puzzles" data-nav="puzzles"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-n" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Puzzles</span></a>
     <a href="#/partidas" data-nav="partidas"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-r" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Partidas</span></a>
     <a href="#/laboratorio" data-nav="laboratorio"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-p" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Lab</span></a>
     <a href="#/ajustes" data-nav="ajustes" aria-label="Aparência e sons"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10m4 0h2M4 17h2m4 0h10M14 4v6m-4 4v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Visual</span></a>
   </nav>
 
+  <button class="tb-arrow l" id="tb-prev" type="button" aria-label="Ver abas anteriores">‹</button>
+  <button class="tb-arrow r" id="tb-next" type="button" aria-label="Ver mais abas">›</button>
   <div id="toasts" aria-live="polite"></div>
   <noscript><p style="padding:2rem;color:#fff">Este site precisa de JavaScript para funcionar.</p></noscript>
 
@@ -1862,7 +1848,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     warnings: [],                                   // avisos da última leitura (partidas corrompidas)
     available() { return !!real(); },   // false = dados NÃO persistem
 
-    /** Leitura/gravação simples de texto em qualquer chave (usado por Puzzles e Repertório). set devolve false se falhar. */
+    /** Leitura/gravação simples de texto em qualquer chave (usado por Repertório e Backup). set devolve false se falhar. */
     raw: {
       get(k) { try { return ls().getItem(k); } catch (e) { return null; } },
       set(k, v) { try { ls().setItem(k, v); return true; } catch (e) { return false; } },
@@ -1884,8 +1870,12 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
                    nivelNome: String(g.meta.nivelNome || '').slice(0, 20), cor: g.meta.cor === 'b' ? 'b' : 'w',
                    motor: String(g.meta.motor || '').slice(0, 20), abandonou: !!g.meta.abandonou };
         }
+        if (g.meta && g.meta.modo === 'dupla') {   // partida presencial (dois jogadores no mesmo celular)
+          meta = { modo: 'dupla', brancas: String(g.meta.brancas || 'Brancas').slice(0, 16), pretas: String(g.meta.pretas || 'Pretas').slice(0, 16), tempo: String(g.meta.tempo || '').slice(0, 20) };
+        }
         // Resultado: o das regras; só um abandono (que as regras não conhecem) pode defini-lo à parte.
-        const result = (st.result === '*' && meta && meta.abandonou && ['1-0', '0-1'].includes(g.result)) ? g.result : st.result;
+        // (partida presencial também pode terminar por tempo, desistência ou empate combinado)
+        const result = (st.result === '*' && meta && (meta.abandonou && ['1-0', '0-1'].includes(g.result) || meta.modo === 'dupla' && ['1-0', '0-1', '1/2-1/2'].includes(g.result))) ? g.result : st.result;
         const rec = {
           id: g.id,
           title: String(g.title || 'Partida sem título').slice(0, 80),
@@ -2143,6 +2133,40 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   const data = { OPENINGS, CATEGORIAS };
   if (typeof module !== 'undefined' && module.exports) module.exports = data;
   else root.OpeningsData = data;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/* GERADO por tools/gen-academia-extra.py a partir da base ECO (Lichess, CC0). Não edite à mão. */
+(function (root) {
+  'use strict';
+  const EXTRA = [
+    {"id": "dorian", "nome": "Gambito Dorian", "tipo": "Gambito", "categoria": "abertos", "resumo": "Gambito raro do Jogo do Centro: as brancas entregam o cavalo em c3 por desenvolvimento.", "ideia": "Depois de 1.e4 e5 2.d4 exd4, as brancas jogam 3.Cc3!? e deixam as pretas capturarem o cavalo com o peão. Em troca, a dama sai para d4, as peças se desenvolvem rápido e o bispo de c1 ganha a grande diagonal depois de Bxb2. É uma linha muito rara e arriscada: o nome e a sequência vieram de você, e ela não consta na base de aberturas do Lichess usada no resto da Academia. Os motores a consideram duvidosa, então use como arma surpresa, não como teoria de torneio.", "planos": {"brancas": "Usar a dama ativa em d4 e e3, recapturar em b2 com o bispo e compensar o material com desenvolvimento e iniciativa.", "pretas": "Aceitar o material, desenvolver com ...Cc6 para ganhar tempo contra a dama e devolver material no momento certo, para simplificar para um final melhor."}, "variantes": [{"nome": "Linha principal", "descricao": "As brancas entregam o cavalo e depois recapturam o peão de b2.", "lances": "e4 e5 d4 exd4 Nc3 dxc3 Qd4 Nc6 Qe3 cxb2 Bxb2", "notas": {"1.e4": "As brancas ocupam o centro e abrem caminho para a dama e o bispo.", "1...e5": "As pretas respondem na mesma moeda e ocupam o centro.", "2.d4": "O Jogo do Centro: as brancas atacam o peão de e5 com o peão de d.", "2...exd4": "As pretas aceitam e capturam o peão.", "3.Nc3": "O Gambito Dorian: em vez de recapturar, as brancas desenvolvem o cavalo em casa de captura, oferecendo uma peça.", "3...dxc3": "As pretas capturam o cavalo com o peão: ganham uma peça inteira.", "4.Qd4": "A dama sai para o centro e ataca o peão de c3 e a casa g7.", "4...Nc6": "As pretas atacam a dama e desenvolvem uma peça.", "5.Qe3": "A dama recua para uma casa segura, pressionando a coluna e.", "5...cxb2": "O peão captura b2 e ataca a torre de a1 e o bispo de c1 ao mesmo tempo.", "6.Bxb2": "O bispo captura o peão ameaçador e se instala na grande diagonal, apontando para g7. As brancas têm menos material, mas muito desenvolvimento."}, "fonte": "usuario"}]},
+    {"id": "letao", "nome": "Gambito Letão", "tipo": "Gambito", "categoria": "abertos", "resumo": "Contragambito agressivo: as pretas jogam ...f5 já no 2º lance.", "ideia": "As pretas ignoram a defesa tradicional de e5 e contra-atacam com ...f5. Se as brancas aceitam com Cxe5, a dama preta sai cedo e o jogo fica muito tático. É arriscada para as pretas: o rei fica exposto, e as brancas bem preparadas costumam ficar melhor.", "planos": {"brancas": "Capturar em e5, tomar o centro com d4 e desenvolver as peças com calma, sem cair em armadilhas de dama.", "pretas": "Ganhar tempo atacando o cavalo, abrir a coluna f e criar ameaças contra o rei branco, aceitando um jogo arriscado."}, "variantes": [{"nome": "Ataque Nimzowitsch", "descricao": "As brancas recuam o cavalo para c4 e depois o levam a e3.", "lances": "e4 e5 Nf3 f5 Nxe5 Qf6 d4 d6 Nc4 fxe4 Ne3", "notas": {"2.Nf3": "Desenvolve o cavalo e ataca o peão de e5.", "2...f5": "O Gambito Letão: as pretas atacam o centro branco logo de cara, ao custo de enfraquecer o próprio rei.", "3.Nxe5": "As brancas aceitam o desafio e capturam o peão.", "3...Qf6": "A dama ataca o cavalo de e5.", "4.d4": "Protege o cavalo e toma o centro.", "4...d6": "Ataca o cavalo e abre caminho para o bispo de c8.", "5.Nc4": "O cavalo recua para uma casa ativa, fugindo do ataque.", "5...fxe4": "As pretas recuperam um peão e abrem a coluna f.", "6.Ne3": "O cavalo vai para e3, uma casa segura que vigia o centro."}}, {"nome": "Ataque Bronstein", "descricao": "As brancas desenvolvem o bispo com Be2 e rocam cedo.", "lances": "e4 e5 Nf3 f5 Nxe5 Qf6 d4 d6 Nc4 fxe4 Be2", "notas": {"6.Be2": "O bispo vai para e2: prepara o roque e a defesa do rei, sem pressa."}}, {"nome": "Variante Corkscrew", "descricao": "As pretas respondem com ...Cf6 e as brancas partem para um sacrifício em f7.", "lances": "e4 e5 Nf3 f5 Nxe5 Nf6 Bc4 fxe4 Nf7 Qe7 Nxh8 d5", "notas": {"3...Nf6": "Desenvolve o cavalo e ataca o peão de e4.", "4.Bc4": "O bispo mira f7, o ponto fraco das pretas.", "4...fxe4": "As pretas capturam o peão de e4 em vez de se defender.", "5.Nf7": "O cavalo captura em f7, atacando ao mesmo tempo a dama e a torre de h8: um garfo.", "5...Qe7": "A dama sai e ataca o cavalo de f7.", "6.Nxh8": "As brancas ganham a torre, mas o cavalo fica preso em h8.", "6...d5": "As pretas atacam o bispo e abrem o centro: o jogo fica muito tático."}}]},
+    {"id": "elefante", "nome": "Gambito Elefante", "tipo": "Gambito", "categoria": "abertos", "resumo": "As pretas empurram ...d5 logo no 2º lance, abrindo o centro.", "ideia": "Também chamado Contragambito do Peão da Dama. As pretas atacam o peão de e4 com ...d5 em vez de defender e5. Se as brancas jogam com precisão, o resultado é bom para elas, mas a posição é jogável e pega muita gente de surpresa.", "planos": {"brancas": "Capturar em d5 ou e5 com cuidado, tomar o centro, desenvolver as peças e evitar sacrificar peças por pura ambição.", "pretas": "Abrir o jogo com ...d5, recuperar o peão e desenvolver rápido, mirando as casas centrais."}, "variantes": [{"nome": "Variante Wasp", "descricao": "As brancas capturam em e5 e as pretas jogam ...Dg5, uma linha afiada.", "lances": "e4 e5 Nf3 d5 Nxe5 dxe4 Bc4 Qg5", "notas": {"3.Nxe5": "As brancas capturam o peão de e5 com o cavalo.", "3...dxe4": "As pretas capturam o peão de e4.", "4.Bc4": "O bispo desenvolve e mira f7.", "4...Qg5": "A dama ataca o cavalo de e5 e o peão de g2: cuidado dos dois lados!"}}]},
+    {"id": "falkbeer", "nome": "Contragambito Falkbeer", "tipo": "Gambito", "categoria": "abertos", "resumo": "A resposta mais combativa ao Gambito do Rei: 2...d5!", "ideia": "Em vez de aceitar o peão de f4, as pretas contra-atacam o centro com ...d5. Depois de exd5 e4, as pretas ganham espaço e tempo com peças ativas. É uma das armas favoritas de quem joga de pretas contra o Gambito do Rei.", "planos": {"brancas": "Aproveitar o peão ganho com cuidado, tirar a dama de linhas perigosas e levar o rei para um lugar seguro.", "pretas": "Recuperar o peão rápido com ...Cf6 e ...Cxe4, e desenvolver as peças atacando o centro e o rei branco."}, "variantes": [{"nome": "Linha principal", "descricao": "As pretas jogam ...Cf6 e ...Bc5 enquanto as brancas ficam com um peão a mais.", "lances": "e4 e5 f4 d5 exd5 e4 d3 Nf6 dxe4 Nxe4 Nf3 Bc5 Qe2 Bf5", "notas": {"2.f4": "O Gambito do Rei: as brancas abrem a coluna f e atacam o centro.", "2...d5": "O Contragambito Falkbeer: as pretas respondem atacando o peão de e4.", "3.exd5": "As brancas capturam o peão.", "3...e4": "As pretas avançam o peão, ganhando espaço.", "4.d3": "As brancas atacam o peão de e4 para abrir a posição.", "4...Nf6": "O cavalo defende o peão de e4 e ataca o peão de d5.", "5.dxe4": "As brancas capturam o peão de e4.", "5...Nxe4": "As pretas recuperam o peão com o cavalo.", "6.Nf3": "As brancas desenvolvem o cavalo.", "6...Bc5": "O bispo mira f2, o ponto fraco do rei branco.", "7.Qe2": "A dama ataca o cavalo de e4, que está cravado contra o rei.", "7...Bf5": "O bispo desenvolve, pressionando o centro."}}, {"nome": "Variante Tarrasch", "descricao": "As brancas atacam o bispo com g4, e as pretas rocam.", "lances": "e4 e5 f4 d5 exd5 e4 d3 Nf6 dxe4 Nxe4 Nf3 Bc5 Qe2 Bf5 g4 O-O", "notas": {"8.g4": "Um golpe audacioso: g4 ataca o bispo e abre o flanco do rei branco.", "8...O-O": "As pretas rocam e mantêm uma posição ativa."}}]},
+    {"id": "figado-frito", "nome": "Ataque do Fígado Frito", "tipo": "Gambito", "categoria": "abertos", "resumo": "O sacrifício em f7 contra a Defesa dos Dois Cavalos.", "ideia": "Depois de 4.Cg5 d5 5.exd5 Cxd5, as brancas sacrificam o cavalo em f7. É uma linha muito conhecida e perigosa para as pretas, e também arriscada para as brancas: o rei preto sai ao centro, mas a iniciativa é branca.", "planos": {"brancas": "Entrar no sacrifício apenas se conhecer a teoria: depois de Cxf7 Rxf7, a dama dá xeque e as peças atacam o rei exposto.", "pretas": "Evitar a linha com outras respostas, e se ela vier, defender com cuidado o rei."}, "variantes": [{"nome": "Linha do sacrifício", "descricao": "As brancas sacrificam o cavalo em f7 para expor o rei preto.", "lances": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 d5 exd5 Nxd5 Nxf7", "notas": {"3.Bc4": "O bispo de c4 mira f7, o ponto fraco das pretas.", "3...Nf6": "As pretas desenvolvem o cavalo e atacam o peão de e4: a Defesa dos Dois Cavalos.", "4.Ng5": "O cavalo ataca f7 junto com o bispo.", "4...d5": "As pretas respondem com um contragolpe no centro.", "5.exd5": "As brancas capturam o peão, abrindo o centro.", "5...Nxd5": "O cavalo retoma o peão e se centraliza.", "6.Nxf7": "O Ataque do Fígado Frito: o cavalo captura f7, expondo o rei preto."}}]},
+    {"id": "traxler", "nome": "Contra-ataque Traxler", "tipo": "Gambito", "categoria": "abertos", "resumo": "Contra-ataque selvagem das pretas na Italiana: ...Bc5 no lugar de ...d5.", "ideia": "Depois de 4.Cg5, as pretas jogam ...Bc5!? em vez de ...d5. Se as brancas capturam em f7, as pretas respondem com sacrifícios ainda mais violentos em f2. As posições são muito táticas e quem sabe a teoria leva vantagem.", "planos": {"brancas": "Conhecer as linhas ou evitá-las com 4.d3, e se aceitar, tomar cuidado com a segurança do rei.", "pretas": "Responder a Cxf7 com ...Bxf2+ e atacar o rei branco com todas as peças."}, "variantes": [{"nome": "Linha da marcha do rei", "descricao": "As brancas capturam duas peças e o rei sai para o centro.", "lances": "e4 e5 Nf3 Nc6 Bc4 Nf6 Ng5 Bc5 Nxf7 Bxf2+ Kxf2 Nxe4+ Ke3", "notas": {"4.Ng5": "As brancas atacam f7 com o cavalo e o bispo.", "4...Bc5": "O Contra-ataque Traxler: as pretas ignoram a ameaça e desenvolvem o bispo atacando f2.", "5.Nxf7": "As brancas aceitam o desafio e capturam o peão de f7.", "5...Bxf2+": "O bispo captura f2 com xeque: as pretas continuam o ataque.", "6.Kxf2": "As brancas capturam o bispo com o rei.", "6...Nxe4+": "O cavalo captura e4 com xeque, expulsando o rei.", "7.Ke3": "O rei branco marcha pelo centro, um caminho perigoso."}}]},
+    {"id": "goring", "nome": "Gambito Göring", "tipo": "Gambito", "categoria": "abertos", "resumo": "Escocesa com sacrifício: as brancas oferecem peões pelo desenvolvimento.", "ideia": "Na Escocesa, as brancas jogam c3 em vez de recapturar em d4. Se as pretas aceitam, as brancas ganham rápido controle do centro e linhas abertas, com boas chances de ataque. As pretas têm também respostas sólidas, como ...d5.", "planos": {"brancas": "Desenvolver as peças depressa (Cc3, Bc4) e usar o centro aberto e o domínio das casas fracas das pretas.", "pretas": "Aceitar o peão com cuidado, desenvolver o bispo em b4 ou c5 e devolver material para neutralizar o ataque."}, "variantes": [{"nome": "Linha principal", "descricao": "As pretas aceitam e as brancas desenvolvem com Cxc3.", "lances": "e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Nxc3 Bb4", "notas": {"3.d4": "A Escocesa: as brancas abrem o centro.", "3...exd4": "As pretas capturam o peão de d4.", "4.c3": "O Gambito Göring: o peão avança para c3 em vez de recapturar em d4.", "4...dxc3": "As pretas aceitam e capturam o segundo peão.", "5.Nxc3": "As brancas recapturam desenvolvendo o cavalo.", "5...Bb4": "As pretas ganham atividade: o bispo prega o cavalo de c3."}}, {"nome": "Variante Bardeleben", "descricao": "As brancas desenvolvem o bispo antes de recapturar.", "lances": "e4 e5 Nf3 Nc6 d4 exd4 c3 dxc3 Bc4 Nf6 Nxc3 Bb4", "notas": {"5.Bc4": "As brancas dão outro peão: o bispo mira f7 e aumenta a pressão.", "5...Nf6": "As pretas desenvolvem o cavalo e atacam o peão de e4.", "6.Nxc3": "As brancas recapturam em c3 e ganham desenvolvimento.", "6...Bb4": "O bispo prega o cavalo de c3."}}, {"nome": "Gambito Göring Recusado", "descricao": "As pretas contra-atacam com ...d5, uma resposta sólida.", "lances": "e4 e5 Nf3 Nc6 d4 exd4 c3 d5", "notas": {"4...d5": "As pretas respondem no centro com ...d5, uma forma segura de recusar o gambito."}}]},
+    {"id": "stafford", "nome": "Gambito Stafford", "tipo": "Gambito", "categoria": "abertos", "resumo": "Armadilha popular contra a Petrov: ...Cc6 depois de Cxe5.", "ideia": "As pretas sacrificam um peão por desenvolvimento rápido e ataque. É uma linha com muitas armadilhas, mas com poucas chances contra um jogo preciso das brancas. É perfeito para quem gosta de jogos agressivos.", "planos": {"brancas": "Capturar o peão, devolver material quando necessário e consolidar a posição com Cc3 ou d3.", "pretas": "Desenvolver as peças depressa com ...Bc5 e ...Cg4 ou ...Bg4 e atacar f2."}, "variantes": [{"nome": "Linha com d3", "descricao": "As brancas protegem o centro com d3.", "lances": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 d3 Bc5", "notas": {"2.Nf3": "Desenvolve o cavalo e ataca o peão de e5.", "2...Nf6": "A Defesa Petrov: as pretas contra-atacam o peão de e4.", "3.Nxe5": "As brancas capturam o peão de e5.", "3...Nc6": "O Gambito Stafford: em vez de recapturar, as pretas atacam o cavalo.", "4.Nxc6": "As brancas capturam o cavalo.", "4...dxc6": "As pretas recapturam e abrem a diagonal da dama e do bispo.", "5.d3": "As brancas protegem o peão de e4 e abrem o bispo.", "5...Bc5": "O bispo desenvolve e mira f2."}}, {"nome": "Linha com Cc3", "descricao": "As brancas desenvolvem o cavalo.", "lances": "e4 e5 Nf3 Nf6 Nxe5 Nc6 Nxc6 dxc6 Nc3 Bc5", "notas": {"5.Nc3": "Desenvolve o cavalo e protege o peão de e4.", "5...Bc5": "O bispo desenvolve e mira f2."}}]},
+    {"id": "wing", "nome": "Gambito Wing (Siciliana)", "tipo": "Gambito", "categoria": "semiabertos", "resumo": "As brancas oferecem o peão b logo no 2º lance contra a Siciliana.", "ideia": "Com 2.b4!?, as brancas oferecem um peão para desviar o peão de c5 e ganhar o centro com a ajuda do bispo de b2. É uma alternativa ao Gambito Smith-Morra, muito usada em partidas rápidas.", "planos": {"brancas": "Desenvolver o bispo em b2, avançar no centro com a3 e preparar c4 e d4.", "pretas": "Aceitar o peão com ...cxb4 e responder no centro com ...d5, devolvendo material em troca de tempo."}, "variantes": [{"nome": "Variante Marienbad", "descricao": "As pretas jogam ...d5 e as brancas desenvolvem o bispo.", "lances": "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Bb2", "notas": {"2.b4": "O Gambito Wing: oferece o peão de b para desviar o peão de c5.", "2...cxb4": "As pretas aceitam e capturam o peão.", "3.a3": "As brancas atacam o peão de b4 e abrem a coluna a.", "3...d5": "As pretas respondem no centro com ...d5.", "4.exd5": "As brancas capturam o peão de d5.", "4...Qxd5": "A dama recupera o peão.", "5.Bb2": "O bispo se instala na grande diagonal, apontando para g7."}}, {"nome": "Variante Nanu", "descricao": "As pretas jogam ...e5 e as brancas lançam c4 e Bd3.", "lances": "e4 c5 b4 cxb4 a3 d5 exd5 Qxd5 Nf3 e5 c4 Qe6 Bd3", "notas": {"5.Nf3": "As brancas desenvolvem o cavalo.", "5...e5": "As pretas avançam o peão, tomando espaço no centro.", "6.c4": "As brancas atacam a dama preta com c4.", "6...Qe6": "A dama recua para uma casa segura.", "7.Bd3": "O bispo desenvolve, jogando por iniciativa."}}]},
+    {"id": "max-lange", "nome": "Ataque Max Lange", "tipo": "Gambito", "categoria": "abertos", "resumo": "Uma das linhas mais afiadas da Italiana: depois de ...Bc5, e5!", "ideia": "As brancas sacrificam material por iniciativa e um ataque rápido. As jogadas são quase todas forçadas, e as pretas precisam encontrar os lances certos para não cair em armadilhas. Entender a linha principal ajuda a reconhecer as ameaças.", "planos": {"brancas": "Seguir com e5, atacar o cavalo, abrir a coluna e e dar xeque para atrapalhar o rei preto.", "pretas": "Defender com precisão (...d5, ...Be6) e devolver material no momento certo para neutralizar o ataque."}, "variantes": [{"nome": "Variante Rubinstein", "descricao": "A principal linha forçada, com muitos lances únicos.", "lances": "e4 e5 Nf3 Nc6 Bc4 Nf6 d4 exd4 O-O Bc5 e5 d5 exf6 dxc4 Re1+ Be6 Ng5 Qd5 Nc3 Qf5 Nce4 Bf8", "notas": {"3.Bc4": "O bispo de c4 mira o ponto fraco f7.", "3...Nf6": "As pretas desenvolvem o cavalo e atacam e4.", "4.d4": "As brancas abrem o centro.", "4...exd4": "As pretas capturam o peão.", "5.O-O": "As brancas rocam para ativar a torre, deixando o peão de e4 sem defesa por ora.", "5...Bc5": "O bispo ataca o peão de d4 e mira f2.", "6.e5": "O Ataque Max Lange: o peão avança atacando o cavalo e abrindo linhas.", "6...d5": "As pretas atacam o bispo de c4 e o peão de e5.", "7.exf6": "As brancas capturam o cavalo.", "7...dxc4": "As pretas capturam o bispo.", "8.Re1+": "Xeque com a torre, forçando uma resposta.", "8...Be6": "O bispo bloqueia o xeque e desenvolve.", "9.Ng5": "O cavalo ataca o bispo de e6 e mira f7.", "9...Qd5": "A dama preta se centraliza e ataca o cavalo de g5.", "10.Nc3": "O cavalo ataca a dama preta.", "10...Qf5": "A dama vai para f5, mantendo a pressão.", "11.Nce4": "O cavalo vai para e4, apoiando o ataque.", "11...Bf8": "O bispo volta para f8 para defender o rei: uma posição teórica conhecida."}}]},
+    {"id": "ponziani", "nome": "Abertura Ponziani", "tipo": "Abertura", "categoria": "abertos", "resumo": "As brancas preparam d4 com c3, antes mesmo de mover o bispo.", "ideia": "Uma abertura antiga e pouco comum: as brancas jogam c3 para construir um centro forte com d4. Para as pretas existem várias respostas, entre elas ...d5, ...f5 e ...Cf6, e algumas levam a posições bem afiadas.", "planos": {"brancas": "Jogar d4 depois de c3 para formar um centro de peões e desenvolver as peças com calma.", "pretas": "Reagir no centro com ...d5 ou ...Cf6, sem deixar as brancas ocuparem o meio do tabuleiro."}, "variantes": [{"nome": "Variante Leonhardt", "descricao": "As pretas jogam ...d5 e as brancas respondem com Da4.", "lances": "e4 e5 Nf3 Nc6 c3 d5 Qa4 Nf6", "notas": {"3.c3": "A Ponziani: prepara d4 e um centro forte.", "3...d5": "As pretas respondem no centro com ...d5.", "4.Qa4": "A dama crava o cavalo de c6 contra o rei preto.", "4...Nf6": "As pretas desenvolvem o cavalo e atacam o peão de e4."}}, {"nome": "Gambito Caro", "descricao": "As pretas desenvolvem o bispo para d7, defendendo o cavalo.", "lances": "e4 e5 Nf3 Nc6 c3 d5 Qa4 Bd7", "notas": {"4...Bd7": "O bispo desfaz a cravada e defende o cavalo de c6, mantendo a posição sólida."}}, {"nome": "Contragambito de Ponziani", "descricao": "As pretas atacam com ...f5.", "lances": "e4 e5 Nf3 Nc6 c3 f5 d4 d6 d5", "notas": {"3...f5": "Um contragambito agressivo: as pretas atacam o peão de e4.", "4.d4": "As brancas respondem no centro com d4.", "4...d6": "As pretas defendem o peão de e5.", "5.d5": "O peão avança, atacando o cavalo de c6."}}]},
+    {"id": "philidor", "nome": "Defesa Philidor", "tipo": "Abertura", "categoria": "abertos", "resumo": "Uma defesa sólida: ...d6 apoia e5 e mantém o centro.", "ideia": "As pretas defendem o peão de e5 com ...d6 em vez de ...Cc6. A posição é sólida, mas um pouco passiva. Se as brancas tomam o centro com d4, as pretas costumam responder com ...Cf6 e ...Cbd7, mantendo a estrutura. É popular entre jogadores que preferem posições estáveis.", "planos": {"brancas": "Tomar o centro com d4, desenvolver as peças com Cc3 e Bc4 ou Be2 e preparar o roque curto.", "pretas": "Manter o centro com ...e5 e ...d6, desenvolver com ...Cf6, ...Cbd7 e ...Be7 e rocar, esperando o momento de agir."}, "variantes": [{"nome": "Variante do Leão (com Bc4)", "descricao": "As pretas jogam um sistema com ...Cbd7 e ...Be7.", "lances": "e4 e5 Nf3 d6 d4 Nf6 Nc3 Nbd7 Bc4 Be7 O-O h6", "notas": {"2.Nf3": "Desenvolve o cavalo e ataca o peão de e5.", "2...d6": "A Defesa Philidor: as pretas defendem e5 com um peão, uma defesa antiga e sólida.", "3.d4": "As brancas tomam o centro.", "3...Nf6": "O cavalo desenvolve e ataca o peão de e4.", "4.Nc3": "As brancas defendem o peão de e4 e desenvolvem.", "4...Nbd7": "A Variante do Leão: o outro cavalo vai para d7, apoiando o centro.", "5.Bc4": "O bispo mira f7.", "5...Be7": "O bispo se prepara para o roque.", "6.O-O": "As brancas rocam.", "6...h6": "As pretas evitam ideias de Cg5 com ...h6."}}, {"nome": "Variante do Leão (com Be2)", "descricao": "Um sistema calmo com o bispo em e2.", "lances": "e4 e5 Nf3 d6 d4 Nf6 Nc3 Nbd7 Be2 Be7 O-O c6", "notas": {"5.Be2": "O bispo vai para e2, uma posição sólida e flexível.", "5...Be7": "O bispo se prepara para o roque.", "6.O-O": "As brancas rocam.", "6...c6": "O peão de c6 apoia o centro e dá espaço para a dama."}}]},
+    {"id": "quatro-cavalos", "nome": "Abertura dos Quatro Cavalos", "tipo": "Abertura", "categoria": "abertos", "resumo": "Simétrica e sólida: os dois lados desenvolvem os dois cavalos.", "ideia": "Um jogo equilibrado e clássico. Na versão Espanhola (Bb5), as brancas pregam o cavalo de c6 e as pretas respondem com ...Bb4 ou ...Cd4. Boa para jogadores que gostam de posições estáveis e de entender estruturas.", "planos": {"brancas": "Pregar o cavalo com Bb5, rocar e jogar d3 ou d4 no momento certo.", "pretas": "Responder ...Bb4 criando uma posição simétrica, ou ...Cd4 para trocar a peça mais ativa das brancas."}, "variantes": [{"nome": "Variante Espanhola simétrica (Metger)", "descricao": "Os dois lados pregam o cavalo e rocam.", "lances": "e4 e5 Nf3 Nc6 Nc3 Nf6 Bb5 Bb4 O-O O-O d3 d6 Bg5 Bxc3 bxc3 Qe7", "notas": {"2.Nf3": "Desenvolve o cavalo e ataca o peão de e5.", "2...Nc6": "As pretas defendem o peão e desenvolvem o cavalo.", "3.Nc3": "As brancas desenvolvem o segundo cavalo.", "3...Nf6": "As pretas fazem o mesmo.", "4.Bb5": "O bispo prega o cavalo de c6: a Variante Espanhola.", "4...Bb4": "As pretas respondem com a mesma ideia.", "5.O-O": "As brancas rocam.", "6.d3": "As brancas apoiam o centro com d3.", "7.Bg5": "O bispo prega o cavalo de f6.", "7...Bxc3": "O bispo captura o cavalo, estragando a estrutura de peões.", "8.bxc3": "As brancas recapturam, ficando com peões dobrados mas com os dois bispos.", "8...Qe7": "A dama sai para e7, defendendo o cavalo cravado."}}, {"nome": "Variante Rubinstein (Maróczy)", "descricao": "As pretas jogam ...Cd4 e trocam o cavalo.", "lances": "e4 e5 Nf3 Nc6 Nc3 Nf6 Bb5 Nd4 Be2 Nxf3+ Bxf3 Bc5 O-O O-O d3 d6 Na4 Bb6", "notas": {"4.Bb5": "O bispo prega o cavalo de c6.", "4...Nd4": "O cavalo de c6 vai para d4, atacando o bispo e o cavalo de f3.", "5.Be2": "O bispo recua para uma casa segura.", "5...Nxf3+": "As pretas trocam o cavalo por um cavalo.", "6.Bxf3": "O bispo recupera em f3, ficando ativo.", "6...Bc5": "O bispo desenvolve e mira f2.", "7.O-O": "As brancas rocam.", "8.d3": "Apoia o centro e libera o bispo.", "9.Na4": "O cavalo vai para a4, mirando o bispo de c5."}}]},
+    {"id": "alekhine", "nome": "Defesa Alekhine", "tipo": "Abertura", "categoria": "semiabertos", "resumo": "Provocativa: ...Cf6 convida as brancas a avançarem os peões.", "ideia": "As pretas atacam o peão de e4 com o cavalo e esperam que as brancas avancem, formando um centro grande que depois será atacado. É uma defesa hipermoderna, com um jogo dinâmico e desequilibrado.", "planos": {"brancas": "Ganhar espaço com e5, d4 e Cf3, usando o centro grande, sem deixar que ele se torne um alvo.", "pretas": "Deixar as brancas avançarem, atacar o centro grande com ...d6, ...Bg4 e ...c6 e se desenvolver com precisão."}, "variantes": [{"nome": "Variante Flohr", "descricao": "Um sistema com ...Bg4 e ...c6.", "lances": "e4 Nf6 e5 Nd5 d4 d6 Nf3 Bg4 Be2 c6", "notas": {"1...Nf6": "As pretas atacam o peão de e4 com o cavalo: a Defesa Alekhine.", "2.e5": "As brancas avançam o peão, atacando o cavalo.", "2...Nd5": "O cavalo foge para uma casa central.", "3.d4": "As brancas ocupam o centro.", "3...d6": "As pretas atacam o peão de e5.", "4.Nf3": "O cavalo desenvolve e protege o centro.", "4...Bg4": "O bispo prega o cavalo de f3.", "5.Be2": "As brancas desenvolvem o bispo.", "5...c6": "O peão de c6 prepara ...d5 e protege o cavalo."}}, {"nome": "Variante Keres", "descricao": "As pretas fazem um fianqueto, e as brancas atacam com Bb3 e a4.", "lances": "e4 Nf6 e5 Nd5 d4 d6 Nf3 g6 Bc4 Nb6 Bb3 Bg7 a4", "notas": {"4...g6": "As pretas preparam o fianqueto do bispo.", "5.Bc4": "O bispo ataca o cavalo de d5.", "5...Nb6": "O cavalo recua, atacando o bispo.", "6.Bb3": "O bispo recua mantendo a diagonal.", "6...Bg7": "As pretas completam o fianqueto.", "7.a4": "As brancas ganham espaço no flanco da dama e ameaçam a5."}}]},
+    {"id": "moderna", "nome": "Defesa Moderna", "tipo": "Abertura", "categoria": "semiabertos", "resumo": "Fianqueto do bispo de g7: as pretas deixam o centro para as brancas e o atacam depois.", "ideia": "As pretas jogam ...g6 e ...Bg7 antes de se comprometerem com o centro. É uma defesa flexível, parecida com a Pirc, mas com mais opções de transposição. Pede paciência e uma boa compreensão de estruturas.", "planos": {"brancas": "Tomar o centro com e4 e d4, desenvolver as peças e atacar na hora certa.", "pretas": "Fianquetear o bispo, desenvolver com ...d6 e ...Cf6 e atacar o centro com ...c5 ou ...e5."}, "variantes": [{"nome": "Gambito Tal", "descricao": "Uma linha aguda com um sacrifício do peão de b2.", "lances": "e4 g6 d4 Bg7 Nc3 d6 Nf3 c6 Bg5 Qb6 Qd2 Qxb2", "notas": {"4...c6": "As pretas preparam ...Db6.", "5.Bg5": "O bispo ataca a dama preta pela diagonal.", "5...Qb6": "A dama foge atacando o peão de b2.", "6.Qd2": "As brancas defendem o peão de b2 com a dama.", "6...Qxb2": "A dama captura b2: o Gambito Tal, um jogo cheio de táticas."}}]},
+    {"id": "holandesa", "nome": "Defesa Holandesa", "tipo": "Abertura", "categoria": "fechados", "resumo": "Combativa: ...f5 toma e4 e busca um jogo desequilibrado.", "ideia": "As pretas controlam a casa e4 com o peão de f5 e lutam pelo ataque no lado do rei. As duas estruturas principais, Stonewall (muralha) e Leningrado, têm planos bem diferentes. Boa para quem gosta de lutar pela vitória de pretas.", "planos": {"brancas": "Desenvolver com g3 e Bg2, rocar e usar o enfraquecimento da diagonal a2-g8 e da casa e6.", "pretas": "Escolher entre a Stonewall (peões em f5, e6, d5, c6) e o Leningrado (...g6, ...Bg7) e atacar no lado do rei."}, "variantes": [{"nome": "Stonewall (muralha)", "descricao": "As pretas formam uma muralha de peões.", "lances": "d4 f5 c4 Nf6 g3 e6 Bg2 Be7 Nf3 O-O O-O d5 Nc3", "notas": {"1...f5": "A Defesa Holandesa: as pretas controlam a casa de e4.", "2.c4": "As brancas ganham espaço no flanco da dama.", "2...Nf6": "As pretas desenvolvem o cavalo.", "3.g3": "As brancas preparam o fianqueto.", "3...e6": "As pretas preparam a muralha de peões.", "4.Bg2": "O bispo se instala na grande diagonal.", "4...Be7": "O bispo se prepara para o roque.", "5.Nf3": "As brancas desenvolvem o cavalo.", "5...O-O": "As pretas rocam.", "6.O-O": "As brancas rocam.", "6...d5": "A muralha: peões em f5, e6 e d5.", "7.Nc3": "As brancas desenvolvem o cavalo."}}, {"nome": "Leningrado", "descricao": "As pretas fazem o fianqueto do bispo.", "lances": "d4 f5 c4 Nf6 g3 g6 Bg2 Bg7 Nf3", "notas": {"1...f5": "A Defesa Holandesa.", "2.c4": "As brancas ganham espaço.", "2...Nf6": "As pretas desenvolvem o cavalo.", "3.g3": "As brancas preparam o fianqueto.", "3...g6": "A Variante Leningrado: as pretas fianqueteiam o bispo.", "4.Bg2": "O bispo se instala na grande diagonal.", "4...Bg7": "O bispo de g7 mira o centro e o flanco da dama.", "5.Nf3": "As brancas desenvolvem o cavalo."}}]},
+    {"id": "benoni", "nome": "Defesa Benoni", "tipo": "Abertura", "categoria": "indias", "resumo": "As pretas atacam o peão de d4 com ...c5 e criam um jogo desequilibrado.", "ideia": "Depois de 1.d4 Cf6 2.c4 c5 3.d5, as pretas jogam ...e6 e criam uma estrutura assimétrica: as brancas têm mais espaço no centro, e as pretas ficam com um ataque contra o flanco da dama. É uma defesa de luta, para quem gosta de posições tensas.", "planos": {"brancas": "Defender o centro e aproveitar o espaço extra, jogando e4 e Cf3 e rocando com segurança.", "pretas": "Fazer jogo no flanco da dama (...b5) e usar a coluna e e a diagonal do bispo de g7."}, "variantes": [{"nome": "Variante Moderna (Cobra)", "descricao": "As pretas capturam em d5 e depois jogam ...Bd6.", "lances": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 Bd6", "notas": {"2.c4": "As brancas ganham espaço no flanco da dama.", "2...c5": "As pretas atacam o peão de d4.", "3.d5": "As brancas avançam o peão, fechando o centro.", "3...e6": "As pretas atacam o peão de d5.", "4.Nc3": "As brancas desenvolvem o cavalo.", "4...exd5": "As pretas abrem a posição.", "5.cxd5": "As brancas recapturam, ficando com um peão avançado em d5.", "5...Bd6": "O bispo se desenvolve para uma casa ativa."}}, {"nome": "Ataque dos Quatro Peões", "descricao": "As brancas avançam e4 e f4 para um grande centro, e as pretas o atacam.", "lances": "d4 Nf6 c4 c5 d5 e6 Nc3 exd5 cxd5 d6 e4 g6 f4 Bg7 Nf3 O-O Be2 Nbd7 O-O Re8 Nd2", "notas": {"6.e4": "As brancas ocupam o centro com um segundo peão.", "6...g6": "As pretas se preparam para fianquetear o bispo.", "7.f4": "O Ataque dos Quatro Peões: as brancas têm um enorme centro de peões.", "7...Bg7": "O bispo de g7 pressiona o centro das brancas.", "8.Nf3": "As brancas desenvolvem o cavalo.", "8...O-O": "As pretas rocam.", "9.Be2": "O bispo se prepara para o roque.", "9...Nbd7": "O cavalo desenvolve e prepara ...Re8 e ...Cc5.", "10.O-O": "As brancas rocam.", "10...Re8": "A torre pressiona o peão de e4.", "11.Nd2": "O cavalo recua para defender e4 e preparar o avanço."}}]},
+    {"id": "grunfeld", "nome": "Defesa Grünfeld", "tipo": "Abertura", "categoria": "indias", "resumo": "As pretas deixam as brancas formarem um centro grande para depois atacá-lo.", "ideia": "Um sistema hipermoderno muito prestigiado: as pretas entregam o centro e o atacam com ...c5 e ...Cc6, usando a força do bispo de g7. É uma defesa complexa, muito usada por grandes mestres.", "planos": {"brancas": "Construir um centro forte com e4 e d4, jogando com precisão para que ele não se torne um alvo.", "pretas": "Atacar o centro com ...c5, ...Cc6 e ...Bg7 e usar a atividade das peças."}, "variantes": [{"nome": "Variante da Troca (Spassky)", "descricao": "As brancas fazem um grande centro e as pretas o atacam.", "lances": "d4 Nf6 c4 g6 Nc3 d5 cxd5 Nxd5 e4 Nxc3 bxc3 Bg7 Bc4 c5 Ne2 Nc6 Be3 O-O O-O Bg4 f3 Na5 Bd3 cxd4 cxd4 Be6", "notas": {"2.c4": "As brancas ganham espaço no flanco da dama.", "2...g6": "As pretas se preparam para fianquetear o bispo.", "3.Nc3": "As brancas desenvolvem o cavalo.", "3...d5": "A Grünfeld: as pretas atacam o centro com ...d5.", "4.cxd5": "As brancas trocam, abrindo a posição.", "4...Nxd5": "O cavalo recaptura.", "5.e4": "As brancas ocupam o centro e atacam o cavalo.", "5...Nxc3": "As pretas trocam o cavalo.", "6.bxc3": "As brancas recapturam, ficando com um grande centro.", "6...Bg7": "O bispo mira o centro e o canto a1.", "7.Bc4": "O bispo ganha atividade e mira f7.", "7...c5": "As pretas atacam o centro de d4.", "8.Ne2": "As brancas desenvolvem o cavalo, protegendo d4.", "8...Nc6": "As pretas aumentam a pressão sobre d4.", "9.Be3": "O bispo reforça d4.", "9...O-O": "As pretas rocam.", "10.O-O": "As brancas rocam.", "10...Bg4": "O bispo prega o cavalo de e2.", "11.f3": "As brancas expulsam o bispo.", "11...Na5": "O cavalo ataca o bispo de c4.", "12.Bd3": "O bispo recua.", "12...cxd4": "As pretas capturam o peão de d4.", "13.cxd4": "As brancas recapturam.", "13...Be6": "O bispo recua para uma casa ativa."}}, {"nome": "Variante Russa (Keres)", "descricao": "As brancas atacam com Db3 e as pretas capturam c4.", "lances": "d4 Nf6 c4 g6 Nc3 d5 Nf3 Bg7 Qb3 dxc4 Qxc4 O-O e4 Bg4 Be3 Nfd7 Be2 Nb6 Qd3 Nc6 O-O-O", "notas": {"4.Nf3": "As brancas desenvolvem o cavalo.", "4...Bg7": "O bispo de g7 mira o centro branco.", "5.Qb3": "A dama ataca o peão de d5 e o de b7.", "5...dxc4": "As pretas capturam em c4.", "6.Qxc4": "A dama recupera o peão.", "6...O-O": "As pretas rocam.", "7.e4": "As brancas ocupam o centro.", "7...Bg4": "O bispo prega o cavalo de f3.", "8.Be3": "O bispo desenvolve e protege o centro.", "8...Nfd7": "O cavalo recua para preparar ...Nb6.", "9.Be2": "O bispo se prepara para o roque.", "9...Nb6": "O cavalo ataca a dama.", "10.Qd3": "A dama recua para uma casa segura.", "10...Nc6": "O cavalo ataca o peão de d4.", "11.O-O-O": "As brancas rocam para o lado da dama, preparando um jogo agudo."}}]},
+    {"id": "catala", "nome": "Abertura Catalã", "tipo": "Abertura", "categoria": "fechados", "resumo": "Fianqueto do bispo de g2: pressão constante na grande diagonal.", "ideia": "As brancas combinam o Gambito da Dama com o fianqueto do bispo. Esse bispo fica em g2 pressionando a diagonal contra a casa de b7 e o flanco da dama. É uma abertura de pressão posicional, muito usada em alto nível.", "planos": {"brancas": "Fianquetear o bispo, desenvolver o cavalo e pressionar o flanco da dama; recuperar o peão de c4 se ele for aceito.", "pretas": "Responder com ...d5 e ...Be7, rocar, e aceitar o peão com ...dxc4 quando for conveniente."}, "variantes": [{"nome": "Catalã Aberta", "descricao": "As pretas aceitam o peão de c4.", "lances": "d4 Nf6 c4 e6 g3 d5 Bg2 dxc4 Qa4+ Nbd7 Qxc4", "notas": {"1.d4": "As brancas tomam o centro.", "1...Nf6": "As pretas desenvolvem o cavalo.", "2.c4": "As brancas ganham espaço no flanco da dama.", "2...e6": "As pretas apoiam o centro.", "3.g3": "A Catalã: as brancas preparam o fianqueto do bispo.", "3...d5": "As pretas atacam o centro.", "4.Bg2": "O bispo de g2 mira a diagonal contra b7.", "4...dxc4": "As pretas aceitam o gambito e capturam c4.", "5.Qa4+": "As brancas dão xeque para recuperar o peão.", "5...Nbd7": "As pretas bloqueiam o xeque com o cavalo.", "6.Qxc4": "As brancas recuperam o peão com a dama."}}, {"nome": "Catalã Fechada", "descricao": "As pretas rocam e mantêm a posição sólida.", "lances": "d4 Nf6 c4 e6 g3 d5 Bg2 Be7 Nf3 O-O O-O Nbd7", "notas": {"4.Bg2": "O bispo se instala na grande diagonal.", "4...Be7": "O bispo se prepara para o roque.", "5.Nf3": "As brancas desenvolvem o cavalo.", "5...O-O": "As pretas rocam.", "6.O-O": "As brancas rocam.", "6...Nbd7": "As pretas desenvolvem o cavalo, mantendo a posição sólida."}}]},
+    {"id": "trompowsky", "nome": "Ataque Trompowsky", "tipo": "Abertura", "categoria": "fechados", "resumo": "O bispo sai cedo: 2.Bg5!? contra a Defesa Índia.", "ideia": "As brancas atacam o cavalo de f6 logo no 2º lance, evitando a teoria da Índia do Rei e da Nimzo. Para as pretas, existem várias respostas, entre elas ...Ce4 e ...c5. É uma boa abertura para fugir de linhas muito estudadas.", "planos": {"brancas": "Aproveitar o bispo ativo, ter um centro com e3 e c3 e jogar posições simples e sólidas.", "pretas": "Responder com ...Ce4 ou ...c5 para ganhar o par de bispos e atacar o centro."}, "variantes": [{"nome": "Gambito Hergert (...c6)", "descricao": "As pretas jogam ...c6 e ...Da5 e as brancas oferecem material.", "lances": "d4 Nf6 Bg5 Ne4 Bh4 c6 Nd2 Qa5 c3 Nxd2 Qxd2 d5 e4", "notas": {"2.Bg5": "O Ataque Trompowsky: o bispo ataca o cavalo de f6.", "2...Ne4": "O cavalo se afasta atacando o bispo.", "3.Bh4": "O bispo recua mantendo a diagonal.", "3...c6": "As pretas preparam ...Da5 e ...d5.", "4.Nd2": "As brancas atacam o cavalo de e4.", "4...Qa5": "A dama ataca o bispo e o cavalo de d2.", "5.c3": "O peão protege o centro.", "5...Nxd2": "As pretas trocam o cavalo.", "6.Qxd2": "As brancas recapturam com a dama.", "6...d5": "As pretas ocupam o centro.", "7.e4": "O Gambito Hergert: as brancas avançam e4 oferecendo um peão em troca de iniciativa."}}, {"nome": "Gambito Hergert (...d5)", "descricao": "As pretas jogam ...d5 e as brancas avançam f3 e e4.", "lances": "d4 Nf6 Bg5 Ne4 Bh4 d5 f3 Nf6 Nc3 Bf5 e4", "notas": {"2.Bg5": "O Ataque Trompowsky.", "2...Ne4": "O cavalo ataca o bispo.", "3.Bh4": "O bispo recua.", "3...d5": "As pretas ocupam o centro.", "4.f3": "As brancas atacam o cavalo de e4.", "4...Nf6": "O cavalo volta para f6.", "5.Nc3": "As brancas desenvolvem o cavalo.", "5...Bf5": "O bispo desenvolve e vigia e4.", "6.e4": "As brancas oferecem o peão de e4 para ganhar o centro."}}]},
+    {"id": "reti", "nome": "Abertura Réti", "tipo": "Abertura", "categoria": "indias", "resumo": "Hipermoderna: as brancas controlam o centro com peças, não com peões.", "ideia": "Com 1.Cf3 e 2.c4, as brancas atacam o centro à distância, normalmente com um fianqueto em g2. Ideia do mestre Richard Réti. É uma abertura flexível, que permite transposições para muitas outras.", "planos": {"brancas": "Fianquetear o bispo, controlar o centro com peças e escolher o momento de avançar os peões.", "pretas": "Tomar o centro com ...d5 e ...e6, ou escolher o Anglo-Eslavo com ...c6."}, "variantes": [{"nome": "Sistema Stonewall (Anglo-Eslava)", "descricao": "As pretas jogam ...e6 e ...c6, e as brancas fianqueteiam as duas alas.", "lances": "Nf3 d5 c4 e6 g3 Nf6 Bg2 Be7 O-O O-O b3 c6 Bb2", "notas": {"1.Nf3": "Desenvolve o cavalo e controla o centro à distância.", "1...d5": "As pretas ocupam o centro com um peão.", "2.c4": "As brancas atacam o peão de d5 pelo flanco.", "2...e6": "As pretas apoiam o centro e preparam ...Cf6.", "3.g3": "As brancas preparam o fianqueto do bispo.", "3...Nf6": "As pretas desenvolvem o cavalo.", "4.Bg2": "O bispo se instala na grande diagonal.", "4...Be7": "O bispo se prepara para o roque.", "5.O-O": "As brancas rocam.", "5...O-O": "As pretas rocam.", "6.b3": "O segundo fianqueto: as brancas preparam o bispo de b2.", "6...c6": "As pretas apoiam o centro com ...c6.", "7.Bb2": "O bispo de b2 completa o plano das brancas: dois bispos mirando o centro."}}, {"nome": "Anglo-Eslava", "descricao": "As pretas jogam ...c6, formando a estrutura eslava.", "lances": "Nf3 d5 c4 c6 g3 Nf6 Bg2 e6 b3 Be7 Bb2", "notas": {"1.Nf3": "Desenvolve o cavalo.", "1...d5": "As pretas ocupam o centro.", "2.c4": "As brancas atacam o peão de d5.", "2...c6": "As pretas apoiam o centro com ...c6: a estrutura Anglo-Eslava.", "3.g3": "As brancas preparam o fianqueto.", "3...Nf6": "As pretas desenvolvem o cavalo.", "4.Bg2": "O bispo se instala na grande diagonal.", "4...e6": "As pretas apoiam o centro e abrem o bispo.", "5.b3": "As brancas preparam o bispo de b2.", "5...Be7": "O bispo se prepara para o roque.", "6.Bb2": "O bispo de b2 mira o centro e a casa e5."}}]},
+    {"id": "gdama-aceito", "nome": "Gambito da Dama Aceito", "tipo": "Gambito", "categoria": "fechados", "resumo": "As pretas capturam o peão de c4 e devolvem-no para ter um centro livre.", "ideia": "No Gambito da Dama Aceito, as pretas aceitam o peão e jogam para devolver o material. As brancas retomam o peão com o bispo e ficam com mais espaço no centro. É uma abertura sólida, ótima para entender jogos de peão da dama.", "planos": {"brancas": "Recapturar o peão de c4, ocupar o centro com e3 ou e4 e desenvolver o bispo para c4.", "pretas": "Aceitar o peão, apoiar o centro com ...Cf6 e ...e6 e preparar ...c5 para liberar o jogo."}, "variantes": [{"nome": "Variante Clássica", "descricao": "As pretas jogam um sistema com ...a6 e ...b5.", "lances": "d4 d5 c4 dxc4 Nf3 Nf6 e3 e6 Bxc4 a6 Nc3 b5 Bb3 Bb7 O-O c5", "notas": {"1...d5": "As pretas ocupam o centro.", "2.c4": "O Gambito da Dama: as brancas oferecem um peão para dominar o centro.", "2...dxc4": "As pretas aceitam o gambito e capturam o peão.", "3.Nf3": "As brancas desenvolvem o cavalo.", "3...Nf6": "As pretas desenvolvem o cavalo.", "4.e3": "As brancas abrem o caminho do bispo para recuperar o peão.", "4...e6": "As pretas apoiam o centro.", "5.Bxc4": "O bispo recupera o peão de c4.", "5...a6": "As pretas se preparam para ganhar espaço com ...b5.", "6.Nc3": "As brancas desenvolvem o cavalo.", "6...b5": "As pretas ganham espaço no flanco da dama.", "7.Bb3": "O bispo se retira para b3.", "7...Bb7": "O bispo se desenvolve na grande diagonal.", "8.O-O": "As brancas rocam.", "8...c5": "As pretas atacam o centro com ...c5."}}, {"nome": "Variante Rubinstein", "descricao": "As pretas jogam ...e6 antes de ...Cf6.", "lances": "d4 d5 c4 dxc4 Nf3 e6 e3 Nf6 Bxc4 Be7 O-O O-O Nc3 a6 a4 c5", "notas": {"3.Nf3": "As brancas desenvolvem o cavalo.", "3...e6": "As pretas apoiam o centro.", "4.e3": "As brancas abrem o caminho do bispo.", "4...Nf6": "As pretas desenvolvem o cavalo.", "5.Bxc4": "O bispo recupera o peão.", "5...Be7": "O bispo se prepara para o roque.", "6.O-O": "As brancas rocam.", "6...O-O": "As pretas rocam.", "7.Nc3": "As brancas desenvolvem o cavalo.", "7...a6": "As pretas preparam ...b5 e ...c5.", "8.a4": "As brancas impedem ...b5.", "8...c5": "As pretas atacam o centro."}}]},
+    {"id": "from", "nome": "Gambito From (Bird)", "tipo": "Gambito", "categoria": "indias", "resumo": "Contra a Bird (1.f4), as pretas respondem com ...e5!?", "ideia": "Depois de 1.f4 e5!? 2.fxe5 d6, as pretas oferecem um peão para ganhar desenvolvimento e jogo no lado do rei branco. É um gambito antigo, com muitas armadilhas e uma boa dose de risco.", "planos": {"brancas": "Aceitar o peão com cuidado, desenvolver as peças e não se expor a mates rápidos na diagonal do rei.", "pretas": "Ganhar tempo com ...d6, ...Bxd6 e ...Cf6 e atacar f2 e a diagonal do rei."}, "variantes": [{"nome": "Variante Lasker", "descricao": "As pretas atacam com ...g5.", "lances": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 g5", "notas": {"1.f4": "A Abertura Bird: as brancas controlam a casa de e5.", "1...e5": "O Gambito From: as pretas oferecem o peão de e5.", "2.fxe5": "As brancas aceitam o gambito.", "2...d6": "As pretas atacam o peão de e5 e abrem a diagonal do bispo.", "3.exd6": "As brancas capturam o peão de d6.", "3...Bxd6": "O bispo recaptura, atacando e abrindo linhas.", "4.Nf3": "As brancas desenvolvem o cavalo.", "4...g5": "A Variante Lasker: as pretas avançam o peão com ...g5."}}, {"nome": "Variante Lipke", "descricao": "As pretas desenvolvem o cavalo para h6.", "lances": "f4 e5 fxe5 d6 exd6 Bxd6 Nf3 Nh6 d4", "notas": {"4.Nf3": "As brancas desenvolvem o cavalo.", "4...Nh6": "O cavalo vai para h6, atacando o centro.", "5.d4": "As brancas tomam o centro."}}]},
+  ];
+  root.AcademiaExtra = EXTRA;
+  if (typeof module !== 'undefined' && module.exports) module.exports = EXTRA;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -2820,6 +2844,10 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     return t;
   }
 
+  // Aberturas e gambitos extras (gerados por tools/gen-academia-extra.py a partir da base ECO do Lichess)
+  const EXTRA = (typeof module !== 'undefined' && module.exports) ? require('./academia-extra.js') : (root.AcademiaExtra || []);
+  EXTRA.forEach((o) => OPENINGS.push(o));
+
   const api = { OPENINGS, CATEGORIAS, plyNotes, describeMove };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.AcademiaData = api;
@@ -2993,7 +3021,8 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           const rank = this.orientation === 'w' ? 8 - r : r + 1;
           const name = FILES[file] + rank;
           const d = document.createElement('div');
-          d.className = 'sq ' + ((file + rank) % 2 === 0 ? 'dark' : 'light');
+          // a1 é casa ESCURA (0+1 = ímpar); a casa do canto direito de quem joga é sempre CLARA
+          d.className = 'sq ' + ((file + rank) % 2 === 1 ? 'dark' : 'light');
           d.dataset.sq = name;
           d.setAttribute('role', 'gridcell');
           if (f === 0) d.insertAdjacentHTML('beforeend', `<span class="coord rank">${rank}</span>`);
@@ -3484,6 +3513,25 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       this.update();
     },
 
+    /** Painel "Abertura": identifica a abertura/gambito dos lances até a posição mostrada. */
+    renderOpening() {
+      const box = $('livre-op'); if (!box) return;
+      const s = this.session, esc = XD.ui.esc, E = XD.Eco;
+      if (s.startFen !== root.Chess.START_FEN) { box.innerHTML = '<p class="muted small">Posição inicial personalizada: a identificação de abertura só vale para partidas que começam do início.</p>'; return; }
+      const sans = s.moves.slice(0, s.cursor).map((m) => m.san);
+      const key = sans.join(' ');
+      if (this._opKey === key && box.dataset.ok === '1') return;
+      this._opKey = key;
+      const tk = this._opTk = (this._opTk || 0) + 1;
+      const done = (html, ok) => { if (tk !== this._opTk) return; box.innerHTML = html; box.dataset.ok = ok ? '1' : ''; };
+      if (!sans.length) { done('<p class="muted small">Faça os primeiros lances para ver o nome da abertura ou do gambito.</p>', true); return; }
+      const show = () => { try { const c = E.classify(sans); done(c.status === 'generica' && sans.length <= 4 ? '<p class="muted small">Ainda são poucos lances para identificar a abertura com segurança. Continue jogando.</p>' : XD.Play.openingHtml(c), true); } catch (e) { done(`<p class="muted small">Não foi possível identificar a abertura (${esc(e.message)}).</p>`, false); } };
+      if (E && E.state === 'ready' && E.byEpd) { show(); return; }
+      if (!E) { done('<p class="muted small">Módulo de aberturas indisponível.</p>', false); return; }
+      done('<p class="muted small"><span class="spinner" aria-hidden="true"></span> Identificando a abertura…</p>', false);
+      E.prepare().then(show).catch((e) => done(`<p class="muted small">A base de aberturas não pôde ser carregada (${esc(e.message)}).</p>`, false));
+    },
+
     update() {
       const s = this.session, st = s.status();
       this.board.set({ board: s.chess.board(), lastMove: s.lastMove(), check: s.checkSquare() });
@@ -3495,6 +3543,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       $('livre-restart').disabled = !s.length;
       XD.ui.renderMoveList($('livre-moves'), s, (i) => { s.goTo(i); this.update(); });
       $('livre-fen').value = s.fen();
+      this.renderOpening();
       $('livre-sub').textContent = this.linkedId
         ? `Editando a partida salva "${this.linkedTitle}". Use Salvar para atualizá-la.`
         : 'Mova as peças brancas e pretas. Toque na peça e depois na casa, ou arraste.';
@@ -4436,422 +4485,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 </script>
   <script>
 /*
- * puzzles-data.js — Puzzles táticos (apenas dados).
- *
- * Cada puzzle: { id, categoria, nivel, fen, titulo, dica, ideia, origem, solucoes }
- *   solucoes: lista de linhas aceitas. Cada linha: { m, r?, f? }
- *     m = 1º lance de quem joga (SAN)          → se não houver r, o puzzle termina aqui
- *     r = resposta do adversário (SAN)          → o site joga sozinho
- *     f = lances finais aceitos (SAN) do jogador → o puzzle só termina quando um deles é jogado
- *   Se houver várias soluções corretas, TODAS estão cadastradas explicitamente.
- *
- * COMO FORAM VERIFICADOS (tests/puzzles.test.js executa isto a cada teste):
- *   - mates: busca exaustiva no motor de regras (todos os 1º lances que forçam o mate e todas as respostas);
- *   - táticas: o lance cadastrado é o melhor segundo o motor interno (profundidade 6) com folga de pelo menos
- *     150 centipeões sobre qualquer outro lance, e a linha cadastrada ganha o material anunciado.
- *   Origem "própria": posição montada para este site e verificada como descrito acima.
- *   Origem "clássica": miniatura conhecida da literatura, conferida pelos mesmos testes.
- *   Não use este arquivo como fonte de teoria: são exercícios, não estudos.
- */
-(function (root) {
-  'use strict';
-
-  const CATEGORIAS = {
-    mate1: 'Mate em 1', mate2: 'Mate em 2', garfo: 'Garfo', cravada: 'Cravada',
-    descoberto: 'Ataque descoberto', indefesa: 'Peça indefesa', material: 'Ganho de material'
-  };
-  const NIVEIS = { facil: 'Fácil', medio: 'Médio', dificil: 'Difícil' };
-
-  const PUZZLES = [
-    /* ---------------- Mate em 1 ---------------- */
-    { id: 'm1-corredor', categoria: 'mate1', nivel: 'facil', titulo: 'Mate do corredor',
-      fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1', origem: 'própria',
-      dica: 'O rei preto está trancado pelos próprios peões. Qual lance dá xeque na última fileira?',
-      ideia: 'Mate do corredor: os peões f7, g7 e h7 tiram as casas de fuga do rei, e a torre dá o xeque na oitava fileira.',
-      solucoes: [{ m: 'Rd8#' }] },
-    { id: 'm1-dama-rei-a', categoria: 'mate1', nivel: 'facil', titulo: 'Dama e rei contra rei',
-      fen: '7k/5Q2/6K1/8/8/8/8/8 w - - 0 1', origem: 'própria',
-      dica: 'O rei branco já cobre g7 e h7. Procure um lance de dama que também tire a casa g8.',
-      ideia: 'O rei branco ajuda a dama: cada casa de fuga do rei preto fica coberta por um dos dois. Há quatro lances que dão mate, e todos foram aceitos.',
-      solucoes: [{ m: 'Qe8#' }, { m: 'Qf8#' }, { m: 'Qg7#' }, { m: 'Qh7#' }] },
-    { id: 'm1-dama-rei-b', categoria: 'mate1', nivel: 'facil', titulo: 'Dama protegida pelo rei',
-      fen: '7k/8/5KQ1/8/8/8/8/8 w - - 0 1', origem: 'própria',
-      dica: 'Dê xeque com a dama em uma casa que o rei branco proteja.',
-      ideia: 'A dama em g7 é protegida pelo rei em f6, então o rei preto não pode capturá-la e não tem para onde ir.',
-      solucoes: [{ m: 'Qg7#' }] },
-    { id: 'm1-sufocado', categoria: 'mate1', nivel: 'facil', titulo: 'Mate sufocado',
-      fen: '6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1', origem: 'própria',
-      dica: 'O rei preto está cercado pelas próprias peças. Só um cavalo pode dar xeque sem ser capturado.',
-      ideia: 'Mate sufocado: o rei está tão cercado pela torre e pelos peões que o cavalo em f7 dá xeque e ele não tem para onde ir.',
-      solucoes: [{ m: 'Nf7#' }] },
-    { id: 'm1-pastor', categoria: 'mate1', nivel: 'facil', titulo: 'Mate do pastor',
-      fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 1', origem: 'clássica (golpe de iniciantes, muito conhecido)',
-      dica: 'O ponto fraco das pretas é f7. Quem ataca f7 duas vezes?',
-      ideia: 'Mate do pastor: a dama e o bispo atacam f7. O peão está protegido pelo bispo, então o rei não pode capturar e não tem fuga.',
-      solucoes: [{ m: 'Qxf7#' }] },
-    { id: 'm1-louco', categoria: 'mate1', nivel: 'facil', titulo: 'Mate do louco',
-      fen: 'rnbqkbnr/pppp1ppp/8/4p3/6P1/5P2/PPPPP2P/RNBQKBNR b KQkq - 0 2', origem: 'clássica (o mate mais curto possível)',
-      dica: 'O rei branco ficou exposto na diagonal h4-e1. Qual peça preta chega até lá?',
-      ideia: 'Mate do louco: os lances f3 e g4 abriram a diagonal para a dama preta dar xeque-mate em h4.',
-      solucoes: [{ m: 'Qh4#' }] },
-    { id: 'm1-escada', categoria: 'mate1', nivel: 'facil', titulo: 'Mate da escada',
-      fen: '6k1/R7/1R6/8/8/8/8/6K1 w - - 0 1', origem: 'própria',
-      dica: 'Uma torre já corta a sétima fileira. A outra pode dar xeque na oitava.',
-      ideia: 'Mate da escada: uma torre fecha uma fileira e a outra dá o xeque na fileira seguinte.',
-      solucoes: [{ m: 'Rb8#' }] },
-    { id: 'm1-dobradas', categoria: 'mate1', nivel: 'facil', titulo: 'Torres dobradas',
-      fen: '2r3k1/5ppp/8/8/8/8/2R2PPP/2R3K1 w - - 0 1', origem: 'própria',
-      dica: 'Há duas torres na coluna c. A torre preta que defende a oitava fileira pode ser capturada com xeque?',
-      ideia: 'As duas torres juntas ganham a luta pela coluna c: a primeira captura com xeque e, como o rei não tem fuga, é mate.',
-      solucoes: [{ m: 'Rxc8#' }] },
-
-    /* ---------------- Mate em 2 ---------------- */
-    { id: 'm2-escada', categoria: 'mate2', nivel: 'facil', titulo: 'Escada de torres',
-      fen: '6k1/8/8/8/8/8/R7/1R4K1 w - - 0 1', origem: 'própria',
-      dica: 'Use uma torre para cortar o rei em uma fileira e a outra para dar o mate na seguinte.',
-      ideia: 'Uma torre fecha a sétima fileira; o rei só pode andar pela oitava, onde a outra torre dá o mate.',
-      solucoes: [{ m: 'Ra7', r: 'Kf8', f: ['Rb8#'] }, { m: 'Rb7', r: 'Kf8', f: ['Ra8#'] }] },
-    { id: 'm2-dama-torre', categoria: 'mate2', nivel: 'medio', titulo: 'Sacrifício na oitava',
-      fen: '3r2k1/5ppp/8/8/Q7/8/5PPP/4R1K1 w - - 0 1', origem: 'própria',
-      dica: 'A torre preta é a única defesa da oitava fileira. O que acontece se você a atrair com um xeque?',
-      ideia: 'Você entrega a dama ou a torre em e8 com xeque. A torre preta é obrigada a capturar e deixa de proteger a fileira, e a outra peça dá o mate.',
-      solucoes: [{ m: 'Qe8+', r: 'Rxe8', f: ['Rxe8#'] }, { m: 'Re8+', r: 'Rxe8', f: ['Qxe8#'] }] },
-    { id: 'm2-legal', categoria: 'mate2', nivel: 'dificil', titulo: 'Mate de Légal',
-      fen: 'rn1qkbnr/ppp2p1p/3p2p1/4N3/2B1P3/2N5/PPPP1PPP/R1BbK2R w KQkq - 0 6',
-      origem: 'clássica (miniatura atribuída a Légal, Paris, 1750); posição após 1.e4 e5 2.Cf3 d6 3.Bc4 Bg4 4.Cc3 g6 5.Cxe5 Bxd1',
-      dica: 'As pretas tomaram a dama branca. Mas o rei preto tem poucos defensores: um bispo pode dar xeque com sacrifício.',
-      ideia: 'Mate de Légal: mesmo sem a dama, o sacrifício Bxf7+ força o rei a ir para e7 e o cavalo dá o mate em d5.',
-      solucoes: [{ m: 'Bxf7+', r: 'Ke7', f: ['Nd5#'] }] },
-    { id: 'm2-sufocado', categoria: 'mate2', nivel: 'dificil', titulo: 'O legado de Philidor',
-      fen: '5r1k/6pp/7N/8/8/1Q6/8/6K1 w - - 0 1', origem: 'própria (ilustra o padrão do mate sufocado)',
-      dica: 'A dama pode dar xeque em g8 porque o cavalo a protege. A torre preta é obrigada a capturar.',
-      ideia: 'Você sacrifica a dama em g8. Se a torre captura, ela bloqueia a única casa de fuga que sobrava, e o cavalo dá o mate sufocado em f7.',
-      solucoes: [{ m: 'Qg8+', r: 'Rxg8', f: ['Nf7#'] }] },
-
-    /* ---------------- Garfo ---------------- */
-    { id: 'garfo-cavalo-dama', categoria: 'garfo', nivel: 'medio', titulo: 'Garfo no rei e na dama',
-      fen: '3q3k/8/8/4N3/2B5/8/8/6K1 w - - 0 1', origem: 'própria',
-      dica: 'Procure uma casa de onde o cavalo dê xeque e ataque a dama ao mesmo tempo.',
-      ideia: 'Garfo de cavalo: de f7 ele ataca o rei em h8 e a dama em d8. O bispo protege o cavalo, então o rei não pode capturá-lo. O rei foge e a dama cai.',
-      solucoes: [{ m: 'Nf7+', r: 'Kg7', f: ['Nxd8'] }] },
-    { id: 'garfo-cavalo-torre', categoria: 'garfo', nivel: 'medio', titulo: 'Garfo no rei e na torre',
-      fen: 'r3k3/8/8/3N4/8/8/8/4K3 w - - 0 1', origem: 'própria',
-      dica: 'Uma casa de cavalo vê o rei em e8 e a torre em a8 ao mesmo tempo.',
-      ideia: 'De c7 o cavalo dá xeque ao rei e ataca a torre de a8. O rei precisa sair do xeque e a torre é capturada.',
-      solucoes: [{ m: 'Nc7+', r: 'Kd7', f: ['Nxa8'] }] },
-    { id: 'garfo-peao', categoria: 'garfo', nivel: 'facil', titulo: 'Garfo de peão',
-      fen: '4k3/8/8/3n1b2/8/8/3NP3/4K3 w - - 0 1', origem: 'própria',
-      dica: 'Um peão ataca duas casas na diagonal. Quais peças pretas estão exatamente nessas casas?',
-      ideia: 'O peão em e4 ataca o cavalo de d5 e o bispo de f5 ao mesmo tempo. O cavalo de d2 protege o peão, então uma das peças cai.',
-      solucoes: [{ m: 'e4', r: 'Ke7', f: ['exf5'] }] },
-
-    /* ---------------- Cravada ---------------- */
-    { id: 'cravada-dama', categoria: 'cravada', nivel: 'medio', titulo: 'A dama cravada',
-      fen: '4k3/3q4/8/8/P7/8/4B3/4K3 w - - 0 1', origem: 'própria',
-      dica: 'Coloque o bispo em uma casa protegida que o prenda contra o rei preto.',
-      ideia: 'O bispo em b5 está protegido pelo peão e crava a dama contra o rei. Se a dama o captura, o peão a recaptura; se o rei sai, o bispo captura a dama.',
-      solucoes: [{ m: 'Bb5', r: 'Ke7', f: ['Bxd7'] }] },
-    { id: 'cravada-bispo', categoria: 'cravada', nivel: 'facil', titulo: 'O bispo cravado',
-      fen: '2k5/8/2b5/8/8/8/2R5/4K3 w - - 0 1', origem: 'própria',
-      dica: 'Uma peça preta está cravada contra o próprio rei e não tem defensor.',
-      ideia: 'O bispo em c6 está cravado contra o rei em c8: se ele se mover, o rei fica em xeque. Sem defensor, ele é capturado de graça.',
-      solucoes: [{ m: 'Rxc6+' }] },
-
-    /* ---------------- Ataque descoberto ---------------- */
-    { id: 'descoberto-bispo', categoria: 'descoberto', nivel: 'medio', titulo: 'Xeque descoberto na dama',
-      fen: '3qk3/8/8/8/8/3B4/8/3R2K1 w - - 0 1', origem: 'própria',
-      dica: 'O bispo está na frente da torre. Mova-o com xeque e a torre passa a atacar a dama.',
-      ideia: 'Quando o bispo sai da coluna d, a torre ataca a dama. Como o bispo dá xeque ao mesmo tempo, as pretas não têm tempo de salvá-la. Dois lances de bispo funcionam: Bb5+ e Bg6+.',
-      solucoes: [{ m: 'Bb5+', r: 'Ke7', f: ['Rxd8'] }, { m: 'Bg6+', r: 'Ke7', f: ['Rxd8'] }] },
-    { id: 'descoberto-cavalo', categoria: 'descoberto', nivel: 'medio', titulo: 'Captura com xeque descoberto',
-      fen: '4k3/8/8/8/3q4/8/4N3/4RK2 w - - 0 1', origem: 'própria',
-      dica: 'A torre está atrás do cavalo na coluna e. Para onde o cavalo pode ir capturando algo?',
-      ideia: 'O cavalo captura a dama em d4 e, ao sair da coluna e, descobre o xeque da torre. As pretas precisam responder ao xeque e a dama já está perdida.',
-      solucoes: [{ m: 'Nxd4+' }] },
-
-    /* ---------------- Peça indefesa ---------------- */
-    { id: 'indefesa-bispo', categoria: 'indefesa', nivel: 'facil', titulo: 'Bispo sem defesa',
-      fen: '4k3/8/8/8/2b5/8/8/2R1K3 w - - 0 1', origem: 'própria',
-      dica: 'Veja quais peças pretas não têm nenhuma outra peça as protegendo.',
-      ideia: 'O bispo de c4 não está protegido por nada e está na mesma coluna da torre. Basta capturá-lo.',
-      solucoes: [{ m: 'Rxc4' }] },
-    { id: 'indefesa-cavalo', categoria: 'indefesa', nivel: 'facil', titulo: 'Cavalo sem defesa',
-      fen: '2r1k3/8/8/3n4/8/8/8/3RK3 w - - 0 1', origem: 'própria',
-      dica: 'A torre preta cuida da coluna c, não da casa do cavalo.',
-      ideia: 'O cavalo de d5 não tem defensores. A torre branca o captura sem nenhum risco.',
-      solucoes: [{ m: 'Rxd5' }] },
-    { id: 'indefesa-torre', categoria: 'indefesa', nivel: 'facil', titulo: 'Torre sem defesa',
-      fen: '4k3/8/8/8/1r6/8/3B4/4K3 w - - 0 1', origem: 'própria',
-      dica: 'O bispo tem uma diagonal livre até uma peça preta desprotegida.',
-      ideia: 'O bispo captura a torre de b4 pela diagonal, e nenhuma peça preta pode recapturar.',
-      solucoes: [{ m: 'Bxb4' }] },
-
-    /* ---------------- Ganho de material ---------------- */
-    { id: 'espeto-torre', categoria: 'material', nivel: 'medio', titulo: 'Xeque que ganha a dama',
-      fen: '1q2k3/8/8/8/8/8/8/K6R w - - 0 1', origem: 'própria',
-      dica: 'O rei e a dama pretos estão na mesma fileira. Dê xeque de longe.',
-      ideia: 'Espeto: a torre dá xeque ao rei pela oitava fileira. Quando o rei sai, a torre captura a dama que estava atrás dele.',
-      solucoes: [{ m: 'Rh8+', r: 'Kd7', f: ['Rxb8'] }] },
-    { id: 'promocao-captura', categoria: 'material', nivel: 'facil', titulo: 'Promoção com captura',
-      fen: '1r2k3/P7/8/8/8/8/8/4K3 w - - 0 1', origem: 'própria',
-      dica: 'O peão pode capturar na diagonal ao chegar à última fileira. O que ele deve virar?',
-      ideia: 'O peão captura a torre em b8 e vira dama, com xeque. Você ganha uma torre e uma dama nova ao mesmo tempo.',
-      solucoes: [{ m: 'axb8=Q+' }] }
-  ];
-
-  const api = { PUZZLES, CATEGORIAS, NIVEIS };
-  if (typeof module !== 'undefined' && module.exports) module.exports = api;
-  else root.PuzzlesData = api;
-})(typeof window !== 'undefined' ? window : globalThis);
-
-</script>
-  <script>
-/*
- * puzzles.js — Puzzles táticos aleatórios, com dicas, solução, dificuldade, categorias e estatísticas.
- * Dados verificados em puzzles-data.js (tests/puzzles.test.js). Usa XD.Board (com animação) e o motor de regras.
- *
- * Estatísticas (localStorage "xadrez.puzzles.v1"):
- *   tentados  = puzzles em que você fez ao menos um lance ou pediu a solução
- *   resolvidos = puzzles concluídos sem usar "Mostrar solução" (dicas e erros antes não impedem)
- *   sequência = resolvidos seguidos SEM errar nenhum lance e sem mostrar a solução; qualquer erro, solução
- *               mostrada ou puzzle pulado depois de tentar zera a sequência.
- */
-(function (root) {
-  'use strict';
-  const XD = root.XD = root.XD || {};
-  const $ = (id) => document.getElementById(id);
-  const { esc } = XD.ui;
-  const D = root.PuzzlesData;
-  const KEY = 'xadrez.puzzles.v1';
-  const NOMES = { p: 'o peão', n: 'o cavalo', b: 'o bispo', r: 'a torre', q: 'a dama', k: 'o rei' };
-
-  const Puzzles = {
-    ready: false, nivel: '', cat: '', cur: null, chess: null, board: null, board0: null,
-    sel: null, stage: 0, status: 'idle', busy: false, hintLvl: 0, timer: null,
-    flags: { counted: false, wrong: false, revealed: false },
-    stats: { tentados: 0, resolvidos: 0, sequencia: 0, melhor: 0 }, recentes: [],
-
-    /* ---------- dados salvos ---------- */
-    load() {
-      try {
-        const d = JSON.parse(XD.Store.raw.get(KEY) || 'null');
-        if (d && typeof d === 'object') {
-          const n = (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : 0);
-          this.stats = { tentados: n(d.tentados), resolvidos: n(d.resolvidos), sequencia: n(d.sequencia), melhor: n(d.melhor) };
-          this.stats.resolvidos = Math.min(this.stats.resolvidos, this.stats.tentados);
-          this.recentes = Array.isArray(d.recentes) ? d.recentes.filter((x) => typeof x === 'string').slice(-8) : [];
-        }
-      } catch (e) { /* dados corrompidos: começa do zero, sem apagar nada do resto do site */ }
-    },
-    save() { XD.Store.raw.set(KEY, JSON.stringify(Object.assign({}, this.stats, { recentes: this.recentes }))); },
-
-    /* ---------- entrada ---------- */
-    enter() {
-      if (!this.ready) this.init();
-      this.renderStats();
-      if (!this.cur) this.next(true);
-      else this.render();
-    },
-    leave() { clearTimeout(this.timer); this.timer = null; },
-
-    init() {
-      this.ready = true; this.load();
-      this.board = new XD.Board($('pz-board'), { interactive: true, getTargets: (sq) => this._targets(sq), onMove: (a, b) => this.onMove(a, b) });
-      $('pz-cat').innerHTML = '<option value="">Todas as categorias</option>' + Object.keys(D.CATEGORIAS).map((k) => `<option value="${k}">${esc(D.CATEGORIAS[k])}</option>`).join('');
-      document.querySelectorAll('[data-pznivel]').forEach((b) => b.addEventListener('click', () => {
-        this.nivel = b.dataset.pznivel;
-        document.querySelectorAll('[data-pznivel]').forEach((x) => x.classList.toggle('on', x === b));
-        this.next(true);
-      }));
-      $('pz-cat').addEventListener('change', (e) => { this.cat = e.target.value; this.next(true); });
-      $('pz-hint').addEventListener('click', () => this.hint());
-      $('pz-show').addEventListener('click', () => this.reveal());
-      $('pz-retry').addEventListener('click', () => this.start(this.cur, true));
-      $('pz-next').addEventListener('click', () => this.next(false));
-      $('pz-reset-stats').addEventListener('click', () => this.resetStats());
-    },
-
-    pool() { return D.PUZZLES.filter((p) => (!this.nivel || p.nivel === this.nivel) && (!this.cat || p.categoria === this.cat)); },
-
-    /** Escolhe outro puzzle: aleatório, sem repetir os recentes e variando a categoria quando possível. */
-    next(filtered) {
-      if (!filtered && this.cur && this.flags.counted && this.status !== 'solved') { this.stats.sequencia = 0; this.save(); this.renderStats(); }
-      const pool = this.pool();
-      if (!pool.length) { this.cur = null; this.status = 'idle'; $('pz-fb').innerHTML = 'Nenhum puzzle com esses filtros. Escolha outro nível ou categoria.'; $('pz-fb').className = 'fb bad'; this.render(); return; }
-      const evitar = Math.min(5, Math.max(0, pool.length - 1));
-      const rec = this.recentes.slice(-evitar);
-      let cand = pool.filter((p) => !rec.includes(p.id) && (!this.cur || p.id !== this.cur.id));
-      if (!cand.length) cand = pool.filter((p) => !this.cur || p.id !== this.cur.id);
-      if (!cand.length) cand = pool;
-      const lastCat = this.cur && this.cur.categoria;
-      const varied = cand.filter((p) => p.categoria !== lastCat);
-      const from = varied.length ? varied : cand;
-      const p = from[Math.floor(Math.random() * from.length)];
-      this.recentes.push(p.id); this.recentes = this.recentes.slice(-8); this.save();
-      this.flags = { counted: false, wrong: false, revealed: false };
-      this.start(p, false);
-    },
-
-    start(p, again) {
-      clearTimeout(this.timer); this.timer = null;
-      if (again) { this.flags.revealed = this.flags.revealed; }
-      this.cur = p; this.chess = new Chess(p.fen); this.sel = null; this.stage = 0; this.busy = false; this.hintLvl = 0;
-      this.status = 'playing';
-      const side = this.chess.turn();
-      this.board.setOrientation(side); this.board.setInteractive(true);
-      this.last = null;
-      this._clearHint();
-      $('pz-fb').className = 'fb'; $('pz-fb').innerHTML = `Sua vez: jogam as <b>${side === 'w' ? 'brancas' : 'pretas'}</b>. Encontre a melhor continuação.`;
-      $('pz-explain').innerHTML = '';
-      this.render();
-    },
-
-    /* ---------- tabuleiro ---------- */
-    _targets(sq) {
-      if (this.status !== 'playing' || this.busy || !this.chess) return [];
-      return [...new Set(this.chess.moves({ square: sq, verbose: true }).map((m) => m.to))];
-    },
-    _draw() {
-      const g = this.chess; let check = null;
-      if (g.isCheck()) { const t = g.turn(); for (const r of g.board()) for (const c of r) if (c && c.type === 'k' && c.color === t) check = c.square; }
-      this.board.set({ board: g.board(), lastMove: this.last, check });
-    },
-    _clearHint() { if (this.board) Object.values(this.board.squares).forEach((s) => s.classList.remove('hint')); },
-
-    async onMove(from, to) {
-      if (this.status !== 'playing' || this.busy) { this._draw(); return; }
-      const g = this.chess, my = this.cur;
-      let promo;
-      const cands = g.moves({ verbose: true }).filter((m) => m.from === from && m.to === to);
-      if (!cands.length) { this._draw(); return; }
-      if (cands[0].promotion) {
-        this.busy = true;
-        promo = await XD.ui.promotionBox(g.turn());
-        this.busy = false;
-        if (my !== this.cur || this.status !== 'playing') return;
-        if (!promo) { this._draw(); return; }
-      }
-      const mv = cands.find((m) => !m.promotion || m.promotion === promo);
-      if (!mv) { this._draw(); return; }
-      if (!this.flags.counted) { this.flags.counted = true; this.stats.tentados++; this.save(); this.renderStats(); }
-      const san = mv.san;
-      const accepted = this.stage === 0 ? this.cur.solucoes.filter((s) => s.m === san) : (this.sel.f.includes(san) ? [this.sel] : []);
-      if (!accepted.length) { this._wrong(); return; }
-      g.move(san); this.last = { from: mv.from, to: mv.to }; this._clearHint(); this.hintLvl = 0;
-      this._draw();
-      const s = accepted[0];
-      if (this.stage === 1 || !s.r) { this._solved(); return; }
-      // lance certo, mas a solução continua: o adversário responde sozinho
-      this.sel = s; this.busy = true;
-      $('pz-fb').className = 'fb ok'; $('pz-fb').innerHTML = `✔ <b>${esc(san)}</b> está certo. O adversário responde…`;
-      this.timer = setTimeout(() => {
-        if (my !== this.cur || this.status !== 'playing') return;
-        const r = g.move(s.r); this.last = { from: r.from, to: r.to };
-        this.stage = 1; this.busy = false; this._draw();
-        $('pz-fb').className = 'fb ok'; $('pz-fb').innerHTML = `O adversário jogou <b>${esc(r.san)}</b>. Agora conclua a ideia: qual é o próximo lance?`;
-      }, 600);
-    },
-
-    _wrong() {
-      if (XD.Sound) XD.Sound.play('bad');
-      if (!this.flags.wrong) { this.flags.wrong = true; this.stats.sequencia = 0; this.save(); this.renderStats(); }
-      $('pz-fb').className = 'fb bad';
-      $('pz-fb').innerHTML = '✘ Esse lance não corresponde à solução do puzzle. Tente novamente ou peça uma 💡 dica.';
-      this._draw();
-    },
-
-    _solved() {
-      if (XD.Sound) XD.Sound.play('ok');
-      this.status = 'solved'; this.busy = false; this.board.setInteractive(false);
-      if (!this.flags.revealed) {
-        this.stats.resolvidos++;
-        if (!this.flags.wrong) { this.stats.sequencia++; this.stats.melhor = Math.max(this.stats.melhor, this.stats.sequencia); }
-        this.save();
-      }
-      $('pz-fb').className = 'fb done';
-      $('pz-fb').innerHTML = '🎉 <b>Resolvido!</b>' + (this.flags.wrong ? ' (depois de algumas tentativas)' : ' De primeira.');
-      $('pz-explain').innerHTML = `<b>${esc(this.cur.titulo)}.</b> ${esc(this.cur.ideia)} <span class="muted small">Origem: ${esc(this.cur.origem)}.</span>`;
-      this.render(); this.renderStats();
-    },
-
-    /* ---------- dica / solução ---------- */
-    _expected() {
-      if (this.stage === 1 && this.sel) return this.sel.f[0];
-      return this.cur.solucoes[0].m;
-    },
-    hint() {
-      if (this.status !== 'playing' || this.busy) return;
-      this.hintLvl = Math.min(2, this.hintLvl + 1);
-      this._clearHint();
-      if (this.hintLvl === 1) {
-        $('pz-fb').className = 'fb hint'; $('pz-fb').innerHTML = '💡 ' + esc(this.stage === 1 ? 'Conclua a ideia: procure o lance que realiza a ameaça criada pelo seu 1º lance.' : this.cur.dica);
-        return;
-      }
-      const exp = this._expected();
-      const mv = this.chess.moves({ verbose: true }).find((m) => m.san === exp);
-      if (mv) {
-        this.board.squares[mv.from].classList.add('hint');
-        $('pz-fb').className = 'fb hint';
-        $('pz-fb').innerHTML = `💡 Mova ${NOMES[mv.piece]} que está em <b>${mv.from}</b> (casa destacada). Para ver a solução completa, use “Mostrar solução”.`;
-      }
-    },
-    reveal() {
-      if (this.status !== 'playing') return;
-      if (!this.flags.counted) { this.flags.counted = true; this.stats.tentados++; }
-      this.flags.revealed = true; this.stats.sequencia = 0; this.save(); this.renderStats();
-      clearTimeout(this.timer);
-      this.status = 'revealed'; this.busy = true; this.board.setInteractive(false); this._clearHint();
-      // reinicia a posição e toca a primeira linha da solução
-      this.chess = new Chess(this.cur.fen); this.last = null; this._draw();
-      const s = this.cur.solucoes[0], seq = [s.m].concat(s.r ? [s.r, s.f[0]] : []);
-      const white = this.chess.turn() === 'w';
-      const txt = seq.map((m, i) => (i % 2 === 0 ? (white ? `${Math.floor(i / 2) + 1}.` : `${Math.floor(i / 2) + 1}…`) : '') + m).join(' ');
-      $('pz-fb').className = 'fb info';
-      $('pz-fb').innerHTML = `👁 <b>Solução:</b> ${esc(txt)}${this.cur.solucoes.length > 1 ? ' (há outros lances equivalentes)' : ''}`;
-      $('pz-explain').innerHTML = `<b>${esc(this.cur.titulo)}.</b> ${esc(this.cur.ideia)} <span class="muted small">Origem: ${esc(this.cur.origem)}.</span>`;
-      const my = this.cur; let i = 0;
-      const play = () => {
-        if (my !== this.cur || this.status !== 'revealed') return;
-        const m = this.chess.move(seq[i]); this.last = { from: m.from, to: m.to }; this._draw(); i++;
-        if (i < seq.length) this.timer = setTimeout(play, 800); else this.busy = false;
-      };
-      this.timer = setTimeout(play, 500);
-      this.render();
-    },
-
-    resetStats() {
-      XD.ui.confirmBox('Reiniciar estatísticas?', 'Os contadores de tentados, resolvidos e sequência voltarão a zero. Isso não apaga seus puzzles nem outros dados do site.', 'Reiniciar', true).then((ok) => {
-        if (!ok) return;
-        this.stats = { tentados: 0, resolvidos: 0, sequencia: 0, melhor: 0 }; this.save(); this.renderStats();
-        XD.ui.toast('Estatísticas reiniciadas.');
-      });
-    },
-
-    /* ---------- telas ---------- */
-    render() {
-      const p = this.cur;
-      const badges = $('pz-badges');
-      if (!p) { badges.innerHTML = ''; ['pz-hint', 'pz-show', 'pz-retry'].forEach((id) => { $(id).disabled = true; }); return; }
-      const white = new Chess(p.fen).turn() === 'w';
-      badges.innerHTML = `<span class="tag abertura">${esc(D.CATEGORIAS[p.categoria])}</span>
-        <span class="tag nivel-${p.nivel}">${esc(D.NIVEIS[p.nivel])}</span>
-        <span class="pz-side"><i class="dot ${white ? 'w' : 'b'}"></i>${white ? 'Brancas jogam' : 'Pretas jogam'}</span>`;
-      const playing = this.status === 'playing';
-      $('pz-hint').disabled = !playing; $('pz-show').disabled = !playing; $('pz-retry').disabled = false;
-      this._draw();
-    },
-    renderStats() {
-      const s = this.stats, taxa = s.tentados ? Math.round((100 * s.resolvidos) / s.tentados) : 0;
-      $('pz-st-t').textContent = s.tentados; $('pz-st-r').textContent = s.resolvidos;
-      $('pz-st-p').textContent = s.tentados ? taxa + '%' : '—'; $('pz-st-s').textContent = s.sequencia; $('pz-st-m').textContent = s.melhor;
-    }
-  };
-  XD.Puzzles = Puzzles;
-})(typeof window !== 'undefined' ? window : globalThis);
-
-</script>
-  <script>
-/*
  * repertorio.js — Meu Repertório: aberturas pessoais por cor, com variantes, notas, etiquetas,
  * consulta no tabuleiro, treino, exportação e importação em JSON.
  *
@@ -5290,8 +4923,8 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
  * backup.js — Backup completo: exporta e importa TODOS os dados do site num único arquivo JSON.
  *
  * Inclui: partidas salvas (xadrez.partidas.v1), rascunho do Modo Livre (xadrez.rascunho.v1), ajustes de aparência/sons (xadrez.ajustes.v1),
- *         repertório (xadrez.repertorio.v1) e estatísticas de puzzles (xadrez.puzzles.v1).
- * Formato: { app:'Meu Xadrez Plus', tipo:'backup-completo', versao:1, exportado, dados:{ partidas[], rascunho|null, repertorio[], puzzles|null } }
+ *         repertório (xadrez.repertorio.v1).
+ * Formato: { app:'Meu Xadrez Plus', tipo:'backup-completo', versao:1, exportado, dados:{ partidas[], rascunho|null, repertorio[] } }
  *
  * Importar valida TUDO antes de gravar (partidas e repertório são reproduzidos no motor de regras). Se qualquer item for
  * inválido, nada é importado. Antes de qualquer importação é guardado um ponto de restauração ("Desfazer a última importação").
@@ -5301,7 +4934,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   'use strict';
   const XD = root.XD = root.XD || {};
   const $ = (id) => document.getElementById(id);
-  const K = { partidas: 'xadrez.partidas.v1', rascunho: 'xadrez.rascunho.v1', repertorio: 'xadrez.repertorio.v1', puzzles: 'xadrez.puzzles.v1', snap: 'xadrez.backup-anterior.v1', meta: 'xadrez.backup-meta.v1' };
+  const K = { partidas: 'xadrez.partidas.v1', rascunho: 'xadrez.rascunho.v1', repertorio: 'xadrez.repertorio.v1', snap: 'xadrez.backup-anterior.v1', meta: 'xadrez.backup-meta.v1' };
   const APP = 'Meu Xadrez Plus', TIPO = 'backup-completo', VERSAO = 1;
   const readJson = (k) => { try { return JSON.parse(XD.Store.raw.get(k) || 'null'); } catch (e) { return null; } };
 
@@ -5311,13 +4944,12 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     /* ---------- leitura do estado atual ---------- */
     current() {
       const Rep = XD.Repertorio; Rep.load();
-      const pz = readJson(K.puzzles);
-      return { partidas: XD.Store.list(), rascunho: readJson(K.rascunho), repertorio: Rep.data.slice(), puzzles: pz && typeof pz === 'object' ? pz : null, ajustes: XD.Settings.hasSaved() ? XD.Settings.values : null };
+      return { partidas: XD.Store.list(), rascunho: readJson(K.rascunho), repertorio: Rep.data.slice(), ajustes: XD.Settings.hasSaved() ? XD.Settings.values : null };
     },
     build() {
       const d = this.current();
       return { app: APP, tipo: TIPO, versao: VERSAO, exportado: new Date().toISOString(),
-        resumo: { partidas: d.partidas.length, repertorio: d.repertorio.length, puzzlesTentados: d.puzzles ? (d.puzzles.tentados || 0) : 0 }, dados: d };
+        resumo: { partidas: d.partidas.length, repertorio: d.repertorio.length }, dados: d };
     },
 
     /* ---------- validação ---------- */
@@ -5330,7 +4962,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       const d = j.dados;
       if (!d || typeof d !== 'object' || !Array.isArray(d.partidas) || !Array.isArray(d.repertorio)) return { ok: false, erro: 'O backup está incompleto (faltam partidas ou repertório). Nada foi importado.' };
       if (d.partidas.length > 5000 || d.repertorio.length > 1000) return { ok: false, erro: 'Backup grande demais. Nada foi importado.' };
-      const out = { partidas: [], repertorio: [], puzzles: null, rascunho: null, ajustes: null };
+      const out = { partidas: [], repertorio: [], rascunho: null, ajustes: null };
       if (d.ajustes != null) { if (typeof d.ajustes !== 'object' || Array.isArray(d.ajustes)) return { ok: false, erro: 'Os ajustes de aparência do arquivo são inválidos. Nada foi importado.' }; out.ajustes = XD.Settings.sanitize(d.ajustes); }
       const ids = new Set();
       for (let i = 0; i < d.partidas.length; i++) {
@@ -5344,11 +4976,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
         if (!r.ok) return { ok: false, erro: r.erro + ' Nada foi importado e seus dados atuais não foram alterados.' };
         out.repertorio.push(r.valor);
       }
-      if (d.puzzles != null) {
-        const p = d.puzzles, n = (v) => (Number.isFinite(v) && v >= 0 ? Math.floor(v) : null);
-        if (typeof p !== 'object' || [p.tentados, p.resolvidos, p.sequencia, p.melhor].some((v) => n(v) === null)) return { ok: false, erro: 'As estatísticas de puzzles do arquivo são inválidas. Nada foi importado.' };
-        out.puzzles = { tentados: n(p.tentados), resolvidos: Math.min(n(p.resolvidos), n(p.tentados)), sequencia: n(p.sequencia), melhor: n(p.melhor), recentes: Array.isArray(p.recentes) ? p.recentes.filter((x) => typeof x === 'string').slice(-8) : [] };
-      }
+      // (cópias antigas podem trazer "puzzles": a função foi removida e o campo é ignorado)
       if (d.rascunho != null) {
         try { const s = new XD.GameSession({ startFen: d.rascunho.startFen, moves: d.rascunho.moves, cursor: d.rascunho.cursor }); out.rascunho = { startFen: s.startFen, moves: s.moves, cursor: s.cursor, linkedId: typeof d.rascunho.linkedId === 'string' ? d.rascunho.linkedId : null }; }
         catch (e) { return { ok: false, erro: 'O rascunho do Modo Livre do arquivo é inválido. Nada foi importado.' }; }
@@ -5360,14 +4988,12 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     _writeAll(d) {
       XD.Store._write(d.partidas);
       XD.Repertorio.data = d.repertorio; if (!XD.Repertorio.save()) throw new Error('Não foi possível gravar o repertório.');
-      if (d.puzzles) { if (!XD.Store.raw.set(K.puzzles, JSON.stringify(d.puzzles))) throw new Error('Não foi possível gravar as estatísticas.'); } else XD.Store.raw.remove(K.puzzles);
       if (d.rascunho) XD.Store.raw.set(K.rascunho, JSON.stringify(d.rascunho)); else XD.Store.raw.remove(K.rascunho);
       if (d.ajustes) XD.Settings.replaceAll(d.ajustes); else if (d.ajustes === null && this._substituindo) XD.Settings.reset();
-      if (XD.Puzzles && XD.Puzzles.ready) XD.Puzzles.load();
     },
     _sig(o) { return JSON.stringify([o.nome, o.cor, o.variantes.map((v) => v.lances.join(' '))]); },
     _mesclar(atual, novo) {
-      const res = { partidas: atual.partidas.slice(), repertorio: atual.repertorio.slice(), puzzles: atual.puzzles, rascunho: atual.rascunho };
+      const res = { partidas: atual.partidas.slice(), repertorio: atual.repertorio.slice(), rascunho: atual.rascunho };
       const cont = { partidas: 0, repertorio: 0 };
       const novoId = () => XD.Store.newId();
       for (const g of novo.partidas) {
@@ -5381,12 +5007,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
         if (sigs.has(this._sig(o))) continue;
         if (res.repertorio.some((x) => x.id === o.id)) o.id = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
         res.repertorio.push(o); sigs.add(this._sig(o)); cont.repertorio++;
-      }
-      if (novo.puzzles && !atual.puzzles) res.puzzles = novo.puzzles;       // não há nada local: adota as estatísticas da cópia
-      else if (novo.puzzles) {
-        const a = atual.puzzles || { tentados: 0, resolvidos: 0, sequencia: 0, melhor: 0, recentes: [] };
-        const t = Math.max(a.tentados || 0, novo.puzzles.tentados);
-        res.puzzles = { tentados: t, resolvidos: Math.min(t, Math.max(a.resolvidos || 0, novo.puzzles.resolvidos)), sequencia: a.sequencia || 0, melhor: Math.max(a.melhor || 0, novo.puzzles.melhor), recentes: a.recentes || [] };
       }
       if (!res.rascunho && novo.rascunho) res.rascunho = novo.rascunho;
       if (!atual.ajustes && novo.ajustes) res.ajustes = novo.ajustes;       // só adota os ajustes da cópia se você nunca personalizou
@@ -5433,7 +5053,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
     renderStats() {
       const d = this.current();
       $('bk-n-partidas').textContent = d.partidas.length; $('bk-n-rep').textContent = d.repertorio.length;
-      $('bk-n-puz').textContent = d.puzzles ? d.puzzles.tentados || 0 : 0; $('bk-n-rasc').textContent = d.rascunho && d.rascunho.moves && d.rascunho.moves.length ? d.rascunho.moves.length + ' lances' : 'vazio';
+      $('bk-n-rasc').textContent = d.rascunho && d.rascunho.moves && d.rascunho.moves.length ? d.rascunho.moves.length + ' lances' : 'vazio';
       const m = readJson(K.meta);
       $('bk-ultimo').textContent = m && m.ultimo ? 'Último backup exportado: ' + XD.ui.fmtDate(m.ultimo) + '.' : 'Você ainda não exportou nenhum backup.';
       $('bk-undo').hidden = !XD.Store.raw.get(K.snap);
@@ -5581,6 +5201,241 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 
 </script>
   <script>
+/*
+ * dupla.js — "Dois jogadores": partida presencial no mesmo celular, com relógio.
+ * Cada lado tem seu painel (nome, relógio, empate, desistir). O painel de cima pode ficar de cabeça
+ * para baixo (frente a frente) e o tabuleiro pode girar sozinho a cada lance.
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'xadrez.dupla.v1';
+  const TEMPOS = [
+    { id: '0+0', nome: 'Sem relógio', min: 0, inc: 0 }, { id: '1+0', nome: '1 min', min: 1, inc: 0 }, { id: '3+2', nome: '3 + 2', min: 3, inc: 2 },
+    { id: '5+0', nome: '5 min', min: 5, inc: 0 }, { id: '10+0', nome: '10 min', min: 10, inc: 0 }, { id: '15+10', nome: '15 + 10', min: 15, inc: 10 }, { id: '30+0', nome: '30 min', min: 30, inc: 0 }
+  ];
+  const DEF = { nb: 'Brancas', np: 'Pretas', tempo: '10+0', auto: false, face: true, flipb: false };
+  const fmt = (ms) => {
+    ms = Math.max(0, ms); const s = ms / 1000;
+    if (s < 20) return Math.floor(s / 60) + ':' + (s % 60).toFixed(1).padStart(4, '0');
+    const t = Math.ceil(s); return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+  };
+
+  const Dupla = {
+    ready: false, cfg: Object.assign({}, DEF), session: null, board: null, tc: TEMPOS[4], clock: { w: 0, b: 0 }, snaps: [],
+    inGame: false, paused: false, over: null, last: 0, timer: null, lock: null, savedId: null, draw: false,
+
+    init() {
+      if (this.ready) return; this.ready = true;
+      this.board = new XD.Board($('du-board'), { interactive: true, getTargets: (sq) => (this.canMove() ? this.session.targetsFrom(sq) : []), onMove: (a, b) => this.tryMove(a, b) });
+      $('du-time').innerHTML = TEMPOS.map((t) => `<button class="opt compact" role="radio" data-t="${t.id}" type="button"><b>${t.nome}</b></button>`).join('');
+      $('du-time').querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', () => { this.readNames(); this.cfg.tempo = b.dataset.t; this.drawSetup(); }));
+      ['auto', 'face', 'flipb'].forEach((k) => $('du-' + k).addEventListener('click', () => { this.cfg[k] = !this.cfg[k]; $('du-' + k).setAttribute('aria-checked', this.cfg[k]); this.persist(); }));
+      $('du-start').addEventListener('click', () => this.start());
+      $('du-resume').addEventListener('click', () => this.resumeSaved());
+      $('du-pause').addEventListener('click', () => (this.paused ? this.unpause() : this.pause()));
+      $('du-undo').addEventListener('click', () => this.undo());
+      $('du-flip').addEventListener('click', () => { this.board.flip(); this.render(); });
+      $('du-menu').addEventListener('click', () => this.toMenu());
+      $('du-save').addEventListener('click', () => this.save());
+      $('du-rematch').addEventListener('click', () => this.rematch());
+      $('du-new').addEventListener('click', () => this.toMenu(true));
+      document.addEventListener('visibilitychange', () => { if (document.hidden) this.pause(); });
+    },
+
+    enter() {
+      this.init();
+      try { const raw = XD.Store.raw.get(KEY); if (raw) { const o = JSON.parse(raw); if (o && o.cfg) this.cfg = Object.assign({}, DEF, o.cfg); } } catch (e) { /* padrão */ }
+      if (this.inGame) { this.showView('game'); this.render(); return; }
+      this.showView('setup'); this.drawSetup();
+    },
+    leave() { if (this.inGame && !this.over && !this.paused) this.pause(true); },
+    showView(v) { $('du-setup').hidden = v !== 'setup'; $('du-game').hidden = v !== 'game'; },
+
+    saved() { try { const raw = XD.Store.raw.get(KEY); const o = raw && JSON.parse(raw); return o && o.game && o.game.moves && o.game.moves.length && !o.game.over ? o.game : null; } catch (e) { return null; } },
+    persist() {
+      try {
+        const g = this.inGame && this.session ? { moves: this.session.moves.slice(0, this.session.cursor), startFen: this.session.startFen, clock: this.clock, tempo: this.tc.id, over: !!this.over } : null;
+        XD.Store.raw.set(KEY, JSON.stringify({ cfg: this.cfg, game: g }));
+      } catch (e) { /* só conforto */ }
+    },
+
+    drawSetup() {
+      $('du-nb').value = this.cfg.nb === DEF.nb ? '' : this.cfg.nb; $('du-np').value = this.cfg.np === DEF.np ? '' : this.cfg.np;
+      $('du-time').querySelectorAll('[data-t]').forEach((b) => { const on = b.dataset.t === this.cfg.tempo; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+      for (const k of ['auto', 'face', 'flipb']) $('du-' + k).setAttribute('aria-checked', !!this.cfg[k]);
+      const s = this.saved(); $('du-resume-box').hidden = !s;
+      if (s) $('du-resume-info').textContent = `Você tem uma partida presencial em andamento (${s.moves.length} lance${s.moves.length === 1 ? '' : 's'}).`;
+    },
+
+    readNames() { this.cfg.nb = $('du-nb').value.trim().slice(0, 16) || DEF.nb; this.cfg.np = $('du-np').value.trim().slice(0, 16) || DEF.np; },
+
+    start(session, clock) {
+      this.readNames();
+      this.tc = TEMPOS.find((t) => t.id === this.cfg.tempo) || TEMPOS[4];
+      this.session = session || new XD.GameSession();
+      this.clock = clock || { w: this.tc.min * 60000, b: this.tc.min * 60000 };
+      this.snaps = []; this.over = null; this.paused = false; this.draw = false; this.savedId = null; this.inGame = true;
+      this.board.setOrientation(this.session.turn === 'b' && this.cfg.auto && this.session.length ? 'b' : 'w');
+      if (!session) this.board.setOrientation('w');
+      this.showView('game'); this.persist(); this.render(); this.startTimer(); this.keepAwake(true);
+      if (XD.Sound && !this.session.length) XD.Sound.play('start');
+    },
+    resumeSaved() {
+      const s = this.saved(); if (!s) return;
+      try {
+        this.cfg.tempo = s.tempo; const sess = new XD.GameSession({ startFen: s.startFen, moves: s.moves });
+        this.start(sess, s.clock); this.pause(true);
+        if (this.cfg.auto) this.board.setOrientation(sess.turn);
+        this.render();
+      } catch (e) { XD.ui.toast('Não foi possível retomar a partida.', 'erro'); }
+    },
+
+    canMove() { return this.inGame && !this.over && !this.paused; },
+    clocked() { return this.tc.min > 0; },
+    running() { return this.canMove() && this.clocked() && this.session.length > 0; },
+
+    startTimer() {
+      clearInterval(this.timer); this.last = performance.now();
+      this.timer = setInterval(() => this.tick(), 100);
+    },
+    tick() {
+      const now = performance.now(), dt = now - this.last; this.last = now;
+      if (!this.running()) return;
+      const c = this.session.turn; this.clock[c] -= dt;
+      if (this.clock[c] <= 0) { this.clock[c] = 0; this.finish(c === 'w' ? '0-1' : '1-0', `Tempo esgotado! ${c === 'w' ? this.cfg.nb : this.cfg.np} perdeu no relógio.`, 'tempo'); return; }
+      this.renderClocks();
+    },
+    pause(auto) {
+      if (!this.inGame || this.over || this.paused) return;
+      this.paused = true; this.persist(); this.board.setInteractive(false); this.render();
+    },
+    unpause() { if (!this.paused) return; this.paused = false; this.last = performance.now(); this.board.setInteractive(true); this.render(); },
+
+    async tryMove(from, to) {
+      if (!this.canMove()) { this.render(); return; }
+      try {
+        let promotion;
+        if (this.session.needsPromotion(from, to)) { promotion = await XD.ui.promotionBox(this.session.turn); if (!promotion) { this.render(); return; } }
+        const mover = this.session.turn;
+        this.snaps.push({ w: this.clock.w, b: this.clock.b });
+        this.session.play({ from, to, promotion });
+        if (this.clocked() && this.session.length >= 1) this.clock[mover] += this.tc.inc * 1000;
+        this.last = performance.now();
+        const st = this.session.status();
+        if (st.over) this.finish(st.result, st.text, st.kind); else this.persist();
+      } catch (e) { XD.ui.toast(e.message, 'erro'); }
+      this.render();
+      if (this.cfg.auto && !this.over) setTimeout(() => { if (this.inGame && !this.over) { this.board.setOrientation(this.session.turn); this.render(); } }, 450);
+    },
+
+    undo() {
+      if (!this.inGame || !this.session.canUndo) return;
+      if (this.over && this.over.kind === 'tempo') return;
+      this.session.undo(); this.session.moves.length = this.session.cursor;   // sem "refazer": o lance desfeito some da lista
+      const s = this.snaps.pop(); if (s) this.clock = s;
+      this.over = null; this.persist(); if (this.cfg.auto) this.board.setOrientation(this.session.turn); this.render();
+    },
+
+    finish(result, texto, kind) {
+      if (this.over) return;
+      this.over = { result, texto, kind }; this.paused = false; this.board.setInteractive(false); this.persist(); this.keepAwake(false);
+      if (XD.Sound) XD.Sound.play(result === '1/2-1/2' ? 'draw' : 'win');
+      this.render();
+    },
+    async resign(c) {
+      if (!this.canMove() && !this.paused) return;
+      const nome = c === 'w' ? this.cfg.nb : this.cfg.np;
+      if (!(await XD.ui.confirmBox(`${nome} quer desistir?`, 'A partida termina e o outro jogador vence.', 'Desistir', true))) return;
+      this.finish(c === 'w' ? '0-1' : '1-0', `${nome} desistiu. ${c === 'w' ? this.cfg.np : this.cfg.nb} vence.`, 'desistencia');
+    },
+    async offerDraw(c) {
+      if (!this.inGame || this.over) return;
+      const wasPaused = this.paused; if (!wasPaused) this.pause();
+      const outro = c === 'w' ? this.cfg.np : this.cfg.nb, nome = c === 'w' ? this.cfg.nb : this.cfg.np;
+      const ok = await XD.ui.confirmBox(`${nome} propõe empate`, `${outro}, você aceita o empate?`, 'Aceitar empate', false);
+      if (ok) { this.paused = false; this.finish('1/2-1/2', 'Empate por acordo.', 'acordo'); }
+      else if (!wasPaused) this.unpause();
+    },
+
+    /* --------------------------------------------------------------- Tela */
+    panel(pos, color) {
+      const el = $('du-' + pos), face = this.cfg.face && pos === 'top';
+      el.className = 'du-panel ' + pos + (face ? ' face' : '') + ' ' + (color === 'w' ? 'cw' : 'cb');
+      const nome = color === 'w' ? this.cfg.nb : this.cfg.np, turno = this.canMove() && this.session.turn === color;
+      el.classList.toggle('turn', turno);
+      el.querySelector('.du-name').innerHTML = `<span class="dot ${color}" aria-hidden="true"></span>${XD.ui.esc(nome)}`;
+      el.dataset.color = color;
+      // botões: o painel de cima aponta para a cor certa
+      el.querySelector('[data-act="draw"]').onclick = () => this.offerDraw(color);
+      el.querySelector('[data-act="resign"]').onclick = () => this.resign(color);
+      el.querySelector('.du-clock').dataset.c = color;
+      el.querySelector('.du-clock').hidden = !this.clocked();
+    },
+    render() {
+      if (!this.inGame) return;
+      const s = this.session, top = this.board.orientation === 'w' ? 'b' : 'w', bot = top === 'w' ? 'b' : 'w';
+      this.board.set({ board: s.chess.board(), lastMove: s.lastMove(), check: s.checkSquare() });
+      this.board.setInteractive(this.canMove());
+      $('du-board').classList.toggle('flipb', !!this.cfg.flipb);
+      this.panel('top', top); this.panel('bot', bot);
+      const st = s.status(), el = $('du-status');
+      el.className = 'status' + (this.over ? ' end' : st.check ? ' alert' : '');
+      const nome = s.turn === 'w' ? this.cfg.nb : this.cfg.np;
+      el.innerHTML = this.over ? `<span>${XD.ui.esc(this.over.texto)}</span>`
+        : this.paused ? '<span>⏸ Partida pausada.</span>'
+        : `<span class="dot ${s.turn}" aria-hidden="true"></span><span>${st.check ? 'Xeque! ' : ''}Vez de ${XD.ui.esc(nome)}${!s.length && this.clocked() ? ' (o relógio começa no 1º lance)' : ''}.</span>`;
+      $('du-pause').textContent = this.paused ? '▶ Continuar' : '⏸ Pausar';
+      $('du-pause').disabled = !!this.over; $('du-undo').disabled = !s.canUndo || !!(this.over && this.over.kind === 'tempo');
+      $('du-pause').hidden = !this.clocked() && !this.paused;
+      $('du-result').hidden = !this.over;
+      if (this.over) $('du-result-text').textContent = { '1-0': `${this.cfg.nb} venceu`, '0-1': `${this.cfg.np} venceu`, '1/2-1/2': 'Empate' }[this.over.result] + '.';
+      $('du-moves').hidden = false; XD.ui.renderMoveList($('du-moves'), s, () => {});
+      this.renderClocks();
+    },
+    renderClocks() {
+      for (const c of ['w', 'b']) {
+        const el = document.querySelector('#du-game .du-clock[data-c="' + c + '"]'); if (!el) continue;
+        el.textContent = fmt(this.clock[c]); el.classList.toggle('low', this.clocked() && this.clock[c] < 10000);
+        el.classList.toggle('run', this.running() && this.session.turn === c);
+      }
+    },
+
+    async toMenu(force) {
+      if (this.inGame && !this.over && this.session.length && !force) {
+        if (!(await XD.ui.confirmBox('Voltar ao menu?', 'A partida fica guardada: você poderá continuar depois.', 'Voltar ao menu', false))) return;
+      }
+      this.pause(); clearInterval(this.timer); this.timer = null; this.keepAwake(false);
+      this.inGame = false; if (this.over) this.session = null; this.persist(); this.showView('setup'); this.drawSetup();
+    },
+    rematch() {
+      [this.cfg.nb, this.cfg.np] = [this.cfg.np, this.cfg.nb];
+      $('du-nb').value = this.cfg.nb === DEF.nb ? '' : this.cfg.nb; $('du-np').value = this.cfg.np === DEF.np ? '' : this.cfg.np;
+      this.start();
+    },
+    async save() {
+      const s = this.session; if (!s || !s.length) return;
+      const r = await XD.ui.promptBox('Salvar partida', 'Título da partida', `${this.cfg.nb} × ${this.cfg.np} · ${XD.ui.fmtDate(new Date().toISOString())}`, 'Salvar');
+      if (!r) return;
+      try {
+        const rec = XD.Store.save({ id: this.savedId || undefined, title: r.text, session: s, result: this.over ? this.over.result : undefined,
+          meta: { modo: 'dupla', brancas: this.cfg.nb, pretas: this.cfg.np, tempo: this.tc.nome } });
+        this.savedId = rec.id; XD.ui.toast('Partida salva em "Minhas Partidas".', 'ok');
+      } catch (e) { XD.ui.toast(e.message, 'erro'); }
+    },
+    async keepAwake(on) {
+      try {
+        if (on && navigator.wakeLock && !this.lock) { this.lock = await navigator.wakeLock.request('screen'); this.lock.addEventListener('release', () => { this.lock = null; }); }
+        else if (!on && this.lock) { await this.lock.release(); this.lock = null; }
+      } catch (e) { /* sem suporte: tudo bem */ }
+    }
+  };
+  XD.Dupla = Dupla; Dupla.TEMPOS = TEMPOS; Dupla.fmt = fmt;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
 /* App instalável: registra o service worker (só em http/https) e cuida do botão "Instalar". */
 (function (root) {
   const XD = root.XD = root.XD || {};
@@ -5622,7 +5477,9 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   const RESULT = { '1-0': 'Brancas venceram', '0-1': 'Pretas venceram', '1/2-1/2': 'Empate', '*': 'Em andamento' };
 
   /** Selo "vs IA · Nível" para partidas jogadas contra a IA. */
-  const iaBadge = (g) => g.meta && g.meta.modo === 'ia'
+  const iaBadge = (g) => g.meta && g.meta.modo === 'dupla'
+    ? `<span class="badge">Presencial · ${esc(g.meta.brancas || 'Brancas')} × ${esc(g.meta.pretas || 'Pretas')}${g.meta.tempo && g.meta.tempo !== 'Sem relógio' ? ' · ' + esc(g.meta.tempo) : ''}</span>`
+    : g.meta && g.meta.modo === 'ia'
     ? `<span class="badge">vs IA · ${esc(g.meta.nivelNome || 'Nível ' + g.meta.nivel)} · você de ${g.meta.cor === 'b' ? 'pretas' : 'brancas'}${g.meta.abandonou ? ' · abandonou' : ''}</span>` : '';
 
   const Games = {
@@ -5687,6 +5544,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
           <div class="board-col">
             <div id="gd-board"></div>
             <div class="caption" id="gd-cap" role="status" aria-live="polite"></div>
+            <div id="gd-eval" class="caption" aria-live="polite"></div>
             <div id="gd-nav">${XD.navRowHtml()}</div>
             <div class="game-actions" style="justify-content:center">
               <button class="btn" id="gd-flip" type="button">⇅ Girar</button>
@@ -5695,6 +5553,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
             </div>
           </div>
           <aside class="side-col">
+            <div class="panel"><h2>Análise do motor</h2><div id="gd-analise"></div></div>
             <div class="panel"><h2>Lances</h2><div id="gd-moves" class="move-box"></div></div>
             <div class="panel">
               <h2>Posições</h2>
@@ -5711,7 +5570,9 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
       const session = new XD.GameSession({ startFen: g.startFen, moves: g.moves });
       session.goTo(0);                                  // começa a revisão na posição inicial
       this.review = new XD.Review({ board: $('gd-board'), nav: $('gd-nav'), moves: $('gd-moves'), caption: $('gd-cap'), session, flipBtn: $('gd-flip') });
+      XD.Analise.mount(g, this.review);
       $('gd-continue').addEventListener('click', () => {
+        XD.Analise.stop();
         const s = this.review.session;
         const copy = new XD.GameSession({ startFen: s.startFen, moves: s.moves, cursor: s.cursor });
         XD.pendingFree = { session: copy, linkedId: this.current.id, title: this.current.title };  // título atual (pode ter sido renomeado)
@@ -6364,6 +6225,331 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 </script>
   <script>
 /*
+ * analise.js — Revisão de partidas com o motor.
+ *
+ * Para cada posição da partida o motor dá uma nota (centipeões) e o melhor lance. Comparando a nota
+ * "antes" (com o melhor lance) e "depois" (com o lance jogado) sabemos quanto cada lance custou.
+ * A conta é feita em "chance de vitória" (0–100%), como no Lichess, para que perder 1 peão num
+ * final igualado pese mais do que perder 1 peão quando já se está ganhando por muito.
+ *
+ * Parte pura (sem navegador): winPct, classify, moveAccuracy, summarize — testada em Node.
+ * Parte de tela: XD.Analise.mount(...) (usa o motor do app e guarda o resultado no aparelho).
+ */
+(function (root) {
+  'use strict';
+  const MATE = 100000;
+  const KEY = 'xadrez.analises.v1';
+  const MAX_SAVED = 40;
+
+  /** Chance de vitória (0–100) para uma nota em centipeões, vista por quem joga. */
+  function winPct(cp) {
+    if (cp >= MATE - 2000) return 100;
+    if (cp <= -(MATE - 2000)) return 0;
+    const c = Math.max(-1000, Math.min(1000, cp));
+    return 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * c)) - 1);
+  }
+
+  /** Classes por perda de chance de vitória (em pontos percentuais). */
+  const CLASSES = [
+    { id: 'brilhante', nome: 'Brilhante', max: -1 },       // só por sacrifício (ver summarize)
+    { id: 'melhor', nome: 'Melhor', max: 0 },              // só quando é o lance do motor
+    { id: 'excelente', nome: 'Excelente', max: 2 },
+    { id: 'bom', nome: 'Bom', max: 5 },
+    { id: 'imprecisao', nome: 'Imprecisão', max: 10 },
+    { id: 'erro', nome: 'Erro', max: 20 },
+    { id: 'gafe', nome: 'Gafe', max: Infinity }
+  ];
+  function classify(loss, isBest) {
+    if (isBest) return 'melhor';
+    for (const c of CLASSES) if (loss < c.max) return c.id;
+    return 'gafe';
+  }
+
+  /** Material (peão 1, cavalo/bispo 3, torre 5, dama 9) de cada lado, a partir do FEN. */
+  function material(fen) {
+    const v = { p: 1, n: 3, b: 3, r: 5, q: 9 }, r = { w: 0, b: 0 };
+    for (const ch of fen.split(' ')[0]) { const l = ch.toLowerCase(); if (v[l]) r[ch === l ? 'b' : 'w'] += v[l]; }
+    return r;
+  }
+  /**
+   * Sacrifício: depois do lance e da melhor resposta do adversário, quem jogou ficou com pelo menos
+   * 3 pontos de material a menos do que tinha antes (uma peça menor). Heurística simples.
+   */
+  function isSacrifice(fen, uci, reply) {
+    try {
+      const C = (typeof window !== 'undefined' ? window.Chess : require('./engine.js').Chess);
+      const side = fen.split(' ')[1];
+      const diff = (f) => { const m = material(f); return side === 'w' ? m.w - m.b : m.b - m.w; };
+      const before = diff(fen);
+      const ch = new C(fen);
+      ch.move({ from: uci.slice(0, 2), to: uci.slice(2, 4), promotion: uci[4] });
+      if (reply) ch.move({ from: reply.slice(0, 2), to: reply.slice(2, 4), promotion: reply[4] });
+      return before - diff(ch.fen()) >= 3;
+    } catch (e) { return false; }
+  }
+
+  /** Precisão (0–100) de um lance, fórmula do Lichess. */
+  function moveAccuracy(loss) {
+    const a = 103.1668 * Math.exp(-0.04354 * Math.max(0, loss)) - 3.1669;
+    return Math.max(0, Math.min(100, a));
+  }
+
+  /**
+   * @param {{score:number, best:string|null}[]} pos  uma entrada por posição (0..n): nota para QUEM JOGA nela
+   * @param {string[]} played  lances jogados em UCI (n)
+   * @param {string[]} turns   de quem era a vez em cada posição ('w'/'b'), tamanho n+1
+   * @param {boolean[]} [sacs] sacs[i] = o lance i foi um sacrifício (para o "Brilhante")
+   * @returns {{moves:{cls:string,loss:number,best:string|null,evalAfter:number}[], acc:{w:number,b:number}, counts:{w:object,b:object}, white:number[]}}
+   */
+  function summarize(pos, played, turns, sacs) {
+    const moves = [], accs = { w: [], b: [] };
+    const counts = { w: {}, b: {} };
+    for (const c of CLASSES) { counts.w[c.id] = 0; counts.b[c.id] = 0; }
+    for (let i = 0; i < played.length; i++) {
+      const side = turns[i];
+      const before = winPct(pos[i].score);              // com o melhor lance
+      const after = winPct(-pos[i + 1].score);          // depois do lance jogado (vista de quem jogou)
+      const loss = Math.max(0, before - after);
+      const isBest = !!pos[i].best && pos[i].best === played[i];
+      let cls = classify(loss, isBest);
+      if (sacs && sacs[i] && loss < 2 && before < 85 && after >= 45) cls = 'brilhante';   // sacrifício correto, sem estar ganhando fácil
+      moves.push({ cls, loss, best: pos[i].best, evalAfter: pos[i + 1].score * (turns[i + 1] === 'w' ? 1 : -1) });
+      accs[side].push(isBest || cls === 'brilhante' ? 100 : moveAccuracy(loss));
+      counts[side][cls]++;
+    }
+    const avg = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : null);
+    const white = pos.map((p, i) => (turns[i] === 'w' ? p.score : -p.score));
+    return { moves, acc: { w: avg(accs.w), b: avg(accs.b) }, counts, white };
+  }
+
+  /** "+0,35", "-1,20", "Mate". */
+  function fmtScore(white) {
+    if (Math.abs(white) >= MATE - 2000) return white > 0 ? 'Mate p/ brancas' : 'Mate p/ pretas';
+    const v = (white / 100).toFixed(2).replace('.', ',');
+    return (white > 0 ? '+' : '') + v;
+  }
+
+  const api = { winPct, classify, moveAccuracy, summarize, fmtScore, isSacrifice, material, CLASSES, MATE };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== parte de tela */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+  const NIVEIS = { rapida: { nome: 'Rápida', ms: 150 }, normal: { nome: 'Normal', ms: 400 }, profunda: { nome: 'Profunda', ms: 1200 } };
+  const CLS_TXT = { brilhante: 'Brilhante', excelente: 'Excelente', melhor: 'Melhor', bom: 'Bom', imprecisao: 'Imprecisão', erro: 'Erro', gafe: 'Gafe' };
+  const CLS_ICO = { brilhante: '!!', excelente: '!', melhor: '★', bom: '✓', imprecisao: '?!', erro: '?', gafe: '??' };
+
+  /* ---- guarda no aparelho (por partida) ---- */
+  function loadAll() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
+  function saveAll(o) {
+    try {
+      const ids = Object.keys(o).sort((a, b) => (o[a].at || 0) - (o[b].at || 0));
+      while (ids.length > MAX_SAVED) delete o[ids.shift()];
+      localStorage.setItem(KEY, JSON.stringify(o));
+    } catch (e) { /* sem espaço: segue sem guardar */ }
+  }
+  const sig = (g) => g.startFen + '|' + g.moves.map((m) => m.from + m.to + (m.promotion || '')).join(',');
+  function loadFor(g, nivel) {
+    const r = loadAll()[g.id];
+    return r && r.sig === sig(g) && r.nivel === nivel ? r : null;
+  }
+  function saveFor(g, r) { const o = loadAll(); o[g.id] = r; saveAll(o); }
+  function clearFor(id) { const o = loadAll(); delete o[id]; saveAll(o); }
+
+  /** Posições da partida: fen e de quem é a vez, de 0 a n. */
+  function positions(g) {
+    const ch = new root.Chess(g.startFen);
+    const out = [{ fen: g.startFen, turn: ch.turn() }];
+    const uci = [];
+    for (const m of g.moves) {
+      ch.move({ from: m.from, to: m.to, promotion: m.promotion });
+      out.push({ fen: ch.fen(), turn: ch.turn() });
+      uci.push(m.from + m.to + (m.promotion || ''));
+    }
+    return { pos: out, uci };
+  }
+  function sanOf(fen, uci) {
+    try {
+      const ch = new root.Chess(fen);
+      const m = ch.moves({ verbose: true }).find((x) => x.from + x.to + (x.promotion || '') === uci);
+      return m ? m.san : uci;
+    } catch (e) { return uci; }
+  }
+
+  const Analise = {
+    api, token: 0, engine: null, ctx: null, result: null,
+
+    /** Liga o painel à partida g e ao Review r. Cancela qualquer análise anterior. */
+    mount(g, review) {
+      this.stop();
+      this.ctx = { g, review, nivel: localStorage.getItem('xadrez.analise.nivel') || 'normal' };
+      if (!NIVEIS[this.ctx.nivel]) this.ctx.nivel = 'normal';
+      this.result = null;
+      this.render();
+      review.els.onChange = () => this.onNav();
+    },
+
+    stop() {
+      this.token++;
+      if (this.engine) { try { this.engine.dispose(); } catch (e) { /* nada */ } this.engine = null; }
+    },
+
+    alive(tk) { return tk === this.token && $('gd-analise') && this.ctx; },
+
+    async run() {
+      const { g } = this.ctx;
+      const tk = ++this.token;
+      const nivel = this.ctx.nivel, ms = NIVEIS[nivel].ms;
+      const { pos, uci } = positions(g);
+      const box = $('gd-analise');
+      const prog = (txt, frac) => {
+        box.innerHTML = `<p class="small" id="an-msg">${esc(txt)}</p>
+          <div class="an-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(frac * 100)}"><i style="width:${Math.round(frac * 100)}%"></i></div>
+          <button class="btn" id="an-cancel" type="button">Cancelar</button>`;
+        $('an-cancel').addEventListener('click', () => { this.stop(); this.render(); });
+      };
+      prog('Carregando o motor…', 0);
+      if (this.engine) this.engine.dispose();
+      this.engine = new XD.Ai.AiEngine({});
+      const eng = this.engine;
+      try { await eng.init(); } catch (e) { /* o estado fica em eng.status */ }
+      if (!this.alive(tk)) return;
+      if (eng.status.state !== 'ready' && eng.status.state !== 'fallback') {
+        box.innerHTML = '<p class="small">Não consegui carregar o motor. Tente de novo.</p><button class="btn primary" id="an-go" type="button">Tentar de novo</button>';
+        $('an-go').addEventListener('click', () => this.run());
+        return;
+      }
+      const kind = eng.kind;
+      const posRes = [];
+      try {
+        for (let i = 0; i < pos.length; i++) {
+          if (!this.alive(tk)) return;
+          prog(`Analisando posição ${i + 1} de ${pos.length}…`, i / pos.length);
+          const ch = new root.Chess(pos[i].fen);
+          if (!ch.moves().length) {                      // mate ou afogamento: não há o que buscar
+            posRes.push({ score: ch.isCheck() ? -MATE : 0, best: null });
+            continue;
+          }
+          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, i), params: { movetime: ms, multipv: 1 } });
+          const l = res.lines && (res.lines[0] || res.lines[1]);
+          posRes.push({ score: l ? l.score : 0, best: res.bestmove || (l && l.move) || null });
+        }
+      } catch (e) {
+        if (!this.alive(tk)) return;
+        box.innerHTML = `<p class="small">A análise parou: ${esc(e.message || 'erro')}.</p><button class="btn primary" id="an-go" type="button">Tentar de novo</button>`;
+        $('an-go').addEventListener('click', () => this.run());
+        return;
+      }
+      if (!this.alive(tk)) return;
+      const r = { sig: sig(g), nivel, kind, at: Date.now(), pos: posRes, turns: pos.map((p) => p.turn), uci };
+      saveFor(g, r);
+      this.stop();
+      this.show(r);
+    },
+
+    /** Recalcula o resumo a partir do que foi guardado. */
+    show(r) {
+      const P = positions(this.ctx.g).pos;
+      const sacs = r.uci.map((u, i) => isSacrifice(P[i].fen, u, r.pos[i + 1].best));   // lance + melhor resposta
+      this.result = Object.assign({}, r, { sum: summarize(r.pos, r.uci, r.turns, sacs) });
+      this.render();
+      this.onNav();
+    },
+
+    render() {
+      const box = $('gd-analise'); if (!box) return;
+      const c = this.ctx;
+      const saved = this.result || loadFor(c.g, c.nivel);
+      if (saved && !this.result) { this.show(saved); return; }
+      if (!this.result) {
+        box.innerHTML = `<p class="small muted">O motor avalia cada lance, aponta erros e mostra o que seria melhor. Funciona sem internet (motor interno); com internet usa o Stockfish.</p>
+          <label class="field"><span>Profundidade</span>
+            <select id="an-nivel">${Object.keys(NIVEIS).map((k) => `<option value="${k}"${k === c.nivel ? ' selected' : ''}>${NIVEIS[k].nome}</option>`).join('')}</select></label>
+          <button class="btn primary" id="an-go" type="button"${c.g.moves.length ? '' : ' disabled'}>Revisar com o motor</button>
+          ${c.g.moves.length ? '' : '<p class="small muted">A partida ainda não tem lances.</p>'}`;
+        $('an-nivel').addEventListener('change', (e) => {
+          c.nivel = e.target.value; try { localStorage.setItem('xadrez.analise.nivel', c.nivel); } catch (x) { /* ok */ }
+          this.render();
+        });
+        $('an-go').addEventListener('click', () => this.run());
+        return;
+      }
+      const r = this.result, s = r.sum, f = (v) => (v === null ? '—' : Math.round(v) + '%');
+      const row = (id) => `<tr><th scope="row"><span class="q q-${id}">${CLS_ICO[id]}</span> ${CLS_TXT[id]}</th><td>${s.counts.w[id]}</td><td>${s.counts.b[id]}</td></tr>`;
+      const crit = s.moves.map((m, i) => ({ m, i })).filter((x) => x.m.cls === 'erro' || x.m.cls === 'gafe');
+      const info = c.review.session.firstMoveInfo();
+      const label = (i) => {                              // "12. Bc4" / "12… Nf6"
+        const white = r.turns[i] === 'w';
+        const num = info.number + Math.floor((i + (info.color === 'b' ? 1 : 0)) / 2);
+        return `${num}${white ? '.' : '…'} ${c.g.moves[i].san}`;
+      };
+      box.innerHTML = `
+        <div class="an-acc"><div><span class="small muted">Brancas</span><strong>${f(s.acc.w)}</strong></div>
+          <div><span class="small muted">Pretas</span><strong>${f(s.acc.b)}</strong></div></div>
+        <p class="small muted">Precisão = quão perto do melhor lance você jogou. Motor: ${r.kind === 'stockfish' ? 'Stockfish' : 'interno'} · ${esc(NIVEIS[r.nivel].nome)}.</p>
+        <div class="an-graph-wrap"><svg id="an-graph" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="Gráfico da vantagem ao longo da partida. Toque para ir a um lance."></svg></div>
+        <table class="an-table"><thead><tr><th></th><th>Brancas</th><th>Pretas</th></tr></thead><tbody>
+          ${['brilhante', 'melhor', 'excelente', 'bom', 'imprecisao', 'erro', 'gafe'].map(row).join('')}</tbody></table>
+        <h3 class="an-h">Momentos críticos</h3>
+        ${crit.length ? '<ul class="an-crit">' + crit.map((x) => `<li><button class="btn" data-an-go="${x.i + 1}" type="button"><span class="q q-${x.m.cls}">${CLS_ICO[x.m.cls]}</span> ${esc(label(x.i))} <span class="small muted">· melhor: ${esc(x.m.best ? sanOf(positions(c.g).pos[x.i].fen, x.m.best) : '—')}</span></button></li>`).join('') + '</ul>'
+          : '<p class="small muted">Nenhum erro grave. Boa partida!</p>'}
+        <div class="game-actions"><button class="btn" id="an-redo" type="button">Analisar de novo</button></div>`;
+      this.drawGraph();
+      box.querySelectorAll('[data-an-go]').forEach((b) => b.addEventListener('click', () => c.review.goTo(+b.dataset.anGo)));
+      $('an-redo').addEventListener('click', () => { clearFor(c.g.id); this.result = null; this.run(); });
+      const svg = $('an-graph');
+      svg.addEventListener('click', (e) => {
+        const rc = svg.getBoundingClientRect();
+        const i = Math.round(((e.clientX - rc.left) / rc.width) * (r.pos.length - 1));
+        c.review.goTo(Math.max(0, Math.min(r.pos.length - 1, i)));
+      });
+    },
+
+    drawGraph() {
+      const svg = $('an-graph'); if (!svg || !this.result) return;
+      const r = this.result, n = r.pos.length;
+      const xs = (i) => (n === 1 ? 0 : (i / (n - 1)) * 300);
+      const ys = (i) => 80 - (winPct(r.sum.white[i]) / 100) * 80;
+      let d = `M0 80 L0 ${ys(0).toFixed(1)}`;
+      for (let i = 1; i < n; i++) d += ` L${xs(i).toFixed(1)} ${ys(i).toFixed(1)}`;
+      d += ' L300 80 Z';
+      svg.innerHTML = `<rect width="300" height="80" class="an-bg"/><path d="${d}" class="an-fill"/><line x1="0" y1="40" x2="300" y2="40" class="an-mid"/><line id="an-cur" y1="0" y2="80" class="an-curline" x1="0" x2="0"/>`;
+    },
+
+    /** Chamado a cada mudança de lance: marca a lista, a linha do gráfico e a legenda de avaliação. */
+    onNav() {
+      const c = this.ctx; if (!c) return;
+      const cap = $('gd-eval');
+      const r = this.result;
+      if (!r) { if (cap) cap.innerHTML = ''; return; }
+      const cur = c.review.session.cursor;
+      document.querySelectorAll('#gd-moves button.mv[data-i]').forEach((b) => {
+        const m = r.sum.moves[+b.dataset.i - 1];
+        if (m) { b.classList.add('q-' + m.cls); b.dataset.q = m.cls; }
+      });
+      const line = $('an-cur');
+      if (line) { const x = (cur / Math.max(1, r.pos.length - 1)) * 300; line.setAttribute('x1', x); line.setAttribute('x2', x); }
+      if (!cap) return;
+      let html = `Avaliação: <strong>${esc(fmtScore(r.sum.white[cur]))}</strong>`;
+      if (cur > 0) {
+        const m = r.sum.moves[cur - 1];
+        html += ` · <span class="q q-${m.cls}">${CLS_ICO[m.cls]}</span> ${CLS_TXT[m.cls]}`;
+        if (m.cls !== 'melhor' && m.best) {
+          const fen = positions(c.g).pos[cur - 1].fen;
+          html += ` <span class="small">— o melhor era <strong>${esc(sanOf(fen, m.best))}</strong></span>`;
+        }
+      }
+      cap.innerHTML = html;
+    }
+  };
+
+  XD.Analise = Analise;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
  * play.js — "Jogar contra a IA": escolha de nível/cor, partida, indicação de "pensando", salvar.
  *
  * Regras de ouro deste arquivo:
@@ -6727,11 +6913,7 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
  'use strict';
  const XD=root.XD, $=id=>document.getElementById(id);
  const Lab={
-  ready:false, ai:null, aiBoard:null, aiStartFen:null, aiMoves:[], humanColor:'w', level:1, busy:false, token:0, clockEnabled:300, clockRemaining:{w:300,b:300}, clockLastTick:0, clockRunning:false, clockFlag:null, clockInterval:null, puzzle:null, puzzleBoard:null, puzzleIndex:0, puzzleSolved:0, editorBoard:null, editorClearMode:false, editorSelected:null,
-  puzzles:[
-   {fen:'7k/5Q2/6K1/8/8/8/8/8 w - - 0 1',solution:'Qf8#',hint:'A dama pode dar xeque na oitava fileira, enquanto o rei branco controla as casas de fuga.',explain:'A dama em f8 dá xeque-mate: o rei preto não tem casa segura nem pode capturar a dama.'},
-   {fen:'7k/8/5KQ1/8/8/8/8/8 w - - 0 1',solution:'Qg7#',hint:'A dama pode se aproximar do rei preto com proteção do rei branco.',explain:'Dama em g7 é xeque-mate: o rei preto fica sem casas de fuga.'}
-  ],
+  ready:false, ai:null, aiBoard:null, aiStartFen:null, aiMoves:[], humanColor:'w', level:1, busy:false, token:0, clockEnabled:300, clockRemaining:{w:300,b:300}, clockLastTick:0, clockRunning:false, clockFlag:null, clockInterval:null, editorBoard:null, editorClearMode:false, editorSelected:null,
   enter(){if(!this.ready)this.init();this.refreshPGNGames();this.renderStats();},
   init(){this.ready=true;
    document.querySelectorAll('[data-lab-tab]').forEach(b=>b.addEventListener('click',()=>this.tab(b.dataset.labTab)));
@@ -6748,14 +6930,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
    $('lab-pgn-export').addEventListener('click',()=>this.exportPGN());
    $('lab-pgn-download').addEventListener('click',()=>this.downloadPGN());
    $('lab-pgn-import').addEventListener('click',()=>this.importPGN());
-   $('lab-analysis-current').addEventListener('click',()=>{ $('lab-analysis-fen').value=this.ai.fen(); $('lab-analysis-message').textContent='Posição atual da partida contra IA carregada.'; });
-   $('lab-analysis-saved').addEventListener('click',()=>this.loadSavedAnalysisPosition());
-   $('lab-analysis-start').addEventListener('click',()=>{ $('lab-analysis-fen').value=root.Chess.START_FEN; $('lab-analysis-message').textContent='Posição inicial carregada.'; });
-   $('lab-analysis-open').addEventListener('click',()=>this.openExternalAnalysis());
-   $('lab-analysis-game').addEventListener('click',()=>this.openFullGameAnalysis());
-   $('lab-analysis-cloud').addEventListener('click',()=>this.queryCloudEval());
-   $('lab-analysis-explorer').addEventListener('click',()=>this.queryOpeningExplorer());
-   $('lab-analysis-copy').addEventListener('click',()=>this.copyAnalysisFEN());
    $('lab-pgn-game').addEventListener('change',()=>{});
    $('lab-fen-start').addEventListener('click',()=>{$('lab-fen').value=root.Chess.START_FEN;$('lab-fen-message').textContent='Posição inicial carregada.';});
    $('lab-fen-open').addEventListener('click',()=>this.openFEN());
@@ -6770,10 +6944,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
    $('lab-editor-open').addEventListener('click',()=>this.generateEditorFEN(true));
    $('lab-stats-refresh').addEventListener('click',()=>this.renderStats());
    $('lab-back-games').addEventListener('click',()=>XD.go('#/partidas'));
-   $('lab-puzzle-reset').addEventListener('click',()=>this.loadPuzzle());
-   $('lab-puzzle-hint').addEventListener('click',()=>{$('lab-puzzle-explain').textContent=this.puzzle?this.puzzle.hint:'';});
-   $('lab-puzzle-next').addEventListener('click',()=>{this.puzzleIndex=(this.puzzleIndex+1)%this.puzzles.length;this.loadPuzzle();});
-   this.loadPuzzle();
   },
   tab(name){document.querySelectorAll('[data-lab-tab]').forEach(b=>b.classList.toggle('primary',b.dataset.labTab===name));document.querySelectorAll('[data-lab-pane]').forEach(p=>p.hidden=p.dataset.labPane!==name);if(name==='stats')this.renderStats();if(name==='pgn')this.refreshPGNGames();},
   setAIStatus(text,end){const e=$('lab-ai-status');e.textContent=text;e.classList.toggle('end',!!end);e.classList.toggle('alert',/xeque/i.test(text)&&!/mate/i.test(text));},
@@ -6801,110 +6971,12 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   exportPGN(){try{const o=this.selectedSession();$('lab-pgn-text').value=this.pgnForSession(o.session,o.title);XD.ui.toast('PGN preparado no campo.','ok');}catch(e){XD.ui.toast(e.message,'erro');}},
   downloadPGN(){try{if(!$('lab-pgn-text').value.trim())this.exportPGN();const data=$('lab-pgn-text').value;if(!data.trim())return;const blob=new Blob([data],{type:'application/x-chess-pgn;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='minha-partida.pgn';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){XD.ui.toast('Não foi possível gerar o arquivo PGN.','erro');}},
   importPGN(){const raw=$('lab-pgn-text').value.trim();if(!raw){XD.ui.toast('Cole uma partida PGN primeiro.','erro');return;}try{let fen=root.Chess.START_FEN;const fm=raw.match(/^\[FEN\s+"([^"]+)"\]/mi);if(fm)fen=fm[1];const body=raw.replace(/^\s*\[[^\]]*\]\s*$/gm,'').replace(/\{[^}]*\}/g,' ').replace(/\([^)]*\)/g,' ').replace(/;[^\n]*/g,' ').replace(/\$\d+/g,' ');const tokens=body.split(/\s+/).filter(Boolean).filter(t=>!/^\d+\.{1,3}$/.test(t)&&!/^\d+\.+/.test(t)&&!['1-0','0-1','1/2-1/2','*'].includes(t));const chess=new root.Chess(fen),moves=[];for(const tok of tokens){const clean=tok.replace(/[!?+#]+$/g,'');if(!clean)continue;const v=chess.move(clean);moves.push({from:v.from,to:v.to,promotion:v.promotion});}if(!moves.length)throw new Error('Não encontrei lances legais no PGN.');const session=new XD.GameSession({startFen:fen,moves});const title=(raw.match(/^\[Event\s+"([^"]+)"\]/mi)||[])[1]||'Partida importada';XD.Store.save({title,session});XD.ui.toast('Partida PGN importada para Minhas Partidas.','ok');this.refreshPGNGames();this.renderStats();}catch(e){XD.ui.toast('PGN inválido ou incompatível: '+e.message,'erro');}},
-  loadSavedAnalysisPosition(){
-   try{
-    const games=XD.Store.list();
-    if(!games.length){$('lab-analysis-message').textContent='Você ainda não tem partidas salvas. Salve uma partida ou use a posição atual.';return;}
-    const options=games.map((g,i)=>`${i+1}. ${g.title}`).join('\n');
-    const answer=prompt('Digite o número da partida salva que deseja analisar:\n'+options,'1');
-    if(answer===null)return;
-    const index=Number(answer)-1;
-    if(!Number.isInteger(index)||index<0||index>=games.length)throw new Error('Número de partida inválido.');
-    const g=games[index], chess=new root.Chess(g.startFen);
-    for(const m of g.moves)chess.move({from:m.from,to:m.to,promotion:m.promotion||'q'});
-    $('lab-analysis-fen').value=chess.fen();$('lab-analysis-message').textContent='Posição final da partida carregada: '+g.title;
-   }catch(e){$('lab-analysis-message').textContent='Não foi possível carregar a partida: '+e.message;}
-  },
-  openFullGameAnalysis(){
-   const msg=$('lab-analysis-message');
-   try{
-    const selected=$('lab-pgn-game').value;
-    let session,title;
-    if(selected==='current'){
-     if(!this.aiMoves.length)throw new Error('Faça alguns lances na partida atual ou selecione uma partida salva na aba PGN.');
-     session=new XD.GameSession({startFen:this.aiStartFen,moves:this.aiMoves});
-     title=`Partida contra IA nível ${this.level}`;
-    }else{
-     const g=XD.Store.get(selected);
-     if(!g)throw new Error('Partida salva não encontrada. Abra a aba PGN e selecione a partida novamente.');
-     session=new XD.GameSession({startFen:g.startFen,moves:g.moves}); title=g.title;
-    }
-    const pgn=this.pgnForSession(session,title);
-    // Lichess accepts a PGN in the analysis URL path. Encode the full PGN so move text is preserved.
-    const url='https://lichess.org/analysis/pgn/'+encodeURIComponent(pgn);
-    const win=window.open(url,'_blank');
-    if(!win){
-     $('lab-pgn-text').value=pgn;
-     msg.textContent='O navegador bloqueou a nova aba. O PGN da partida foi colocado na aba PGN; copie-o e importe em lichess.org/analysis.';
-     this.tab('pgn'); return;
-    }
-    msg.textContent='Partida enviada ao Lichess. Ative o motor Stockfish para examinar os lances e os erros.';
-   }catch(e){msg.textContent=e.message||'Não foi possível preparar a análise da partida.';}
-  },
-  openExternalAnalysis(){
-   const fen=$('lab-analysis-fen').value.trim();
-   try{
-    new root.Chess(fen);
-    const url='https://lichess.org/analysis/standard/'+fen.replace(/\s+/g,'_');
-    const win=window.open(url,'_blank');
-    if(!win){$('lab-analysis-message').textContent='O navegador bloqueou a nova aba. Abra o link do Lichess abaixo e cole a FEN.';return;}
-    $('lab-analysis-message').textContent='Posição enviada ao Lichess. Ative a análise do motor na página que abriu.';
-   }catch(e){$('lab-analysis-message').textContent='FEN inválida: '+e.message;}
-  },
-  async queryCloudEval(){
-   const fen=$('lab-analysis-fen').value.trim(), msg=$('lab-analysis-message'), out=$('lab-analysis-results');
-   let chess;
-   try{chess=new root.Chess(fen);}catch(e){msg.textContent='FEN inválida: '+e.message;return;}
-   msg.textContent='Consultando avaliações Stockfish disponíveis…';out.innerHTML='<p class="muted small">Buscando no serviço do Lichess…</p>';
-   try{
-    const url='https://lichess.org/api/cloud-eval?fen='+encodeURIComponent(chess.fen())+'&multiPv=3&variant=standard';
-    const res=await fetch(url,{headers:{'Accept':'application/json'}});
-    if(res.status===404)throw new Error('Essa posição não está no cache de avaliações. Use “Abrir análise completa” para pedir uma análise ao motor no Lichess.');
-    if(!res.ok)throw new Error('O serviço respondeu com HTTP '+res.status+'.');
-    const data=await res.json();
-    if(!Array.isArray(data.pvs)||!data.pvs.length)throw new Error('Não há linhas de avaliação disponíveis para essa posição.');
-    const rows=data.pvs.slice(0,3).map((pv,i)=>{
-      const copy=new root.Chess(chess.fen()), san=[];
-      const uci=(pv.moves||'').trim().split(/\s+/).filter(Boolean);
-      for(const token of uci){if(!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(token))break;try{const m=copy.move({from:token.slice(0,2),to:token.slice(2,4),promotion:token[4]||'q'});san.push(m.san);}catch(e){break;}}
-      const score=pv.mate!==undefined?'Mate em '+pv.mate:(pv.cp!==undefined?(pv.cp/100).toFixed(2)+' peões':'avaliação indisponível');
-      return `<li><strong>Linha ${i+1} · ${score}</strong><br><span>${san.join(' ')||'Sem lances fornecidos'}</span></li>`;
-    }).join('');
-    out.innerHTML=`<h3>Stockfish · cache do Lichess</h3><p class="muted small">Profundidade ${Number(data.depth)||'?'} · ${Number(data.knodes||0).toLocaleString('pt-BR')} milhares de nós</p><ol>${rows}</ol><p class="muted small">Avaliações em relação ao lado indicado pelo serviço. O cache não contém todas as posições.</p>`;
-    msg.textContent='Avaliação recebida. Para cálculo atualizado e análise completa, abra o analisador externo.';
-   }catch(e){out.innerHTML=`<p>${this.escapeText(e.message||'Falha na consulta.')}</p>`;msg.textContent='Consulta encerrada.';}
-  },
-  async queryOpeningExplorer(){
-   const fen=$('lab-analysis-fen').value.trim(), msg=$('lab-analysis-message'), out=$('lab-analysis-results');
-   try{new root.Chess(fen);}catch(e){msg.textContent='FEN inválida: '+e.message;return;}
-   msg.textContent='Consultando banco de partidas do Lichess…';out.innerHTML='<p class="muted small">Buscando lances jogados nesta posição…</p>';
-   try{
-    const url='https://explorer.lichess.ovh/lichess?variant=standard&fen='+encodeURIComponent(fen)+'&moves=8&topGames=0&recentGames=0';
-    const res=await fetch(url,{headers:{'Accept':'application/json'}});
-    if(!res.ok)throw new Error('O explorador respondeu com HTTP '+res.status+'.');
-    const data=await res.json(), moves=data.moves||[];
-    if(!moves.length)throw new Error('Não foram encontrados dados para essa posição. Tente a posição inicial ou uma abertura conhecida.');
-    const total=moves.reduce((n,m)=>n+m.white+m.draws+m.black,0);
-    out.innerHTML=`<h3>Explorador de partidas</h3><p class="muted small">${Number(data.white||0).toLocaleString('pt-BR')} vitórias brancas · ${Number(data.draws||0).toLocaleString('pt-BR')} empates · ${Number(data.black||0).toLocaleString('pt-BR')} vitórias pretas</p><ol>${moves.slice(0,8).map(m=>{const n=m.white+m.draws+m.black;const pct=x=>n?Math.round(x/n*100):0;return `<li><strong>${this.escapeText(m.san)}</strong> · ${n.toLocaleString('pt-BR')} partidas <span class="muted small">(Brancas ${pct(m.white)}% · Empates ${pct(m.draws)}% · Pretas ${pct(m.black)}%)</span></li>`;}).join('')}</ol><p class="muted small">Percentuais calculados a partir dos resultados retornados pelo banco de partidas.</p>`;
-    msg.textContent='Explorador carregado.';
-   }catch(e){out.innerHTML=`<p>${this.escapeText(e.message||'Falha na consulta.')}</p>`;msg.textContent='Consulta encerrada.';}
-  },
   escapeText(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));},
-  copyAnalysisFEN(){
-   const fen=$('lab-analysis-fen').value.trim();
-   try{new root.Chess(fen);}catch(e){$('lab-analysis-message').textContent='FEN inválida: '+e.message;return;}
-   const area=$('lab-analysis-fen');area.focus();area.select();
-   let ok=false;try{ok=document.execCommand('copy');}catch(e){}
-   if(ok){$('lab-analysis-message').textContent='FEN copiada.';return;}
-   $('lab-analysis-message').textContent='FEN selecionada. Use Copiar no menu do Android.';
-  },
   openFEN(){const fen=$('lab-fen').value.trim();try{const session=new XD.GameSession({startFen:fen});$('lab-fen-message').textContent='FEN aceita. Abrindo no Modo Livre…';XD.pendingFree={session,linkedId:null,title:'Posição personalizada'};XD.go('#/livre');}catch(e){$('lab-fen-message').textContent='FEN inválida: '+e.message;}},
   editSquare(square){if(!this.editorPieces)return;const pieceValue=$('lab-editor-piece').value;const color=pieceValue[0],type=pieceValue[1].toLowerCase();const rank=8-Number(square[1]),file=square.charCodeAt(0)-97;this.editorPieces[rank][file]=this.editorClearMode?null:{color,type,square};this.editorBoard.set({board:this.editorPieces,lastMove:null,check:null});$('lab-editor-message').textContent=this.editorClearMode?`Casa ${square} apagada.`:`Peça colocada em ${square}.`;},
   editorFenFromBoard(board,turn){const rows=[];for(let r=0;r<8;r++){let row='',empty=0;for(let f=0;f<8;f++){const p=board[r][f];if(!p){empty++;continue;}if(empty){row+=empty;empty=0;}const c=p.type.toLowerCase();row+=p.color==='w'?c.toUpperCase():c;}if(empty)row+=empty;rows.push(row);}return rows.join('/')+' '+turn+' - - 0 1';},
   generateEditorFEN(open){try{const fen=this.editorFenFromBoard(this.editorPieces,$('lab-editor-turn').value);const checked=new root.Chess(fen);if(checked.board().flat().filter(p=>p&&p.type==='k'&&p.color==='w').length!==1||checked.board().flat().filter(p=>p&&p.type==='k'&&p.color==='b').length!==1)throw new Error('A posição precisa ter exatamente um rei branco e um rei preto.');$('lab-fen').value=fen;$('lab-editor-message').textContent='FEN gerada: '+fen;if(open){const session=new XD.GameSession({startFen:fen});XD.pendingFree={session,linkedId:null,title:'Posição criada no editor visual'};XD.go('#/livre');}}catch(e){$('lab-editor-message').textContent='Não foi possível gerar a posição: '+e.message;}},
-  loadPuzzle(){const p=this.puzzles[this.puzzleIndex%this.puzzles.length];this.puzzle=p;this.puzzleChess=new root.Chess(p.fen);if(!this.puzzleBoard)this.puzzleBoard=new XD.Board($('lab-puzzle-board'),{interactive:true,getTargets:sq=>this.puzzleChess?this.puzzleChess.moves({square:sq,verbose:true}).map(m=>m.to):[],onMove:(from,to)=>this.puzzleMove(from,to)});this.puzzleBoard.setInteractive(true);this.puzzleBoard.set({board:this.puzzleChess.board(),lastMove:null,check:null});$('lab-puzzle-status').textContent='Encontre o lance correto!';$('lab-puzzle-status').classList.remove('end');$('lab-puzzle-explain').textContent='';},
-  puzzleMove(from,to){try{const m=this.puzzleChess.move({from,to,promotion:'q'});if(m.san===this.puzzle.solution||this.puzzleChess.isCheckmate()){this.puzzleSolved++;$('lab-puzzle-status').textContent='Correto! Xeque-mate encontrado. ♕';$('lab-puzzle-status').classList.add('end');$('lab-puzzle-explain').textContent=this.puzzle.explain;this.puzzleBoard.setInteractive(false);}else{$('lab-puzzle-status').textContent='Esse lance é legal, mas não resolve o desafio. Tente outra ideia.';this.puzzleChess.undo();}this.puzzleBoard.set({board:this.puzzleChess.board(),lastMove:null,check:null});}catch(e){XD.ui.toast('Lance inválido.','erro');}},
-  renderStats(){const el=$('lab-stats');if(!el)return;const games=XD.Store.list();const counts={wins:0,losses:0,draws:0,unknown:0,moves:0};for(const g of games){counts.moves+=g.moves.length;if(g.result==='1-0')counts.wins++;else if(g.result==='0-1')counts.losses++;else if(g.result==='1/2-1/2')counts.draws++;else counts.unknown++;}el.innerHTML=`<div class="lab-stat"><strong>${games.length}</strong><span>Partidas salvas</span></div><div class="lab-stat"><strong>${counts.moves}</strong><span>Lances registrados</span></div><div class="lab-stat"><strong>${counts.draws}</strong><span>Empates registrados</span></div><div class="lab-stat"><strong>${this.puzzleSolved}</strong><span>Desafios resolvidos nesta sessão</span></div>`;}
+  renderStats(){const el=$('lab-stats');if(!el)return;const games=XD.Store.list();const counts={wins:0,losses:0,draws:0,unknown:0,moves:0};for(const g of games){counts.moves+=g.moves.length;if(g.result==='1-0')counts.wins++;else if(g.result==='0-1')counts.losses++;else if(g.result==='1/2-1/2')counts.draws++;else counts.unknown++;}el.innerHTML=`<div class="lab-stat"><strong>${games.length}</strong><span>Partidas salvas</span></div><div class="lab-stat"><strong>${counts.moves}</strong><span>Lances registrados</span></div><div class="lab-stat"><strong>${counts.draws}</strong><span>Empates registrados</span></div>`;}
  };
  XD.Lab=Lab;
 })(typeof window!=='undefined'?window:globalThis);
@@ -7728,12 +7800,11 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   // Peças SVG disponíveis para todo o site
   document.body.insertAdjacentHTML('afterbegin', XD.Pieces.spriteMarkup());
 
-  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'puzzles', 'repertorio', 'backup', 'ajustes'];
+  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla'];
 
   /** Tela inicial: contadores reais e atalho para a partida em andamento. */
   XD.refreshHome = function () {
     $('home-ac-count').textContent = `${root.AcademiaData.OPENINGS.length} aberturas e gambitos com explicação lance a lance, mais um catálogo de 3.865 linhas (1.315 de gambitos) para estudar e treinar.`;
-    $('home-pz-count').textContent = `${root.PuzzlesData.PUZZLES.length} puzzles verificados em ${Object.keys(root.PuzzlesData.CATEGORIAS).length} categorias, com dica, solução e estatísticas.`;
     if (XD.Repertorio) { const r = XD.Repertorio.count(); $('home-rp-count').textContent = r ? `${r} abertura${r === 1 ? '' : 's'} no seu repertório.` : 'Guarde suas próprias aberturas, variantes e anotações, e treine seus lances.'; }
     if (XD.Backup) $('home-bk-note').textContent = XD.Backup.homeNote();
     const n = XD.Store.list().length;
@@ -7775,15 +7846,16 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   const currentRoute = () => (XD.currentHash !== null ? XD.currentHash : location.hash);
 
   function route() {
-    XD.activeReview = null;
+    XD.activeReview = null; if (XD.Analise && XD.Analise.stop) XD.Analise.stop();
     if (XD.Academia) XD.Academia.leave();
-    if (XD.Puzzles) XD.Puzzles.leave();
     if (XD.Repertorio) XD.Repertorio.leave();
+    if (XD.Dupla) XD.Dupla.leave();    // pausa o relógio ao sair da tela
     if (XD.Play) XD.Play.leave();      // cancela a IA se ela estiver pensando em outra tela
     const parts = (currentRoute().replace(/^#\/?/, '') || '').split('/');
     const [section, id] = parts;
     try {
       if (!section) { XD.refreshHome(); show('home', 'home'); document.title = 'Meu Xadrez'; }
+      else if (section === 'dupla') { show('dupla', 'dupla'); document.title = 'Dois jogadores · Meu Xadrez'; XD.Dupla.enter(); }
       else if (section === 'livre') {
         show('livre', 'livre'); document.title = 'Modo Livre · Meu Xadrez';
         const p = XD.pendingFree; XD.pendingFree = null;
@@ -7807,8 +7879,6 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
         if (!XD.Academia.showDetail(id, parts[2])) { XD.ui.toast('Abertura não encontrada.', 'erro'); XD.go('#/academia'); return; }
         show('academia-op', 'academia'); XD.activeReview = XD.Academia.keyNav;
         document.title = XD.Academia.current.nome + ' · Academia · Meu Xadrez';
-      } else if (section === 'puzzles') {
-        show('puzzles', 'puzzles'); document.title = 'Puzzles · Meu Xadrez'; XD.Puzzles.enter();
       } else if (section === 'repertorio') {
         show('repertorio', 'repertorio'); document.title = 'Meu Repertório · Meu Xadrez';
         if (!XD.Repertorio.enter(id, parts[2])) { XD.ui.toast('Abertura não encontrada no repertório.', 'erro'); XD.go('#/repertorio'); return; }
@@ -7850,6 +7920,17 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
   });
   window.addEventListener('popstate', () => { XD.currentHash = null; route(); });   // botão Voltar
   window.addEventListener('hashchange', () => { XD.currentHash = null; route(); });
+  // Menu de baixo rolável: setinhas + "empurrãozinho" inicial (alguns navegadores só ativam a rolagem depois de a barra se mover uma vez)
+  (function tabbarScroll() {
+    const bar = document.querySelector('.tabbar'), pv = $('tb-prev'), nx = $('tb-next'); if (!bar || !pv || !nx) return;
+    const upd = () => { const max = bar.scrollWidth - bar.clientWidth; pv.classList.toggle('show', bar.scrollLeft > 4); nx.classList.toggle('show', max > 4 && bar.scrollLeft < max - 4); };
+    const by = (d) => bar.scrollTo({ left: bar.scrollLeft + d, behavior: 'smooth' });
+    pv.addEventListener('click', () => by(-bar.clientWidth * 0.7)); nx.addEventListener('click', () => by(bar.clientWidth * 0.7));
+    bar.addEventListener('scroll', upd, { passive: true }); window.addEventListener('resize', upd);
+    const nudge = () => { if (bar.scrollWidth > bar.clientWidth && bar.scrollLeft === 0) { bar.scrollLeft = 2; requestAnimationFrame(() => { bar.scrollLeft = 0; upd(); }); } else upd(); };
+    window.addEventListener('load', () => setTimeout(nudge, 50)); setTimeout(nudge, 300); upd();
+    bar.addEventListener('touchstart', () => { if (bar.scrollLeft === 0) { bar.scrollLeft = 1; } }, { passive: true, once: true });
+  })();
   XD.Settings.load();
   const sndBtn = $('snd-toggle');
   if (sndBtn) sndBtn.addEventListener('click', () => { XD.Settings.set('som', !XD.Settings.get('som')); if (XD.Settings.get('som')) XD.Sound.play('move'); });
