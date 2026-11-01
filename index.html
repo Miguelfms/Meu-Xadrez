@@ -5,6 +5,7 @@
   <!-- viewport-fit=cover: usa a tela toda em celulares com recortes; initial-scale=1: sem zoom estranho -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0d1411">
+  <script>/* aplica o tema salvo antes de desenhar a tela (evita piscar) */(function(){try{var o=JSON.parse(localStorage.getItem("xadrez.ajustes.v1")||"null"),t=o&&o.tema,l=t==="claro"||(t==="auto"&&window.matchMedia&&matchMedia("(prefers-color-scheme: light)").matches);document.documentElement.setAttribute("data-tema",l?"claro":"escuro");if(l){var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute("content","#f5f2e9")}}catch(e){}})();</script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="icon-192.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -151,7 +152,7 @@ input:focus, textarea:focus { outline: 2px solid var(--gold); border-color: tran
   display: grid; grid-template-columns: repeat(8, 1fr); grid-template-rows: repeat(8, 1fr);
   width: min(100%, 76vh); aspect-ratio: 1; margin: 0 auto;
   border-radius: 8px; overflow: hidden; border: 3px solid #0a0f0c; box-shadow: 0 10px 30px rgba(0, 0, 0, .5), 0 0 0 1px var(--line);
-  touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer;
+  touch-action: none; user-select: none; -webkit-user-select: none; cursor: pointer; position: relative;
 }
 .board.readonly { touch-action: auto; cursor: default; }
 .sq { position: relative; display: grid; place-items: center; }
@@ -274,6 +275,27 @@ summary { cursor: pointer; font-weight: 700; min-height: 32px; }
   .detail-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 22px; align-items: start; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+
+/* Foto da posição */
+.foto-modal { width: min(100%, 460px); max-height: calc(100vh - 24px); overflow-y: auto; }
+.foto-prev { position: relative; display: grid; place-items: center; margin: 6px 0 10px; background: var(--surface-2); border-radius: 12px; padding: 8px; min-height: 120px; }
+.foto-prev img { display: block; width: 100%; max-width: 380px; height: auto; border-radius: 10px; }
+.foto-wait { position: absolute; color: var(--muted); font-size: .85rem; } .foto-wait[hidden] { display: none; }
+.foto-opts { display: grid; gap: 4px; margin: 8px 0; } .foto-opts label { display: flex; gap: 10px; align-items: center; min-height: 40px; cursor: pointer; }
+.foto-opts input { width: 22px; height: 22px; accent-color: var(--gold); }
+.foto-act { flex-wrap: wrap; } .foto-act .btn { flex: 1 1 40%; min-height: 46px; }
+
+/* Setas e marcações no tabuleiro */
+.setas-svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; overflow: visible; }
+.setas-svg .mk { opacity: .5; } .setas-svg .ar { opacity: .85; } .setas-svg .pv { opacity: .55; }
+.board.setas-on { touch-action: none; cursor: crosshair; outline: 3px solid var(--gold); outline-offset: 2px; }
+.setas-bar { margin: 8px auto 4px; padding: 8px 10px; background: var(--surface); border: 1px solid var(--gold); border-radius: 12px; display: grid; gap: 6px; max-width: 76vh; }
+.setas-bar .small { margin: 0; }
+.setas-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.setas-cor { width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--line); background: var(--c); cursor: pointer; padding: 0; }
+.setas-cor[aria-checked="true"] { border-color: var(--text); box-shadow: 0 0 0 2px var(--gold); }
+.setas-row .btn { min-height: 40px; }
+[data-setas].on { border-color: var(--gold); color: var(--gold-2); background: rgba(212, 175, 55, .14); }
 
 </style>
   <style>
@@ -402,6 +424,8 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 .snd-tests { display: flex; flex-wrap: wrap; gap: 8px; }
 #aj-preview { width: min(100%, 420px); margin: 8px auto; }
 
+.tema-mini { display: inline-grid; place-items: center; width: 44px; height: 28px; border-radius: 8px; border: 2px solid; } .tema-mini i { display: block; width: 18px; height: 5px; border-radius: 3px; }
+
 </style>
   <style>
 /* Início: seções com atalhos em grade */
@@ -420,13 +444,13 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 .cards .card.feature h2 { font-size: 1rem; margin: 0; }
 .cards .card.feature p { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; font-size: .8rem; line-height: 1.3; margin: 0; }
 .cards .card.feature .go { display: none; }
-.cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child { grid-column: 1 / -1; min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; border-color: var(--gold); }
-.cards.sec-jogar .card:first-child .ico, .cards.sec-aprender .card:first-child .ico { flex: none; width: 46px; height: 46px; }
-.cards.sec-jogar .card:first-child p, .cards.sec-aprender .card:first-child p { flex-basis: 100%; }
-.cards.sec-meu .card:last-child, .cards.sec-jogar .card:last-child { grid-column: 1 / -1; min-height: 0; }
+.cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child, .cards.sec-meu .card:first-child { grid-column: 1 / -1; min-height: 0; flex-direction: row; flex-wrap: wrap; align-items: center; column-gap: 12px; border-color: var(--gold); }
+.cards.sec-jogar .card:first-child .ico, .cards.sec-aprender .card:first-child .ico, .cards.sec-meu .card:first-child .ico { flex: none; width: 46px; height: 46px; }
+.cards.sec-jogar .card:first-child p, .cards.sec-aprender .card:first-child p, .cards.sec-meu .card:first-child p { flex-basis: 100%; }
+.cards.sec-meu .card:last-child { grid-column: 1 / -1; min-height: 0; }
 @media (min-width: 760px) {
   .cards.sec-jogar, .cards.sec-aprender, .cards.sec-meu { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child, .cards.sec-meu .card:last-child, .cards.sec-jogar .card:last-child { grid-column: auto; min-height: 132px; flex-direction: column; align-items: flex-start; }
+  .cards.sec-jogar .card:first-child, .cards.sec-aprender .card:first-child, .cards.sec-meu .card:first-child, .cards.sec-meu .card:last-child { grid-column: auto; min-height: 132px; flex-direction: column; align-items: flex-start; }
 }
 
 /* Menu de baixo rolável: botões maiores, desliza para os lados */
@@ -471,6 +495,132 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 
 </style>
   <style>
+/* Relógio de xadrez */
+.rl-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 6px; }
+.rl-pv { border-radius: 16px; padding: 16px 8px; text-align: center; font-size: clamp(1.9rem, 9vw, 2.6rem); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; border: 1px solid var(--line); }
+.rl-pv.b { background: linear-gradient(160deg, #262b28, #111413); color: #f1ede0; }
+.rl-pv.w { background: linear-gradient(160deg, #f7f3e6, #e4dcc3); color: #1a1a1a; box-shadow: 0 0 0 2px var(--gold), 0 0 22px rgba(212, 175, 55, .28); }
+.rl-sum { text-align: center; margin: 4px 0 12px; color: var(--muted); }
+.rl-sum b { color: var(--gold-2); }
+.rl-grp { margin: 14px 0; }
+.rl-grp h3 { margin: 0 0 6px; font-size: .86rem; letter-spacing: .06em; text-transform: uppercase; color: var(--gold-2); }
+.rl-presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(88px, 1fr)); gap: 8px; }
+.rl-pre { min-height: 60px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--text); font: inherit; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; cursor: pointer; padding: 6px; touch-action: manipulation; }
+.rl-pre b { font-size: 1.25rem; font-variant-numeric: tabular-nums; } .rl-pre small { font-size: .68rem; color: var(--muted); }
+.rl-pre.on { border-color: var(--gold); background: linear-gradient(180deg, rgba(212, 175, 55, .2), rgba(212, 175, 55, .06)); box-shadow: inset 0 0 0 1px var(--gold); }
+.rl-pre.on b { color: var(--gold-2); }
+.rl-pre.wide { width: 100%; min-height: 52px; } .rl-pre.wide b { font-size: 1rem; }
+.rl-custom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; } .rl-custom[hidden] { display: none; }
+.rl-custom input { min-height: 48px; }
+.rl-opt { display: flex; gap: 12px; align-items: flex-start; padding: 10px 2px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.rl-opt input { width: 24px; height: 24px; flex: none; margin-top: 2px; accent-color: var(--gold); }
+.rl-opt b { display: block; } .rl-opt small { display: block; color: var(--muted); font-size: .8rem; line-height: 1.3; }
+.rl-start { width: 100%; min-height: 58px; font-size: 1.1rem; margin-top: 14px; }
+.rl-note { text-align: center; margin-top: 8px; }
+.rl-cont { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; border-color: var(--gold); }
+@media (max-width: 380px) { .rl-custom { grid-template-columns: 1fr; } }
+
+/* tela cheia durante a partida */
+body.rl-open { overflow: hidden; }
+.rl-play { position: fixed; inset: 0; z-index: 90; display: flex; flex-direction: column; background: #080b0a; padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom); touch-action: none; user-select: none; -webkit-user-select: none; }
+.rl-play[hidden] { display: none; }
+.rl-side { flex: 1 1 0; min-height: 0; margin: 8px 10px; border: 0; border-radius: 26px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font: inherit; cursor: pointer; position: relative; overflow: hidden; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: filter .2s, box-shadow .2s, background .2s; }
+.rl-side.b { background: linear-gradient(160deg, #2a302c, #101312); color: #f1ede0; margin-bottom: 4px; }
+.rl-side.w { background: linear-gradient(160deg, #f8f4e7, #e2d9be); color: #1a1a1a; margin-top: 4px; }
+.rl-play.mirror .rl-side.b { transform: rotate(180deg); }
+.rl-name { font-size: .95rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .7; }
+.rl-time { font-size: clamp(3.4rem, min(23vw, 15vh), 9.5rem); font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.rl-info { font-size: .95rem; opacity: .65; }
+.rl-msg { min-height: 1.4em; font-weight: 800; font-size: 1.15rem; }
+.rl-play[data-state="running"] .rl-side:not(.run) { filter: brightness(.5) saturate(.7); }
+.rl-side.run { box-shadow: 0 0 0 4px var(--gold), 0 0 34px rgba(212, 175, 55, .5); }
+.rl-side.low .rl-time { color: #b45309; } .rl-side.b.low .rl-time { color: #ffb347; }
+.rl-side.crit .rl-time { color: #c62828; animation: rlpulse .8s ease-in-out infinite alternate; } .rl-side.b.crit .rl-time { color: #ff6b60; }
+@keyframes rlpulse { from { opacity: 1; } to { opacity: .55; } }
+.rl-side.flag { background: linear-gradient(160deg, #d63a30, #8f1d17); color: #fff; filter: none !important; box-shadow: 0 0 0 4px #ff6b60; }
+.rl-side.flag .rl-time { color: #fff; animation: none; }
+.rl-side.win { box-shadow: 0 0 0 4px #5fbf74; filter: none !important; }
+.rl-play[data-state="paused"] .rl-side::after { content: 'Pausado'; position: absolute; inset: 0; display: grid; place-items: center; background: rgba(0, 0, 0, .62); color: #fff; font-size: 1.6rem; font-weight: 800; letter-spacing: .04em; }
+.rl-bar { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 4px 10px 2px; }
+.rl-hint { margin: 0; color: var(--muted); font-size: .82rem; text-align: center; min-height: 1.2em; }
+.rl-btns { display: flex; gap: 10px; justify-content: center; }
+.rl-btn { width: 52px; height: 52px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface); color: var(--text); display: grid; place-items: center; cursor: pointer; touch-action: manipulation; }
+.rl-btn svg { width: 24px; height: 24px; }
+.rl-btn:disabled { opacity: .35; } .rl-btn.hot { background: var(--gold); color: #111; border-color: var(--gold); }
+.rl-btn[hidden] { display: none; }
+@media (prefers-reduced-motion: reduce) { .rl-side.crit .rl-time { animation: none; } .rc-p { animation: none !important; } }
+
+/* cartão do início */
+.relogio-card { position: relative; overflow: hidden; border-color: rgba(212, 175, 55, .55) !important; background: radial-gradient(120% 120% at 100% 0%, rgba(212, 175, 55, .16), transparent 60%), var(--surface); }
+.rc-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 0 0 8px; }
+.rc-p { border-radius: 9px; height: 34px; display: grid; place-items: center; font-weight: 800; font-size: .92rem; font-variant-numeric: tabular-nums; }
+.rc-p.b { background: linear-gradient(160deg, #2a302c, #101312); color: #f1ede0; border: 1px solid #3a413c; }
+.rc-p.w { background: linear-gradient(160deg, #f8f4e7, #e2d9be); color: #1a1a1a; }
+.rc-p { animation: rcglow 2.4s ease-in-out infinite; } .rc-p.w { animation-delay: 1.2s; }
+@keyframes rcglow { 0%, 45% { box-shadow: 0 0 0 2px var(--gold), 0 0 14px rgba(212, 175, 55, .55); } 55%, 100% { box-shadow: none; filter: brightness(.7); } }
+
+</style>
+  <style>
+/* Tema claro (Ajustes → Tema do site). Só troca cores; o escuro continua sendo o padrão. Vem por último no CSS. */
+html[data-tema="claro"] {
+  --bg: #f5f2e9; --bg-2: #ece8db; --surface: #ffffff; --surface-2: #f1eddf; --line: #d6cfba;
+  --text: #1d2621; --muted: #56655b; --gold: #b98a0c; --gold-2: #7d5d05; --green: #2f7d4f; --danger: #b3261e;
+  --panel: #ffffff;
+  color-scheme: light;
+}
+html[data-tema="claro"] body { background: radial-gradient(1200px 600px at 50% -10%, #fffdf6 0%, var(--bg) 60%) fixed; background-color: var(--bg); }
+html[data-tema="claro"] .topbar, html[data-tema="claro"] header.top, html[data-tema="claro"] .site-head { background: rgba(245, 242, 233, .9); }
+html[data-tema="claro"] .tabbar { background: rgba(255, 255, 255, .97); }
+html[data-tema="claro"] .tb-arrow.l { background: linear-gradient(90deg, rgba(255,255,255,.98) 40%, rgba(255,255,255,0)); color: var(--text); }
+html[data-tema="claro"] .tb-arrow.r { background: linear-gradient(270deg, rgba(255,255,255,.98) 40%, rgba(255,255,255,0)); color: var(--text); }
+html[data-tema="claro"] .hero { background: radial-gradient(120% 140% at 100% 0%, rgba(185,138,12,.16), transparent 55%), repeating-conic-gradient(rgba(0,0,0,.03) 0 25%, transparent 0 50%) 0 0 / 44px 44px, #fff; }
+html[data-tema="claro"] .card::after { background: conic-gradient(#000 25%, transparent 0 50%, #000 0 75%, transparent 0) 0 0 / 32px 32px; opacity: .05; }
+html[data-tema="claro"] .relogio-card { background: radial-gradient(120% 120% at 100% 0%, rgba(185,138,12,.16), transparent 60%), #fff; }
+/* botões e avisos */
+html[data-tema="claro"] .btn:hover:not(:disabled) { background: #e9e4d3; border-color: #bdb59b; }
+html[data-tema="claro"] .btn.primary { background: linear-gradient(180deg, #f0cf5e, #d4a81f); color: #1a1405; border-color: #a98a22; }
+html[data-tema="claro"] .btn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #f6d96f, #dcb12a); }
+html[data-tema="claro"] .btn.danger { background: #fde8e6; border-color: #e0a5a0; color: #9b2b25; }
+html[data-tema="claro"] .btn.danger:hover:not(:disabled) { background: #fbd5d1; }
+html[data-tema="claro"] .field-error { color: #b3261e; }
+html[data-tema="claro"] .status.alert, html[data-tema="claro"] .toast.erro { border-color: #d9857f; background: #fdecea; color: #7a1f1a; }
+html[data-tema="claro"] .status.end { background: #fff3d1; border-color: #c99a1a; }
+html[data-tema="claro"] .notice, html[data-tema="claro"] .engine-banner.fallback { background: #fff3d1; border-color: #d1ad3f; }
+html[data-tema="claro"] .engine-banner.error { background: #fdecea; border-color: #d9857f; }
+html[data-tema="claro"] .engine-banner.loading { border-color: #d1ad3f; background: rgba(185,138,12,.08); }
+html[data-tema="claro"] .engine-banner.ready { border-color: #8cc9a3; background: rgba(47,125,79,.1); }
+html[data-tema="claro"] .status.thinking { border-color: #d1ad3f; background: rgba(185,138,12,.08); }
+html[data-tema="claro"] .tag.gambito { border-color: #c9a640; background: rgba(185,138,12,.12); }
+html[data-tema="claro"] .tag.abertura { color: #1f6b3e; border-color: #8cc9a3; background: rgba(47,125,79,.1); }
+html[data-tema="claro"] .opt:hover, html[data-tema="claro"] .swatch:hover { border-color: #bdb59b; }
+html[data-tema="claro"] .res-vitoria b { color: #1f7a43; } html[data-tema="claro"] .res-derrota b { color: #b3261e; }
+html[data-tema="claro"] .toast { background: #26302a; color: #f4f1e8; }
+html[data-tema="claro"] .modal { box-shadow: 0 20px 60px rgba(0, 0, 0, .25); }
+html[data-tema="claro"] .modal-back { background: rgba(20, 24, 22, .45); }
+html[data-tema="claro"] .board { border-color: #cfc7ae; box-shadow: 0 8px 22px rgba(60, 50, 20, .18), 0 0 0 1px var(--line); }
+html[data-tema="claro"] .sq.target::after { background: rgba(12, 30, 20, .28); }
+/* análise, partidas e Explorador */
+html[data-tema="claro"] .cw, html[data-tema="claro"] .ex-card.win strong { color: #1f7a43; }
+html[data-tema="claro"] .cl, html[data-tema="claro"] .ex-card.loss strong { color: #b3261e; }
+html[data-tema="claro"] .cd, html[data-tema="claro"] .ex-card.draw strong { color: #555; }
+html[data-tema="claro"] .ex-msg.erro { border-color: #d9857f; background: #fdecea; }
+html[data-tema="claro"] .fav-n { background: rgba(0, 0, 0, .08); }
+html[data-tema="claro"] .chip.on .fav-n { background: rgba(0, 0, 0, .15); }
+html[data-tema="claro"] .ex-op { background: rgba(185,138,12,.14); }
+html[data-tema="claro"] .ex-bar { background: #d8d3c1; }
+html[data-tema="claro"] .ex-ch-svg .mx, html[data-tema="claro"] .ex-ch-svg .cur circle { stroke: #fff; }
+html[data-tema="claro"] .ex-ch-svg .ln { stroke: #a87c06; }
+html[data-tema="claro"] .ex-ch-svg .cur .cl { stroke: #7d5d05; }
+html[data-tema="claro"] .ex-ch-svg .mx, html[data-tema="claro"] .ex-ch-svg .cur circle { fill: #a87c06; }
+html[data-tema="claro"] .du-clock.run { background: var(--surface-2); color: var(--text); }
+html[data-tema="claro"] .du-clock.low { color: #c62828; }
+html[data-tema="claro"] .rl-pv.b, html[data-tema="claro"] .rc-p.b { border-color: #3a413c; }
+html[data-tema="claro"] .rl-pre.on { background: linear-gradient(180deg, rgba(185,138,12,.2), rgba(185,138,12,.06)); }
+/* ouro usado como TEXTO precisa ser o tom escuro no fundo claro */
+html[data-tema="claro"] .tabbar a.on, html[data-tema="claro"] .cat-title, html[data-tema="claro"] .eyebrow, html[data-tema="claro"] .fav-star.on { color: var(--gold-2); }
+
+</style>
+  <style>
 /* Revisão de partidas com o motor */
 .an-bar { height: 10px; border-radius: 6px; background: var(--surface-2); overflow: hidden; margin: .5rem 0; }
 .an-bar i { display: block; height: 100%; background: var(--gold); transition: width .2s; }
@@ -488,11 +638,134 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 .an-crit { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .an-crit .btn { width: 100%; text-align: left; min-height: 44px; }
 .q { display: inline-block; min-width: 1.7em; text-align: center; border-radius: 6px; font-weight: 800; font-size: .8rem; padding: 1px 4px; color: #111; }
-.q-brilhante { background: #5fd6e6; } .q-excelente { background: #a7e3a1; } .q-melhor { background: #7fd18b; } .q-bom { background: #b9d9a0; } .q-imprecisao { background: #f0d36a; }
+.q-brilhante { background: #5fd6e6; } .q-genial { background: #6aa8ff; } .q-melhor { background: #7fd18b; } .q-bom { background: #b9d9a0; } .q-imprecisao { background: #f0d36a; }
 .q-erro { background: #f0a25a; } .q-gafe { background: #e8625a; }
-button.mv.q-brilhante { box-shadow: inset 0 -3px 0 #5fd6e6; } button.mv.q-imprecisao { box-shadow: inset 0 -3px 0 #f0d36a; } button.mv.q-erro { box-shadow: inset 0 -3px 0 #f0a25a; }
+button.mv.q-brilhante { box-shadow: inset 0 -3px 0 #5fd6e6; } button.mv.q-genial { box-shadow: inset 0 -3px 0 #6aa8ff; } button.mv.q-imprecisao { box-shadow: inset 0 -3px 0 #f0d36a; } button.mv.q-erro { box-shadow: inset 0 -3px 0 #f0a25a; }
 button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
 #gd-eval { margin: .25rem 0 .5rem; text-align: center; min-height: 1.4em; }
+.an-how { margin: .5rem 0; } .an-how summary { cursor: pointer; padding: 6px 0; min-height: 36px; } .an-how ul { padding-left: 1.1rem; margin: .25rem 0; }
+.an-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; } .an-jump { min-height: 40px; text-align: left; margin: 2px 4px 2px 0; } .an-decisive { display: flex; flex-wrap: wrap; gap: 6px; }
+
+</style>
+  <style>
+/* Explorador (Chess.com) */
+.ex-search { display: flex; gap: 8px; margin: 4px 0 8px; }
+.ex-search input { flex: 1 1 auto; min-width: 0; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 0 14px; font: inherit; font-size: 1.02rem; }
+.ex-search input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.ex-search .btn { min-height: 48px; flex: none; }
+.ex-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0 10px; }
+.ex-chips .chip { min-height: 36px; padding: 0 12px; border-radius: 18px; border: 1px solid var(--line); background: var(--surface-2); color: var(--text); font: inherit; font-size: .88rem; cursor: pointer; }
+.ex-chips .chip.ghost { background: transparent; color: var(--muted); }
+.ex-msg { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; margin: 6px 0 10px; border: 1px solid var(--line); background: var(--surface); }
+.ex-msg:empty { display: none; }
+.ex-msg.erro { border-color: #8a3a35; background: rgba(232, 98, 90, .1); }
+.ex-msg.info { color: var(--muted); }
+.ex-intro { margin-top: 6px; }
+.ex-loading { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.fade-in { animation: exfade .35s ease both; }
+@keyframes exfade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .fade-in { animation: none; } }
+.ex-skel { display: grid; gap: 10px; } .ex-skel i { display: block; height: 84px; border-radius: 14px; background: linear-gradient(90deg, var(--surface) 25%, var(--surface-2) 50%, var(--surface) 75%) 0 0 / 200% 100%; animation: exshim 1.2s linear infinite; }
+@keyframes exshim { to { background-position: -200% 0; } }
+
+.ex-prof { display: flex; gap: 14px; align-items: center; background: radial-gradient(120% 140% at 100% 0%, rgba(212,175,55,.12), transparent 60%), var(--surface); }
+.ex-ava { flex: none; width: 72px; height: 72px; border-radius: 50%; overflow: hidden; border: 2px solid var(--gold); display: grid; place-items: center; background: var(--surface-2); font-size: 2rem; font-weight: 800; color: var(--gold-2); }
+.ex-ava img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ex-prof-info h2 { margin: 0; font-size: 1.25rem; word-break: break-word; }
+.ex-prof-info p { margin: 2px 0; }
+.ex-name { font-weight: 600; }
+
+.ex-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 6px; }
+.ex-card { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.ex-card strong { font-size: 1.15rem; } .ex-card span { font-size: .72rem; color: var(--muted); }
+.ex-card.win strong, .cw { color: #7fd18b; } .ex-card.loss strong, .cl { color: #e8756e; } .ex-card.draw strong, .cd { color: #c9c9c9; }
+.ex-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.ex-mode { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 12px; }
+.ex-mode.off { opacity: .6; }
+.ex-mode h3 { margin: 0 0 2px; font-size: .95rem; color: var(--gold-2); }
+.ex-mode p { margin: 3px 0; }
+.ex-rating { font-size: 1.7rem; font-weight: 800; line-height: 1.1; } .ex-rating small { display: block; font-size: .68rem; font-weight: 500; color: var(--muted); }
+.ex-bar { display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #333; margin: 6px 0 4px; }
+.ex-bar .w { background: #5fbf74; } .ex-bar .d { background: #9a9a9a; } .ex-bar .l { background: #d9645d; }
+
+.ex-filters { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 6px; }
+.ex-f select { width: 100%; min-height: 44px; }
+.ex-games { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ex-game { background: var(--surface-2); border: 1px solid var(--line); border-left: 4px solid #888; border-radius: 12px; padding: 10px 12px; animation: exfade .25s ease both; }
+.ex-game.win { border-left-color: #5fbf74; } .ex-game.loss { border-left-color: #d9645d; } .ex-game.draw { border-left-color: #9a9a9a; }
+.ex-g-top { display: flex; gap: 10px; align-items: flex-start; }
+.ex-col { flex: none; width: 18px; height: 18px; border-radius: 4px; margin-top: 3px; border: 1px solid #777; }
+.ex-col.w { background: #f3efe2; } .ex-col.b { background: #1b1b1b; }
+.ex-g-main { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+.ex-op { display: inline-block; margin-top: 4px; font-size: .78rem; color: var(--gold-2); background: rgba(212,175,55,.1); border-radius: 8px; padding: 2px 8px; }
+.ex-res { flex: none; font-size: .78rem; font-weight: 700; padding: 3px 8px; border-radius: 8px; color: #111; }
+.ex-res.win { background: #7fd18b; } .ex-res.loss { background: #f0a09a; } .ex-res.draw { background: #cfcfcf; }
+.ex-g-act { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+.ex-g-act .btn { min-height: 42px; }
+.ex-foot { text-align: center; margin-top: 8px; } .ex-foot .btn { min-height: 46px; width: 100%; }
+@media (max-width: 380px) { .ex-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); } .ex-filters { grid-template-columns: 1fr; } }
+
+/* gráfico de rating */
+.ex-ch-sum { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 8px 0; }
+.ex-ch-sum div { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; gap: 2px; }
+.ex-ch-sum strong { font-size: 1.1rem; } .ex-ch-sum span { font-size: .7rem; color: var(--muted); }
+.ex-ch-wrap { background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 6px 4px 2px; }
+.ex-ch-svg { display: block; width: 100%; height: auto; aspect-ratio: 360 / 210; touch-action: pan-y; }
+.ex-ch-svg .axis text { fill: var(--muted); font-size: 9.5px; }
+.ex-ch-svg .g { stroke: var(--line); stroke-width: .6; stroke-dasharray: 2 3; }
+.ex-ch-svg .ln { fill: none; stroke: var(--gold); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+.ex-ch-svg .area { fill: url(#ex-grad); stroke: none; }
+.ex-ch-svg .mx { fill: var(--gold-2); stroke: #111; stroke-width: 1; }
+.ex-ch-svg .cur .cl { stroke: var(--gold-2); stroke-width: 1; opacity: .7; }
+.ex-ch-svg .cur circle { fill: var(--gold-2); stroke: #111; stroke-width: 1.4; }
+.ex-ch-read { min-height: 1.4em; margin: 6px 2px; }
+.ex-ch-act { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; } .ex-ch-act .btn { min-height: 44px; flex: 1 1 auto; }
+.ex-me { display: flex; gap: 8px; align-items: center; margin: 2px 0 8px; } .ex-me .btn { min-height: 44px; }
+.ex-me-hint { margin: 2px 0 8px; }
+.ex-me-btn { min-height: 40px; margin: 6px 0 4px; } .ex-me-btn.on { border-color: var(--gold); color: var(--gold-2); }
+@media (max-width: 380px) { .ex-ch-sum { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ex-chips .chip.on { border-color: var(--gold); color: var(--gold-2); background: rgba(212,175,55,.14); font-weight: 700; }
+
+</style>
+  <style>
+/* Favoritos */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.fav-star { appearance: none; flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--surface-2); color: var(--muted); display: inline-grid; place-items: center; cursor: pointer; padding: 0; transition: background .2s, color .2s, border-color .2s, transform .15s; -webkit-tap-highlight-color: transparent; }
+.fav-star svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2; transition: fill .2s; }
+.fav-star:hover { color: var(--gold-2); border-color: var(--gold); }
+.fav-star:active { transform: scale(.92); }
+.fav-star.on { color: var(--gold); border-color: var(--gold); background: rgba(212, 175, 55, .14); }
+.fav-star.on svg { fill: currentColor; }
+.fav-star.pop svg { animation: favpop .42s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes favpop { 0% { transform: scale(.6) rotate(-20deg); } 60% { transform: scale(1.3) rotate(8deg); } 100% { transform: scale(1) rotate(0); } }
+@media (prefers-reduced-motion: reduce) { .fav-star.pop svg { animation: none; } .fav-star { transition: none; } }
+.fav-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.fav-row h1 { margin: 0; min-width: 0; word-break: break-word; }
+.ex-prof { position: relative; }
+.ex-fav { position: absolute; top: 8px; right: 8px; }
+.ex-prof-info { padding-right: 46px; }
+.ex-g-act .fav-star { width: 42px; height: 42px; }
+.ex-g-act .ex-rtxt { flex: 1 1 auto; min-width: 0; margin-left: 8px; }
+
+.fav-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 6px 0 4px; padding-bottom: 2px; }
+.fav-tabs::-webkit-scrollbar { display: none; }
+.fav-tabs .chip { flex: none; min-height: 44px; display: inline-flex; align-items: center; gap: 6px; }
+.fav-n { background: rgba(255, 255, 255, .1); border-radius: 999px; padding: 1px 8px; font-size: .78rem; }
+.chip.on .fav-n { background: rgba(0, 0, 0, .18); }
+.fav-search input { width: 100%; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); color: var(--text); padding: 0 14px; font: inherit; font-size: 1rem; }
+.fav-search input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+.fav-items { list-style: none; margin: 8px 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.fav-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.fav-ava { flex: none; width: 46px; height: 46px; border-radius: 50%; overflow: hidden; background: var(--surface-2); border: 1px solid var(--gold); display: grid; place-items: center; color: var(--gold-2); font-weight: 800; font-size: 1.2rem; }
+.fav-ava img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.fav-ava.ico { border-radius: 12px; font-size: 1.5rem; }
+.fav-main { flex: 1 1 auto; min-width: 0; word-break: break-word; }
+.fav-act { flex: none; display: flex; gap: 6px; align-items: center; }
+.fav-act .btn { min-height: 44px; }
+.fav-rm { width: 44px; padding: 0; display: inline-grid; place-items: center; } .fav-rm svg { width: 22px; height: 22px; }
+.fav-empty { text-align: center; padding: 22px 16px; }
+.fav-empty-ico { width: 54px; height: 54px; margin: 0 auto 8px; color: var(--gold); opacity: .85; } .fav-empty-ico svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; }
+@media (max-width: 400px) { .fav-item { flex-wrap: wrap; } .fav-act { width: 100%; justify-content: flex-end; } }
 
 </style>
 </head>
@@ -527,7 +800,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       <a href="#/ia" data-nav="ia">Jogar contra a IA</a>
       <a href="#/academia" data-nav="academia">Academia de Aberturas</a>
       <a href="#/repertorio" data-nav="repertorio">Meu Repertório</a>
-      <a href="#/partidas" data-nav="partidas">Minhas Partidas</a>
+      <a href="#/explorador" data-nav="explorador">Explorador</a>
+      <a href="#/favoritos" data-nav="favoritos">Favoritos</a>
+    <a href="#/partidas" data-nav="partidas">Minhas Partidas</a>
       <a href="#/laboratorio" data-nav="laboratorio">Laboratório</a>
       <a href="#/backup" data-nav="backup">Backup</a>
       <a href="#/ajustes" data-nav="ajustes">Aparência e sons</a>
@@ -574,6 +849,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <p>Importe e exporte partidas em PGN, monte posições personalizadas e veja estatísticas das suas partidas.</p>
           <span class="go">Explorar ferramentas →</span>
         </a>
+        <a class="card feature relogio-card" href="#/relogio">
+          <div class="rc-mini" aria-hidden="true"><span class="rc-p b">05:00</span><span class="rc-p w">05:00</span></div>
+          <h2>Relógio de xadrez</h2>
+          <p>Para jogar no tabuleiro de verdade: dois lados, incremento e toque para passar a vez.</p>
+          <span class="go">Abrir relógio →</span>
+        </a>
       </div>
 <h2 class="home-sec">Aprender <small>Aberturas, táticas e memória</small></h2>
       <div class="cards sec-aprender">
@@ -589,6 +870,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <p id="home-rp-count">Guarde suas próprias aberturas, variantes e anotações, e treine seus lances.</p>
           <span class="go">Abrir repertório →</span>
         </a>
+<a class="card feature" href="#/explorador">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="#d4af37" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="#d4af37" stroke-width="2.4" stroke-linecap="round"/></svg>
+          <h2>Explorador</h2>
+          <p>Pesquise jogadores do Chess.com, veja estatísticas e analise as partidas deles.</p>
+          <span class="go">Pesquisar →</span>
+        </a>
       </div>
 <h2 class="home-sec">Meu espaço <small>Suas coisas, do seu jeito</small></h2>
       <div class="cards sec-meu">
@@ -596,6 +883,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <svg class="ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-r" style="--pf:#d4af37;--ps:#0d1411"/></svg>
           <h2>Minhas Partidas</h2>
           <p id="home-games-count">Suas partidas salvas ficam guardadas neste navegador.</p>
+          <span class="go">Abrir →</span>
+        </a>
+<a class="card feature" href="#/favoritos">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7l-5.4 3.1 1.2-6.1L3.3 9.5l6.1-.7z" fill="none" stroke="#d4af37" stroke-width="2" stroke-linejoin="round"/></svg>
+          <h2>Favoritos</h2>
+          <p id="home-fav-note">Aberturas, partidas e jogadores que você quer guardar.</p>
           <span class="go">Abrir →</span>
         </a>
 <a class="card feature" href="#/backup">
@@ -644,6 +937,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <div class="toolbar" role="toolbar" aria-label="Controles da partida">
             <button class="btn" id="ia-undo" type="button"><span aria-hidden="true">↶</span> Desfazer</button>
             <button class="btn" id="ia-flip" type="button"><span aria-hidden="true">⇅</span> Girar</button>
+            <button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
             <button class="btn" id="ia-restart" type="button"><span aria-hidden="true">⟲</span> Reiniciar</button>
             <button class="btn danger" id="ia-resign" type="button"><span aria-hidden="true">⚑</span> Abandonar</button>
             <button class="btn" id="ia-new" type="button"><span aria-hidden="true">＋</span> Nova partida</button>
@@ -689,6 +983,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <div class="toolbar lab-toolbar">
             <button class="btn" id="lab-ai-undo" type="button">↶ Desfazer</button>
             <button class="btn" id="lab-ai-flip" type="button">⇅ Girar</button>
+            <button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
             <button class="btn" id="lab-ai-new" type="button">＋ Nova partida</button>
             <button class="btn primary" id="lab-ai-save" type="button">✓ Salvar partida</button>
           </div>
@@ -778,6 +1073,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
             <button class="btn" id="du-pause" type="button">⏸ Pausar</button>
             <button class="btn" id="du-undo" type="button"><span aria-hidden="true">↶</span> Desfazer</button>
             <button class="btn" id="du-flip" type="button"><span aria-hidden="true">⇅</span> Girar</button>
+            <button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
             <button class="btn" id="du-menu" type="button">☰ Menu</button>
           </div>
           <div class="panel du-result" id="du-result" hidden>
@@ -803,6 +1099,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
             <button class="btn" id="livre-undo" type="button"><span aria-hidden="true">↶</span> Desfazer</button>
             <button class="btn" id="livre-redo" type="button"><span aria-hidden="true">↷</span> Refazer</button>
             <button class="btn" id="livre-flip" type="button"><span aria-hidden="true">⇅</span> Girar</button>
+            <button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
             <button class="btn" id="livre-restart" type="button"><span aria-hidden="true">⟲</span> Reiniciar</button>
             <button class="btn" id="livre-new" type="button"><span aria-hidden="true">＋</span> Nova partida</button>
             <button class="btn primary" id="livre-save" type="button"><span aria-hidden="true">✓</span> Salvar</button>
@@ -831,6 +1128,44 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           </details>
         </aside>
       </div>
+    </section>
+
+    <!-- ===================== EXPLORADOR (Chess.com) ===================== -->
+    <section id="view-explorador" class="view" hidden>
+      <div class="page-head">
+        <h1>Explorador</h1>
+        <p class="muted">Pesquise qualquer jogador do Chess.com, veja as estatísticas dele e analise as partidas públicas com o motor.</p>
+      </div>
+      <form id="ex-form" class="ex-search" role="search" autocomplete="off">
+        <input id="ex-q" type="search" inputmode="text" placeholder="Nome de usuário do Chess.com" aria-label="Nome de usuário do Chess.com" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="40" enterkeyhint="search">
+        <button class="btn primary" id="ex-go" type="submit">Pesquisar</button>
+      </form>
+      <div id="ex-me"></div>
+      <div id="ex-recent"></div>
+      <div id="ex-msg" role="status" aria-live="polite"></div>
+      <div id="ex-intro" class="panel ex-intro">
+        <h2>Como funciona</h2>
+        <p class="small">Digite um nome de usuário e o site consulta a <b>API pública oficial do Chess.com</b> direto do seu aparelho: perfil, estatísticas por modalidade e as partidas, um mês de cada vez.</p>
+        <p class="small muted">Precisa de internet. Nenhum dado fica em servidor nenhum: só os últimos nomes pesquisados ficam guardados neste navegador.</p>
+      </div>
+      <div id="ex-result" hidden></div>
+    </section>
+
+    <!-- ===================== RELÓGIO DE XADREZ ===================== -->
+    <section id="view-relogio" class="view" hidden>
+      <div id="rl-setup"></div>
+    </section>
+
+    <!-- ===================== FAVORITOS ===================== -->
+    <section id="view-favoritos" class="view" hidden>
+      <div class="page-head">
+        <h1>Favoritos</h1>
+        <p class="muted">Sua biblioteca pessoal: aberturas, partidas e jogadores que você quer estudar ou acompanhar.</p>
+      </div>
+      <div id="fav-tabs" class="fav-tabs" role="tablist" aria-label="Categorias de favoritos"></div>
+      <label class="field fav-search"><span class="sr-only">Pesquisar nos favoritos</span>
+        <input id="fav-q" type="search" placeholder="Pesquisar nos favoritos…" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Pesquisar nos favoritos"></label>
+      <div id="fav-list"></div>
     </section>
 
     <!-- ===================== ABERTURAS (lista) ===================== -->
@@ -944,6 +1279,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         <h1>Aparência e sons</h1>
         <p class="muted">Deixe o site com a sua cara. Tudo é aplicado na hora e fica salvo neste navegador.</p>
       </div>
+      <div class="panel"><h2>Tema do site</h2><div class="swatches" id="aj-theme-opts" role="radiogroup" aria-label="Tema do site"></div>
+        <p class="muted small">Automático segue o modo escuro ou claro do seu celular.</p></div>
       <div class="panel"><h2>Sons</h2><div id="aj-som"></div>
         <p class="muted small">Ouvir cada som:</p>
         <div class="snd-tests">
@@ -1025,11 +1362,14 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
 
     <!-- ===================== PARTIDA SALVA (revisão) ===================== -->
     <section id="view-partida" class="view" hidden>
-      <a class="back" href="#/partidas">← Minhas partidas</a>
+      <a class="back" id="gd-back" href="#/partidas">← Minhas partidas</a>
       <div id="game-detail"></div>
     </section>
 
   </main>
+
+  <!-- Relógio de xadrez em tela cheia (fora do <main> para cobrir tudo) -->
+  <div id="rl-play" class="rl-play" hidden></div>
 
   <!-- Menu inferior (celular) -->
   <nav class="tabbar" aria-label="Seções">
@@ -1037,10 +1377,14 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     <a href="#/livre" data-nav="livre"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-n" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Livre</span></a>
     <a href="#/ia" data-nav="ia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-k" style="--pf:currentColor;--ps:#0d1411"/></svg><span>IA</span></a>
     <a href="#/dupla" data-nav="dupla" aria-label="Dois jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7 1a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14.2c2.7.2 5 1.8 5 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dupla</span></a>
+    <a href="#/relogio" data-nav="relogio"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9.5v4.4l3 1.8M9.5 3h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Relógio</span></a>
     <a href="#/academia" data-nav="academia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-b" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Academia</span></a>
     <a href="#/repertorio" data-nav="repertorio" aria-label="Meu Repertório"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-q" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Repert.</span></a>
+    <a href="#/explorador" data-nav="explorador" aria-label="Explorador de jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Explorar</span></a>
+    <a href="#/favoritos" data-nav="favoritos"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7l-5.4 3.1 1.2-6.1L3.3 9.5l6.1-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Favoritos</span></a>
     <a href="#/partidas" data-nav="partidas"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-r" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Partidas</span></a>
     <a href="#/laboratorio" data-nav="laboratorio"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-p" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Lab</span></a>
+    <a href="#/backup" data-nav="backup" aria-label="Backup e restauração"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v10m0 0-4-4m4 4 4-4M5 15v4h14v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Backup</span></a>
     <a href="#/ajustes" data-nav="ajustes" aria-label="Aparência e sons"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10m4 0h2M4 17h2m4 0h10M14 4v6m-4 4v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Visual</span></a>
   </nav>
 
@@ -1658,7 +2002,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
 
   const NAMES = { p: 'peão', n: 'cavalo', b: 'bispo', r: 'torre', q: 'dama', k: 'rei' };
 
-  const api = { spriteMarkup, pieceHtml, NAMES };
+  const api = { spriteMarkup, pieceHtml, NAMES, symbol: (t) => SYMBOLS[t] };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else { root.XD = root.XD || {}; root.XD.Pieces = api; }
 })(typeof window !== 'undefined' ? window : globalThis);
@@ -2866,7 +3210,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   'use strict';
   const XD = root.XD = root.XD || {};
   const KEY = 'xadrez.ajustes.v1';
-  const DEFAULTS = { som: true, volume: 60, vibrar: false, tabuleiro: 'verde', pecas: 'classico', coords: true, ultimoLance: true, destinos: true, animacao: true };
+  const DEFAULTS = { tema: 'escuro', som: true, volume: 60, vibrar: false, tabuleiro: 'verde', pecas: 'classico', coords: true, ultimoLance: true, destinos: true, animacao: true };
   const BOARDS = {
     verde: ['Verde clássico', '#e8dcb5', '#4e7b5a'], madeira: ['Madeira', '#f0d9b5', '#b58863'], azul: ['Azul', '#dee3e6', '#8ca2ad'],
     marmore: ['Mármore', '#e9e9e9', '#7c7c7c'], roxo: ['Ametista', '#efe6f7', '#8a6bb1'], noite: ['Noite', '#9aa6b2', '#4a5565']
@@ -2884,7 +3228,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       o = o && typeof o === 'object' ? o : {};
       const b = (k) => (typeof o[k] === 'boolean' ? o[k] : DEFAULTS[k]);
       const vol = Number.isFinite(o.volume) ? Math.max(0, Math.min(100, Math.round(o.volume))) : DEFAULTS.volume;
-      return { som: b('som'), volume: vol, vibrar: b('vibrar'), tabuleiro: ok(o.tabuleiro, BOARDS) || DEFAULTS.tabuleiro, pecas: ok(o.pecas, PIECES) || DEFAULTS.pecas,
+      return { tema: ['escuro', 'claro', 'auto'].includes(o.tema) ? o.tema : DEFAULTS.tema, som: b('som'), volume: vol, vibrar: b('vibrar'), tabuleiro: ok(o.tabuleiro, BOARDS) || DEFAULTS.tabuleiro, pecas: ok(o.pecas, PIECES) || DEFAULTS.pecas,
         coords: b('coords'), ultimoLance: b('ultimoLance'), destinos: b('destinos'), animacao: b('animacao') };
     },
     load() {
@@ -2899,6 +3243,10 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     replaceAll(o) { this.values = this.sanitize(o); this.save(); this.apply(); },
     apply() {
       const v = this.values, h = document.documentElement;
+      const light = v.tema === 'claro' || (v.tema === 'auto' && !!(root.matchMedia && root.matchMedia('(prefers-color-scheme: light)').matches));
+      h.dataset.tema = light ? 'claro' : 'escuro';
+      const mt = document.querySelector('meta[name="theme-color"]'); if (mt) mt.setAttribute('content', light ? '#f5f2e9' : '#0d1411');
+      if (!this.mq && root.matchMedia) { try { this.mq = root.matchMedia('(prefers-color-scheme: light)'); this.mq.addEventListener('change', () => { if (this.values.tema === 'auto') this.apply(); }); } catch (e) { /* navegador antigo */ } }
       h.dataset.board = v.tabuleiro; h.dataset.pieces = v.pecas;
       h.dataset.coords = v.coords ? 'on' : 'off'; h.dataset.last = v.ultimoLance ? 'on' : 'off'; h.dataset.legal = v.destinos ? 'on' : 'off';
       if (XD.Board) XD.Board.animMs = v.animacao ? 180 : 0;
@@ -2938,7 +3286,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     play(kind) {
       this.log.push(kind); if (this.log.length > 50) this.log.shift();
       const S = Settings.values;
-      try { if (S.vibrar && navigator.vibrate) navigator.vibrate(kind === 'capture' || kind === 'check' ? [18] : kind === 'bad' ? [30, 40, 30] : 10); } catch (e) { /* ok */ }
+      try { if (S.vibrar && kind !== 'press' && kind !== 'flag' && navigator.vibrate) navigator.vibrate(kind === 'capture' || kind === 'check' ? [18] : kind === 'bad' ? [30, 40, 30] : 10); } catch (e) { /* ok */ }
       if (!S.som || S.volume <= 0) return;
       const c = this._ctx(); if (!c) return;
       if (kind === 'move' || kind === 'capture') { const now = Date.now(); if (now - this.last < 25) return; this.last = now; }
@@ -2957,6 +3305,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         case 'ok': this._tone(c, t, 660, 0.12, { type: 'triangle', vol: 0.25 }); this._tone(c, t + 0.1, 990, 0.2, { type: 'triangle', vol: 0.25 }); break;
         case 'bad': this._tone(c, t, 150, 0.2, { type: 'square', vol: 0.12 }); this._tone(c, t + 0.1, 120, 0.22, { type: 'square', vol: 0.1 }); break;
         case 'start': this._knock(c, t, { f: 1400, dur: 0.04, vol: 0.4, thump: 200 }); this._knock(c, t + 0.1, { f: 1700, dur: 0.045, vol: 0.5, thump: 190 }); break;
+        case 'press': this._knock(c, t, { f: 2300, dur: 0.035, vol: 1, thump: 260 }); this._knock(c, t + 0.008, { f: 1300, dur: 0.05, vol: 0.9, thump: 150 }); this._tone(c, t, 1900, 0.04, { type: 'square', vol: 0.18 }); break;
+        case 'flag': [0, 0.2, 0.4].forEach((d) => this._tone(c, t + d, 1000, 0.16, { type: 'square', vol: 0.16 })); this._tone(c, t + 0.62, 700, 0.5, { type: 'square', vol: 0.16 }); break;
         default: this._tone(c, t, 660, 0.15, { vol: 0.25 });
       }
     }
@@ -4165,7 +4515,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (back) { back.setAttribute('href', o.eco ? '#/academia/catalogo' : '#/academia'); back.textContent = o.eco ? '← Catálogo completo' : '← Todas as aberturas da academia'; }
       $('ac-detail').innerHTML = `
         <div class="page-head">
-          <h1>${esc(o.nome)}</h1>
+          <div class="fav-row"><h1>${esc(o.nome)}</h1>${XD.Favoritos ? XD.Favoritos.starHtml('abertura', o.id, { titulo: o.nome, sub: [o.eco ? 'ECO ' + o.eco : '', o.catLabel || D.CATEGORIAS[o.categoria] || ''].filter(Boolean).join(' · ') }) : ''}</div>
           <p>${tagHtml(o)}<span class="muted small">${esc(o.catLabel || D.CATEGORIAS[o.categoria])}</span></p>${o.extraHead || (XD.Catalogo ? XD.Catalogo.linkFor(o.id) : '')}
         </div>
         <div class="mode-tabs" role="tablist" aria-label="Modo">
@@ -4183,7 +4533,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
                 </div>
                 <div class="row" style="justify-content:center">
                   <button class="btn" type="button" data-act="reset">⟲ Reiniciar sequência</button>
-                  <button class="btn" id="ac-flip" type="button">⇅ Girar</button>
+                  <button class="btn" id="ac-flip" type="button">⇅ Girar</button><button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
                   <button class="btn primary" id="ac-free" type="button">Analisar no Modo Livre</button>
                 </div>
               </div>
@@ -4355,7 +4705,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         <div class="toolbar">
           <button class="btn" id="ac-hint" type="button"${tr.done || tr.busy ? ' disabled' : ''}>💡 Dica</button>
           <button class="btn" id="ac-show" type="button"${tr.done || tr.busy ? ' disabled' : ''}>👁 Mostrar lance</button>
-          <button class="btn" id="ac-flip2" type="button">⇅ Girar</button>
+          <button class="btn" id="ac-flip2" type="button">⇅ Girar</button><button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
           <button class="btn" id="ac-retry" type="button">⟲ Recomeçar</button>
           <button class="btn" id="ac-side" type="button">Trocar de lado</button>
         </div></div>`;
@@ -4718,7 +5068,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <div class="board-col">
             <div id="rp-board"></div>
             <div id="rp-study"><div id="rp-nav">${XD.navRowHtml()}
-              <div class="row" style="justify-content:center"><button class="btn" id="rp-flip" type="button">⇅ Girar</button></div></div></div>
+              <div class="row" style="justify-content:center"><button class="btn" id="rp-flip" type="button">⇅ Girar</button><button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button></div></div></div>
             <div id="rp-train" hidden></div>
           </div>
           <aside class="side-col">
@@ -5149,6 +5499,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     },
     render() {
       const v = S().values;
+      const TEMAS = [['escuro', 'Escuro', '#0d1411', '#d4af37'], ['claro', 'Claro', '#f5f2e9', '#b98a0c'], ['auto', 'Automático', 'linear-gradient(135deg,#0d1411 50%,#f5f2e9 50%)', '#d4af37']];
+      $('aj-theme-opts').innerHTML = TEMAS.map(([k, nome, bg, ac]) => `<button class="swatch" data-aj-tema="${k}" role="radio" aria-checked="${v.tema === k}" type="button"><span class="tema-mini" style="background:${bg};border-color:${ac}"><i style="background:${ac}"></i></span>${esc(nome)}</button>`).join('');
+      document.querySelectorAll('[data-aj-tema]').forEach((b) => b.addEventListener('click', () => { S().set('tema', b.dataset.ajTema); this.mark('[data-aj-tema]', b); }));
       $('aj-som').innerHTML = this.toggleHtml('aj-t-som', 'Efeitos sonoros', 'Sons dos lances, capturas, xeque e fim de partida.', v.som) +
         `<div class="set-row" style="display:block"><b>Volume: <span id="aj-vol-n">${v.volume}</span>%</b>
           <input class="set-range" id="aj-vol" type="range" min="0" max="100" step="5" value="${v.volume}" aria-label="Volume"></div>` +
@@ -5436,6 +5789,571 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
 
 </script>
   <script>
+/*
+ * relogio.js — Relógio de xadrez para jogar no tabuleiro de verdade (fora do celular).
+ * ClockCore: lógica pura do relógio (sem tela), testável em Node. O resto é a interface.
+ * Regras: o 1º toque (parado) inicia o relógio do ADVERSÁRIO; depois, tocar no próprio lado passa a vez
+ * (soma o incremento, estilo Fischer, a quem acabou de jogar). Quem chega a zero perde no tempo.
+ * O tempo é medido por carimbos de hora (não por "ticks"), então não atrasa se a tela travar um pouco.
+ */
+(function (root) {
+  'use strict';
+  const KEY = 'xadrez.relogio.v1';
+  const PRESETS = [
+    { id: '1+0', min: 1, inc: 0, grp: 'Bullet' }, { id: '1+1', min: 1, inc: 1, grp: 'Bullet' }, { id: '2+1', min: 2, inc: 1, grp: 'Bullet' },
+    { id: '3+0', min: 3, inc: 0, grp: 'Blitz' }, { id: '3+2', min: 3, inc: 2, grp: 'Blitz' }, { id: '5+0', min: 5, inc: 0, grp: 'Blitz' }, { id: '5+3', min: 5, inc: 3, grp: 'Blitz' },
+    { id: '10+0', min: 10, inc: 0, grp: 'Rapid' }, { id: '10+5', min: 10, inc: 5, grp: 'Rapid' }, { id: '15+10', min: 15, inc: 10, grp: 'Rapid' }, { id: '30+0', min: 30, inc: 0, grp: 'Rapid' }
+  ];
+  const DEF = { id: '5+3', cmin: 20, cinc: 0, som: true, espelhar: true, tela: true };
+  const pad = (n) => String(n).padStart(2, '0');
+
+  /** Tempo para exibir: mm:ss (h:mm:ss se passar de 1 h); abaixo de 20 s mostra décimos (19.9). */
+  function fmt(ms) {
+    ms = Math.max(0, ms);
+    if (ms < 20000) { const d = Math.ceil(ms / 100); return Math.floor(d / 10) + '.' + (d % 10); }
+    const s = Math.ceil(ms / 1000), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
+    return h ? `${h}:${pad(m)}:${pad(s % 60)}` : `${pad(m)}:${pad(s % 60)}`;
+  }
+
+  /** Configuração (min, inc) a partir do que está salvo/escolhido. Valida limites. */
+  function control(cfg) {
+    const p = PRESETS.find((x) => x.id === cfg.id);
+    if (p) return { min: p.min, inc: p.inc };
+    const min = Math.min(180, Math.max(1, Math.round(+cfg.cmin) || 1)), inc = Math.min(60, Math.max(0, Math.round(+cfg.cinc) || 0));
+    return { min, inc };
+  }
+  const label = (c) => `${c.min} min${c.inc ? ' + ' + c.inc + ' s' : ''}`;
+
+  /* ------------------------------------------------------------------ lógica pura */
+  class ClockCore {
+    constructor(min, inc) { this.base = min * 60000; this.inc = inc * 1000; this.reset(); }
+    reset() { this.t = { w: this.base, b: this.base }; this.moves = { w: 0, b: 0 }; this.state = 'ready'; this.turn = null; this.last = 0; this.loser = null; }
+    /** Gasta o tempo de quem está jogando. Devolve a cor que estourou o tempo (ou null). */
+    tick(now) {
+      if (this.state !== 'running') return null;
+      const dt = Math.max(0, now - this.last); this.last = now;
+      this.t[this.turn] -= dt;
+      if (this.t[this.turn] <= 0) { this.t[this.turn] = 0; this.state = 'over'; this.loser = this.turn; return this.loser; }
+      return null;
+    }
+    /** `side` tocou no próprio lado. Devolve true se o toque valeu. */
+    press(side, now) {
+      if (this.state === 'ready') { this.turn = side === 'w' ? 'b' : 'w'; this.state = 'running'; this.last = now; return true; }
+      if (this.state !== 'running' || side !== this.turn) return false;
+      this.tick(now); if (this.state === 'over') return false;
+      this.t[side] += this.inc; this.moves[side]++; this.turn = side === 'w' ? 'b' : 'w';
+      return true;
+    }
+    pause(now) { if (this.state !== 'running') return false; this.tick(now); if (this.state === 'running') this.state = 'paused'; return this.state === 'paused'; }
+    resume(now) { if (this.state !== 'paused') return false; this.state = 'running'; this.last = now; return true; }
+  }
+
+  const api = { ClockCore, fmt, control, label, PRESETS, DEF };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ------------------------------------------------------------------ interface */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s == null ? '' : String(s));
+  const ICON = {
+    pause: '<path d="M8 5v14M16 5v14" stroke-width="3.2" stroke-linecap="round"/>',
+    play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
+    restart: '<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5" stroke-linecap="round" stroke-linejoin="round"/>',
+    on: '<path d="M4 9v6h4l5 4V5L8 9z" stroke-linejoin="round"/><path d="M16.5 9a4 4 0 0 1 0 6" stroke-linecap="round"/>',
+    off: '<path d="M4 9v6h4l5 4V5L8 9z" stroke-linejoin="round"/><path d="m17 9 4 6m0-6-4 6" stroke-linecap="round"/>',
+    exit: '<path d="M6 6l12 12M18 6 6 18" stroke-width="2.6" stroke-linecap="round"/>',
+    fs: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" stroke-linecap="round" stroke-linejoin="round"/>'
+  };
+  const svg = (k) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2">${ICON[k]}</svg>`;
+  const NAMES = { w: 'Brancas', b: 'Pretas' };
+
+  const Relogio = {
+    ready: false, cfg: Object.assign({}, DEF), core: null, iv: null, wake: null, shown: {},
+
+    /* -------------------------------------------------- configuração salva */
+    load() {
+      let o = null; try { o = JSON.parse(localStorage.getItem(KEY)); } catch (e) { o = null; }
+      const c = Object.assign({}, DEF);
+      if (o && typeof o === 'object') {
+        if (typeof o.id === 'string' && (o.id === 'custom' || PRESETS.some((p) => p.id === o.id))) c.id = o.id;
+        if (Number.isFinite(o.cmin)) c.cmin = Math.min(180, Math.max(1, Math.round(o.cmin)));
+        if (Number.isFinite(o.cinc)) c.cinc = Math.min(60, Math.max(0, Math.round(o.cinc)));
+        for (const k of ['som', 'espelhar', 'tela']) if (typeof o[k] === 'boolean') c[k] = o[k];
+      }
+      this.cfg = c;
+    },
+    save() { try { localStorage.setItem(KEY, JSON.stringify(this.cfg)); } catch (e) { /* sem espaço: segue sem salvar */ } },
+
+    init() {
+      if (this.ready) return; this.ready = true; this.load();
+      const play = $('rl-play');
+      play.addEventListener('pointerdown', (e) => { const s = e.target.closest('.rl-side'); if (s) { e.preventDefault(); this.tap(s.dataset.side); } });
+      play.addEventListener('click', (e) => {
+        const s = e.target.closest('.rl-side'); if (s && e.detail === 0) this.tap(s.dataset.side);   // teclado/leitor de tela
+        if (e.target.closest('#rl-pause')) this.togglePause();
+        else if (e.target.closest('#rl-restart')) this.restart();
+        else if (e.target.closest('#rl-snd')) { this.cfg.som = !this.cfg.som; this.save(); this.render(); }
+        else if (e.target.closest('#rl-fs')) this.fullscreen();
+        else if (e.target.closest('#rl-exit')) XD.go('#/relogio');
+      });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) { this.render(); if (this.core && this.core.state === 'running') this.keepAwake(); } });
+    },
+
+    /* -------------------------------------------------- entrada / saída */
+    enter(sub) {
+      this.init();
+      if (sub === 'jogo') {
+        if (!this.core) { XD.go('#/relogio'); return; }
+        this.buildPlay(); $('rl-play').hidden = false; document.body.classList.add('rl-open');
+        if (this.core.state === 'running') { this.startTimer(); }
+        this.render(); return;
+      }
+      this.renderSetup();
+    },
+    leave() {
+      if (!this.ready) return;
+      if (this.core && this.core.state === 'running') this.core.pause(performance.now());
+      this.stopTimer(); this.shown = {};
+      $('rl-play').hidden = true; document.body.classList.remove('rl-open');
+      try { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); } catch (e) { /* ok */ }
+    },
+
+    /* -------------------------------------------------- tela de ajustes */
+    renderSetup() {
+      const c = this.cfg, ctl = control(c), box = $('rl-setup');
+      const grp = (g) => `<div class="rl-grp"><h3>${g}</h3><div class="rl-presets">${PRESETS.filter((p) => p.grp === g).map((p) => `<button class="rl-pre${c.id === p.id ? ' on' : ''}" type="button" data-pre="${p.id}" aria-pressed="${c.id === p.id}"><b>${p.min}${p.inc ? '+' + p.inc : ''}</b><small>${label(p)}</small></button>`).join('')}</div></div>`;
+      const opt = (k, t, d) => `<label class="rl-opt"><input type="checkbox" data-opt="${k}"${c[k] ? ' checked' : ''}><span><b>${t}</b><small>${d}</small></span></label>`;
+      const cont = this.core && (this.core.state === 'running' || this.core.state === 'paused')
+        ? `<div class="panel rl-cont fade-in"><div><b>Partida em andamento</b><div class="small muted">${fmt(this.core.t.w)} (Brancas) · ${fmt(this.core.t.b)} (Pretas) · pausada</div></div><a class="btn primary" href="#/relogio/jogo">Continuar</a></div>` : '';
+      box.innerHTML = `<div class="page-head"><h1>Relógio de xadrez</h1><p class="muted">Para jogar num tabuleiro de verdade: deixe o celular entre vocês e toque no seu lado depois de cada lance.</p></div>
+        ${cont}
+        <div class="rl-preview" aria-hidden="true"><div class="rl-pv b">${fmt(ctl.min * 60000)}</div><div class="rl-pv w">${fmt(ctl.min * 60000)}</div></div>
+        <p class="rl-sum" id="rl-sum">Cada jogador: <b>${label(ctl)}</b>${ctl.inc ? ' (o incremento é somado a cada lance)' : ''}</p>
+        ${['Bullet', 'Blitz', 'Rapid'].map(grp).join('')}
+        <div class="rl-grp"><h3>Personalizado</h3>
+          <button class="rl-pre wide${c.id === 'custom' ? ' on' : ''}" type="button" data-pre="custom" aria-pressed="${c.id === 'custom'}"><b>Escolher o meu tempo</b></button>
+          <div class="rl-custom" id="rl-custom"${c.id === 'custom' ? '' : ' hidden'}>
+            <label class="field"><span>Minutos por jogador (1–180)</span><input id="rl-cmin" type="number" inputmode="numeric" min="1" max="180" value="${c.cmin}"></label>
+            <label class="field"><span>Incremento por lance, em segundos (0–60)</span><input id="rl-cinc" type="number" inputmode="numeric" min="0" max="60" value="${c.cinc}"></label></div></div>
+        <div class="rl-grp"><h3>Opções</h3>
+          ${opt('espelhar', 'Girar o lado de cima', 'Quem joga de pretas lê o relógio de frente (jogo frente a frente).')}
+          ${opt('som', 'Som', 'Clique ao passar a vez e alarme no fim. Segue o volume de Aparência e sons.')}
+          ${opt('tela', 'Manter a tela ligada', 'Evita que o celular apague durante a partida.')}</div>
+        <button class="btn primary rl-start" id="rl-start" type="button">Iniciar relógio</button>
+        <p class="small muted rl-note">O relógio só começa a contar no primeiro toque. Nada é enviado para fora do seu aparelho.</p>`;
+      const upd = () => { const k = control(this.cfg); $('rl-sum').innerHTML = `Cada jogador: <b>${label(k)}</b>${k.inc ? ' (o incremento é somado a cada lance)' : ''}`; box.querySelectorAll('.rl-pv').forEach((el) => { el.textContent = fmt(k.min * 60000); }); };
+      box.querySelectorAll('[data-pre]').forEach((b) => b.addEventListener('click', () => {
+        this.cfg.id = b.dataset.pre; this.save();
+        box.querySelectorAll('[data-pre]').forEach((x) => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); });
+        $('rl-custom').hidden = this.cfg.id !== 'custom'; upd();
+      }));
+      const num = (id, key, lo, hi) => $(id).addEventListener('input', (e) => { const v = Math.round(+e.target.value); if (Number.isFinite(v) && e.target.value !== '') { this.cfg[key] = Math.min(hi, Math.max(lo, v)); this.save(); upd(); } });
+      num('rl-cmin', 'cmin', 1, 180); num('rl-cinc', 'cinc', 0, 60);
+      box.querySelectorAll('[data-opt]').forEach((i) => i.addEventListener('change', () => { this.cfg[i.dataset.opt] = i.checked; this.save(); }));
+      $('rl-start').addEventListener('click', () => {
+        const k = control(this.cfg); this.stopTimer(); this.core = new ClockCore(k.min, k.inc);
+        XD.go('#/relogio/jogo');
+      });
+    },
+
+    /* -------------------------------------------------- tela do relógio */
+    buildPlay() {
+      const inc = this.core.inc / 1000, side = (c) => `<button class="rl-side ${c}" type="button" data-side="${c}" aria-label="Relógio das ${NAMES[c]}. Toque para passar a vez.">
+        <span class="rl-name">${NAMES[c]}</span><span class="rl-time" data-t="${c}"></span>
+        <span class="rl-info"><span data-m="${c}">0</span> lances${inc ? ' · +' + inc + ' s' : ''}</span><span class="rl-msg" data-msg="${c}"></span></button>`;
+      $('rl-play').innerHTML = `${side('b')}<div class="rl-bar"><p class="rl-hint" id="rl-hint" role="status" aria-live="polite"></p><div class="rl-btns">
+        <button class="rl-btn" id="rl-pause" type="button" aria-label="Pausar"></button>
+        <button class="rl-btn" id="rl-restart" type="button" aria-label="Reiniciar o relógio">${svg('restart')}</button>
+        <button class="rl-btn" id="rl-snd" type="button"></button>
+        <button class="rl-btn" id="rl-fs" type="button" aria-label="Tela cheia"${document.documentElement.requestFullscreen ? '' : ' hidden'}>${svg('fs')}</button>
+        <button class="rl-btn" id="rl-exit" type="button" aria-label="Sair do relógio">${svg('exit')}</button></div></div>${side('w')}`;
+      $('rl-play').classList.toggle('mirror', !!this.cfg.espelhar); this.shown = {};
+    },
+
+    set(el, key, val) { if (!el) return; if (this.shown[key] !== val) { this.shown[key] = val; el.textContent = val; } },
+
+    /** Só os números (chamado a cada 100 ms). */
+    renderTimes() {
+      const c = this.core; if (!c) return;
+      for (const s of ['w', 'b']) {
+        const el = document.querySelector(`.rl-time[data-t="${s}"]`); if (!el) continue;
+        this.set(el, 't' + s, fmt(c.t[s]));
+        const side = el.closest('.rl-side'), low = c.state !== 'ready' && c.t[s] <= 20000, crit = c.t[s] <= 10000 && c.state !== 'ready';
+        side.classList.toggle('low', low && !crit); side.classList.toggle('crit', crit && c.state !== 'over');
+      }
+    },
+
+    render() {
+      const c = this.core, root = $('rl-play'); if (!c || root.hidden) return;
+      root.dataset.state = c.state;
+      for (const s of ['w', 'b']) {
+        const side = root.querySelector(`.rl-side.${s}`);
+        side.classList.toggle('run', c.state === 'running' && c.turn === s);
+        side.classList.toggle('flag', c.state === 'over' && c.loser === s);
+        side.classList.toggle('win', c.state === 'over' && c.loser !== s);
+        this.set(root.querySelector(`[data-m="${s}"]`), 'm' + s, String(c.moves[s]));
+        this.set(root.querySelector(`[data-msg="${s}"]`), 'g' + s, c.state === 'over' ? (c.loser === s ? 'Tempo esgotado' : 'Venceu no tempo') : '');
+      }
+      this.renderTimes();
+      const hint = { ready: 'Toque no seu lado para iniciar o relógio do adversário.', running: `Vez das ${NAMES[c.turn]}. Toque no seu lado depois de jogar.`, paused: 'Relógio pausado.', over: `Fim de jogo: ${NAMES[c.loser]} perdeu no tempo.` }[c.state];
+      this.set($('rl-hint'), 'hint', hint);
+      const p = $('rl-pause'); p.innerHTML = svg(c.state === 'paused' ? 'play' : 'pause'); p.disabled = c.state === 'ready' || c.state === 'over';
+      p.setAttribute('aria-label', c.state === 'paused' ? 'Continuar' : 'Pausar'); p.classList.toggle('hot', c.state === 'paused');
+      const sn = $('rl-snd'); sn.innerHTML = svg(this.cfg.som ? 'on' : 'off'); sn.setAttribute('aria-label', this.cfg.som ? 'Desligar o som' : 'Ligar o som'); sn.setAttribute('aria-pressed', String(!!this.cfg.som));
+    },
+
+    /* -------------------------------------------------- ações */
+    feel(kind) {
+      try { if (this.cfg.som && XD.Sound) XD.Sound.play(kind); } catch (e) { /* ok */ }
+    },
+    tap(side) {
+      const c = this.core; if (!c) return;
+      const was = c.state, ok = c.press(side, performance.now());
+      if (c.state === 'over') { this.flagged(); return; }
+      if (!ok) return;                                  // lado errado ou pausado: ignora (nada acontece)
+      this.feel('press');
+      if (was === 'ready') this.startTimer();
+      this.render();
+    },
+    onTick() {
+      const c = this.core; if (!c) return;
+      if (c.tick(performance.now())) this.flagged(); else this.renderTimes();
+    },
+    flagged() { this.stopTimer(); this.feel('flag'); this.render(); },
+    togglePause() {
+      const c = this.core; if (!c) return;
+      if (c.state === 'running') { c.pause(performance.now()); this.stopTimer(); }
+      else if (c.state === 'paused') { c.resume(performance.now()); this.startTimer(); }
+      this.render();
+    },
+    async restart() {
+      const c = this.core; if (!c) return;
+      if ((c.state === 'running' || c.state === 'paused') && !(await XD.ui.confirmBox('Reiniciar o relógio?', 'O tempo volta ao valor inicial e a partida atual é descartada.', 'Reiniciar', true))) return;
+      this.stopTimer(); c.reset(); this.shown = {}; this.render();
+    },
+    fullscreen() {
+      try { if (document.fullscreenElement) document.exitFullscreen(); else $('rl-play').requestFullscreen(); } catch (e) { /* sem suporte */ }
+    },
+
+    startTimer() { if (this.iv) return; this.iv = setInterval(() => this.onTick(), 100); this.keepAwake(); },
+    stopTimer() { if (this.iv) { clearInterval(this.iv); this.iv = null; } this.release(); },
+    async keepAwake() {
+      if (!this.cfg.tela || this.wake) return;
+      try { if (navigator.wakeLock) { this.wake = await navigator.wakeLock.request('screen'); this.wake.addEventListener('release', () => { this.wake = null; }); } } catch (e) { this.wake = null; }
+    },
+    release() { try { if (this.wake) { this.wake.release(); } } catch (e) { /* ok */ } this.wake = null; }
+  };
+
+  XD.Relogio = Relogio;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * imagem.js — "Foto da posição": gera uma imagem PNG do tabuleiro que está na tela (com as suas cores e peças),
+ * para salvar, compartilhar (WhatsApp etc.) ou copiar. Lê a posição direto do tabuleiro visível, então funciona
+ * igual em qualquer tela (Livre, IA, Dupla, Partidas, Academia…). Tudo é desenhado no próprio aparelho.
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const S = 1080, PAD = 36, FILES = 'abcdefgh';
+  const FILE = 'meu-xadrez-posicao.png';
+
+  /** Posição, orientação e destaques lidos do tabuleiro (elemento .board) que está na tela. */
+  function readBoard(el) {
+    const sqs = [...el.querySelectorAll('.sq')]; if (sqs.length !== 64) return null;
+    const pieces = {}, last = []; let check = null;
+    for (const d of sqs) {
+      const pc = d.querySelector('svg.piece'), use = pc && pc.querySelector('use');
+      if (pc && use) pieces[d.dataset.sq] = { c: pc.classList.contains('b') ? 'b' : 'w', t: (use.getAttribute('href') || '').replace('#pc-', '') };
+      if (d.classList.contains('last')) last.push(d.dataset.sq);
+      if (d.classList.contains('check')) check = d.dataset.sq;
+    }
+    const sd = XD.Setas ? XD.Setas.get(el) : { arrows: [], marks: [] };
+    return { pieces, last, check, orientation: sqs[0].dataset.sq === 'a8' ? 'w' : 'b', arrows: sd.arrows, marks: sd.marks };
+  }
+
+  /** Cores atuais das peças e do tabuleiro (as escolhidas em Aparência e sons). */
+  function theme() {
+    const cs = (cls) => { const e = document.createElement('div'); e.className = 'piece ' + cls; e.style.cssText = 'position:absolute;width:0;height:0;visibility:hidden'; document.body.appendChild(e); const g = getComputedStyle(e); const r = { f: g.getPropertyValue('--pf').trim(), s: g.getPropertyValue('--ps').trim() }; e.remove(); return r; };
+    const st = XD.Settings ? XD.Settings.values : {}, B = (XD.Settings && XD.Settings.BOARDS[st.tabuleiro]) || ['', '#e8dcb5', '#4e7b5a'];
+    return { w: cs('w'), b: cs('b'), light: B[1], dark: B[2] };
+  }
+
+  const imgCache = {};
+  function pieceImage(color, type, th) {
+    const c = th[color], key = color + type + c.f + c.s;
+    if (imgCache[key]) return imgCache[key];
+    const inner = XD.Pieces.symbol(type).replace(/var\(--ps\)/g, c.s);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><style>.pf{fill:${c.f};stroke:${c.s};stroke-width:3.2;stroke-linejoin:round}.pd{fill:none;stroke:${c.s};stroke-width:2.6;stroke-linecap:round}</style>${inner}</svg>`;
+    return (imgCache[key] = new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('Não consegui desenhar as peças.')); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg); }));
+  }
+
+  /** Desenha a imagem. opts: { flip, coords, last, caption, brand }. Devolve o <canvas>. */
+  async function draw(pos, opts) {
+    opts = Object.assign({ flip: false, coords: true, last: true, caption: '', brand: false }, opts);
+    const th = theme(), ori = opts.flip ? (pos.orientation === 'w' ? 'b' : 'w') : pos.orientation;
+    const cap = opts.caption.trim(), foot = cap || opts.brand ? 110 : 0, W = S + PAD * 2, H = S + PAD * 2 + foot, q = S / 8;
+    const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const g = cv.getContext('2d');
+    g.fillStyle = '#0d1411'; g.fillRect(0, 0, W, H);
+    g.save(); g.beginPath(); (g.roundRect ? g.roundRect(PAD, PAD, S, S, 18) : g.rect(PAD, PAD, S, S)); g.clip();
+    const imgs = {};
+    await Promise.all(Object.values(pos.pieces).map(async (p) => { imgs[p.c + p.t] = await pieceImage(p.c, p.t, th); }));
+    for (let r = 0; r < 8; r++) for (let f = 0; f < 8; f++) {
+      const file = ori === 'w' ? f : 7 - f, rank = ori === 'w' ? 8 - r : r + 1, name = FILES[file] + rank, x = PAD + f * q, y = PAD + r * q;
+      const darkSq = (file + rank) % 2 === 1;
+      g.fillStyle = darkSq ? th.dark : th.light; g.fillRect(x, y, q, q);
+      const mk = (pos.marks || []).find((m) => m.sq === name); if (mk) { g.globalAlpha = .55; g.fillStyle = XD.Setas.COLORS[mk.color]; g.fillRect(x, y, q, q); g.globalAlpha = 1; }
+      if (opts.last && pos.last.includes(name)) { g.fillStyle = 'rgba(255, 213, 79, .5)'; g.fillRect(x, y, q, q); }
+      if (opts.last && pos.check === name) { const gr = g.createRadialGradient(x + q / 2, y + q / 2, 4, x + q / 2, y + q / 2, q * .62); gr.addColorStop(0, 'rgba(230,50,40,.85)'); gr.addColorStop(1, 'rgba(230,50,40,0)'); g.fillStyle = gr; g.fillRect(x, y, q, q); }
+      if (opts.coords) {
+        g.font = `700 ${Math.round(q * .17)}px system-ui, sans-serif`; g.fillStyle = darkSq ? th.light : th.dark; g.globalAlpha = .9;
+        if (f === 0) { g.textAlign = 'left'; g.textBaseline = 'top'; g.fillText(String(rank), x + q * .06, y + q * .05); }
+        if (r === 7) { g.textAlign = 'right'; g.textBaseline = 'alphabetic'; g.fillText(FILES[file], x + q * .94, y + q * .95); }
+        g.globalAlpha = 1;
+      }
+      const p = pos.pieces[name];
+      if (p) { const s = q * .96; g.save(); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = q * .05; g.shadowOffsetY = q * .02; g.drawImage(imgs[p.c + p.t], x + (q - s) / 2, y + (q - s) / 2, s, s); g.restore(); }
+    }
+    for (const a of pos.arrows || []) {                                    // setas desenhadas por cima das peças
+      const o = ori, c = (sq) => XD.Setas.center(sq, o), ge = XD.Setas.geom(c(a.from), c(a.to)), col = XD.Setas.COLORS[a.color], X = (v) => PAD + v * q;
+      g.save(); g.globalAlpha = .82; g.strokeStyle = col; g.fillStyle = col; g.lineCap = 'round'; g.lineWidth = .17 * q;
+      g.beginPath(); g.moveTo(X(ge.x1), X(ge.y1)); g.lineTo(X(ge.x2), X(ge.y2)); g.stroke();
+      g.beginPath(); g.moveTo(X(ge.tip[0]), X(ge.tip[1])); g.lineTo(X(ge.l[0]), X(ge.l[1])); g.lineTo(X(ge.r[0]), X(ge.r[1])); g.closePath(); g.fill(); g.restore();
+    }
+    g.restore();
+    g.strokeStyle = 'rgba(212,175,55,.55)'; g.lineWidth = 3; (g.roundRect ? (g.beginPath(), g.roundRect(PAD, PAD, S, S, 18), g.stroke()) : g.strokeRect(PAD, PAD, S, S));
+    if (foot) {
+      g.textAlign = 'center'; g.textBaseline = 'middle';
+      if (cap) { g.fillStyle = '#f1ede0'; let fs = 46; g.font = `700 ${fs}px system-ui, sans-serif`; while (g.measureText(cap).width > S && fs > 24) { fs -= 2; g.font = `700 ${fs}px system-ui, sans-serif`; } g.fillText(cap, W / 2, PAD + S + (opts.brand ? 42 : 55)); }
+      if (opts.brand) { g.fillStyle = '#d4af37'; g.font = `600 ${cap ? 30 : 36}px Georgia, serif`; g.fillText('♞ Meu Xadrez Plus', W / 2, PAD + S + (cap ? 88 : 55)); }
+    }
+    return cv;
+  }
+
+  const toBlob = (cv) => new Promise((res, rej) => cv.toBlob((b) => (b ? res(b) : rej(new Error('Não consegui gerar a imagem.'))), 'image/png'));
+
+  /** O tabuleiro visível mais próximo do botão. */
+  function boardFor(btn) {
+    for (let e = btn.parentElement; e; e = e.parentElement) {
+      const b = [...e.querySelectorAll('.board')].find((x) => x.offsetParent !== null || x.getClientRects().length);
+      if (b) return b;
+    }
+    return null;
+  }
+
+  const Imagem = {
+    readBoard, draw, toBlob, boardFor,
+    pref: { coords: true, last: true, brand: false },
+
+    async open(boardEl) {
+      const pos = readBoard(boardEl);
+      if (!pos) { XD.ui.toast('Não encontrei um tabuleiro para fotografar.', 'erro'); return; }
+      const st = { flip: false, coords: this.pref.coords, last: this.pref.last, brand: this.pref.brand, caption: '' };
+      let url = null, blob = null, seq = 0;
+      await XD.ui.modal((box, done) => {
+        const can = !!(navigator.canShare && navigator.share), canCopy = !!(navigator.clipboard && root.ClipboardItem);
+        box.classList.add('foto-modal');
+        box.innerHTML = `<h3>Foto da posição</h3>
+          <div class="foto-prev"><img id="foto-img" alt="Pré-visualização da posição" width="400" height="400"><span class="foto-wait" id="foto-wait">Gerando…</span></div>
+          <label class="field"><span>Legenda (opcional)</span><input id="foto-cap" type="text" maxlength="60" placeholder="Ex.: Brancas jogam e ganham" autocomplete="off"></label>
+          <div class="foto-opts">
+            <label><input type="checkbox" data-o="flip"> Virar o tabuleiro</label>
+            <label><input type="checkbox" data-o="coords"${st.coords ? ' checked' : ''}> Coordenadas</label>
+            <label><input type="checkbox" data-o="last"${st.last ? ' checked' : ''}> Último lance e xeque</label>
+            <label><input type="checkbox" data-o="brand"${st.brand ? ' checked' : ''}> Assinatura Meu Xadrez Plus</label></div>
+          <div class="modal-actions foto-act">
+            ${can ? '<button class="btn primary" id="foto-share" type="button">Compartilhar</button>' : ''}
+            <button class="btn ${can ? '' : 'primary'}" id="foto-save" type="button">Salvar imagem</button>
+            ${canCopy ? '<button class="btn" id="foto-copy" type="button">Copiar</button>' : ''}
+            <button class="btn" id="foto-close" type="button">Fechar</button></div>`;
+        const img = box.querySelector('#foto-img'), wait = box.querySelector('#foto-wait');
+        const regen = async () => {
+          const my = ++seq; wait.hidden = false;
+          try {
+            const b = await toBlob(await draw(pos, st)); if (my !== seq) return;
+            blob = b; if (url) URL.revokeObjectURL(url); url = URL.createObjectURL(b); img.src = url; wait.hidden = true;
+          } catch (e) { wait.hidden = false; wait.textContent = e.message; }
+        };
+        box.querySelectorAll('[data-o]').forEach((i) => i.addEventListener('change', () => { st[i.dataset.o] = i.checked; if (i.dataset.o !== 'flip') this.pref[i.dataset.o] = i.checked; regen(); }));
+        let tmr = null; box.querySelector('#foto-cap').addEventListener('input', (e) => { st.caption = e.target.value; clearTimeout(tmr); tmr = setTimeout(regen, 250); });
+        const file = () => new File([blob], FILE, { type: 'image/png' });
+        const sh = box.querySelector('#foto-share'); if (sh) sh.addEventListener('click', async () => {
+          if (!blob) return; const f = file();
+          try { if (navigator.canShare({ files: [f] })) await navigator.share({ files: [f], title: 'Posição de xadrez' }); else XD.ui.toast('Este aparelho não consegue compartilhar a imagem. Use "Salvar imagem".', 'erro'); }
+          catch (e) { if (e && e.name !== 'AbortError') XD.ui.toast('Não consegui compartilhar. Use "Salvar imagem".', 'erro'); }
+        });
+        box.querySelector('#foto-save').addEventListener('click', () => {
+          if (!blob) return; const a = document.createElement('a'); a.href = url; a.download = FILE; document.body.appendChild(a); a.click(); a.remove();
+          XD.ui.toast('Imagem salva (veja em Downloads).', 'ok');
+        });
+        const cp = box.querySelector('#foto-copy'); if (cp) cp.addEventListener('click', async () => {
+          if (!blob) return; try { await navigator.clipboard.write([new root.ClipboardItem({ 'image/png': blob })]); XD.ui.toast('Imagem copiada.', 'ok'); } catch (e) { XD.ui.toast('Não consegui copiar. Use "Salvar imagem".', 'erro'); }
+        });
+        box.querySelector('#foto-close').addEventListener('click', () => done(null));
+        regen();
+      });
+      if (url) URL.revokeObjectURL(url);
+    },
+
+    init() {
+      if (this.bound) return; this.bound = true;
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest && e.target.closest('[data-foto]'); if (!b) return;
+        e.preventDefault(); const el = boardFor(b);
+        if (!el) { XD.ui.toast('Não encontrei um tabuleiro para fotografar.', 'erro'); return; }
+        this.open(el);
+      });
+    }
+  };
+  XD.Imagem = Imagem; Imagem.init();
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * setas.js — Desenhar setas e marcar casas no tabuleiro (como no Chess.com/Lichess).
+ * Botão "✏ Desenhar" liga o modo de desenho do tabuleiro daquela tela: arrastar de uma casa a outra cria uma
+ * seta (arrastar de novo a mesma remove); tocar numa casa a pinta (tocar de novo na mesma cor remove).
+ * No modo de desenho as peças NÃO se movem. As setas ficam sobre o tabuleiro e somem quando a posição muda.
+ * Entram na "Foto da posição" (imagem.js lê XD.Setas.get(tabuleiro)).
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const NS = 'http://www.w3.org/2000/svg', FILES = 'abcdefgh';
+  const COLORS = { verde: '#3fa85b', vermelho: '#e0453f', azul: '#3b82d9', amarelo: '#e8a91c' };
+  const NAMES = { verde: 'Verde', vermelho: 'Vermelho', azul: 'Azul', amarelo: 'Amarelo' };
+  const MAX = 24, states = new WeakMap();
+
+  const state = (el) => { let s = states.get(el); if (!s) { s = { arrows: [], marks: [], color: 'verde', on: false, sig: null, obs: null, svg: null, bar: null, drag: null }; states.set(el, s); } return s; };
+  const orientation = (el) => { const q = el.querySelector('.sq'); return q && q.dataset.sq === 'a8' ? 'w' : 'b'; };
+  /** Assinatura da posição (peças por casa): muda quando alguém joga ou navega. */
+  const signature = (el) => { let s = ''; el.querySelectorAll('.sq').forEach((d) => { const u = d.querySelector('svg.piece use'); s += d.dataset.sq + (u ? (d.querySelector('svg.piece').classList.contains('b') ? 'b' : 'w') + u.getAttribute('href') : '') + ';'; }); return s; };
+  /** Centro da casa em unidades do tabuleiro (0–8), conforme a orientação. */
+  function center(sq, ori) { const f = FILES.indexOf(sq[0]), r = +sq[1]; return ori === 'w' ? [f + .5, 8 - r + .5] : [7 - f + .5, r - .5]; }
+  /** Geometria da seta: [x1,y1] saída, [lx,ly] fim da haste, pontas do triângulo. */
+  function geom(a, b) {
+    const dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len, head = .42, hw = .26;
+    const sx = a[0] + ux * .18, sy = a[1] + uy * .18, tipx = b[0] - ux * .1, tipy = b[1] - uy * .1, bx = tipx - ux * head, by = tipy - uy * head;
+    return { x1: sx, y1: sy, x2: bx + ux * .02, y2: by + uy * .02, tip: [tipx, tipy], l: [bx - uy * hw, by + ux * hw], r: [bx + uy * hw, by - ux * hw] };
+  }
+
+  const Setas = {
+    COLORS, geom, center,
+    get(el) { const s = states.get(el); return s ? { arrows: s.arrows.slice(), marks: s.marks.slice() } : { arrows: [], marks: [] }; },
+
+    /** Liga o acompanhamento do tabuleiro (uma vez): camada de desenho, refaz ao girar e limpa ao mudar a posição. */
+    attach(el) {
+      const s = state(el); if (s.obs) return s;
+      const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'setas-svg'); svg.setAttribute('viewBox', '0 0 8 8'); svg.setAttribute('aria-hidden', 'true');
+      s.svg = svg; el.appendChild(svg); s.sig = signature(el);
+      let ori = orientation(el);
+      s.obs = new MutationObserver((muts) => {
+        if (!muts.some((m) => !svg.contains(m.target) || m.target === svg.parentNode && [...m.removedNodes].includes(svg))) return;   // ignora o que a própria camada escreve
+        let changed = false;
+        if (!svg.isConnected) { el.appendChild(svg); changed = true; }  // o tabuleiro foi refeito (girou)
+        const sg = signature(el), o = orientation(el);
+        if (sg !== s.sig && s.sig !== null && (s.arrows.length || s.marks.length) && o === ori) { s.arrows = []; s.marks = []; changed = true; }
+        if (o !== ori) changed = true;
+        s.sig = sg; ori = o; if (changed) this.paint(el);
+      });
+      s.obs.observe(el, { childList: true, subtree: true });
+      el.addEventListener('pointerdown', (e) => this.down(el, e), true);
+      el.addEventListener('pointermove', (e) => this.move(el, e), true);
+      el.addEventListener('pointerup', (e) => this.up(el, e), true);
+      el.addEventListener('pointercancel', () => { s.drag = null; this.paint(el); }, true);
+      return s;
+    },
+
+    sqAt(el, e) {
+      const r = el.getBoundingClientRect(), w = el.clientWidth, h = el.clientHeight, x = e.clientX - r.left - el.clientLeft, y = e.clientY - r.top - el.clientTop;
+      if (x < 0 || y < 0 || x >= w || y >= h) return null;
+      const f = Math.floor(x / w * 8), rr = Math.floor(y / h * 8), o = orientation(el);
+      return FILES[o === 'w' ? f : 7 - f] + (o === 'w' ? 8 - rr : rr + 1);
+    },
+    down(el, e) {
+      const s = state(el); if (!s.on || (e.pointerType === 'mouse' && e.button !== 0)) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      const sq = this.sqAt(el, e); if (!sq) return;
+      s.drag = { from: sq, to: sq }; try { el.setPointerCapture(e.pointerId); } catch (x) { /* ok */ }
+      this.paint(el);
+    },
+    move(el, e) {
+      const s = state(el); if (!s.on || !s.drag) return; e.preventDefault(); e.stopImmediatePropagation();
+      const sq = this.sqAt(el, e); if (sq && sq !== s.drag.to) { s.drag.to = sq; this.paint(el); }
+    },
+    up(el, e) {
+      const s = state(el); if (!s.on || !s.drag) return; e.preventDefault(); e.stopImmediatePropagation();
+      const sq = this.sqAt(el, e) || s.drag.to, from = s.drag.from; s.drag = null;
+      if (sq === from) this.toggleMark(el, from); else this.toggleArrow(el, from, sq);
+      this.paint(el);
+    },
+    toggleArrow(el, from, to) {
+      const s = state(el), i = s.arrows.findIndex((a) => a.from === from && a.to === to);
+      if (i >= 0) { const same = s.arrows[i].color === s.color; s.arrows.splice(i, 1); if (same) return; }
+      if (s.arrows.length >= MAX) { XD.ui.toast(`Máximo de ${MAX} setas. Use "Limpar".`, 'erro'); return; }
+      s.arrows.push({ from, to, color: s.color });
+    },
+    toggleMark(el, sq) {
+      const s = state(el), i = s.marks.findIndex((m) => m.sq === sq);
+      if (i >= 0) { const same = s.marks[i].color === s.color; s.marks.splice(i, 1); if (same) return; }
+      s.marks.push({ sq, color: s.color });
+    },
+    clear(el) { const s = state(el); s.arrows = []; s.marks = []; s.drag = null; this.paint(el); },
+
+    /** Redesenha a camada. */
+    paint(el) {
+      const s = state(el); if (!s.svg) return; const o = orientation(el);
+      const add = (arr) => arr.join('');
+      const marks = s.marks.map((m) => { const [cx, cy] = center(m.sq, o); return `<rect class="mk" x="${cx - .5}" y="${cy - .5}" width="1" height="1" fill="${COLORS[m.color]}" data-sq="${m.sq}"/>`; });
+      const draw = (a, preview) => {
+        const g = geom(center(a.from, o), center(a.to, o)), c = COLORS[a.color || s.color];
+        return `<g class="ar${preview ? ' pv' : ''}" data-from="${a.from}" data-to="${a.to}" data-color="${a.color || s.color}"><line x1="${g.x1.toFixed(3)}" y1="${g.y1.toFixed(3)}" x2="${g.x2.toFixed(3)}" y2="${g.y2.toFixed(3)}" stroke="${c}" stroke-width=".17" stroke-linecap="round"/><polygon points="${g.tip[0].toFixed(3)},${g.tip[1].toFixed(3)} ${g.l[0].toFixed(3)},${g.l[1].toFixed(3)} ${g.r[0].toFixed(3)},${g.r[1].toFixed(3)}" fill="${c}"/></g>`;
+      };
+      const arrows = s.arrows.map((a) => draw(a, false));
+      if (s.drag && s.drag.from !== s.drag.to) arrows.push(draw({ from: s.drag.from, to: s.drag.to }, true));
+      else if (s.drag) { const [cx, cy] = center(s.drag.from, o); marks.push(`<rect class="mk pv" x="${cx - .5}" y="${cy - .5}" width="1" height="1" fill="${COLORS[s.color]}"/>`); }
+      s.svg.innerHTML = add(marks) + add(arrows);
+    },
+
+    /** Liga/desliga o modo de desenho. */
+    setOn(el, on) {
+      const s = this.attach(el); s.on = !!on; el.classList.toggle('setas-on', s.on); s.drag = null;
+      if (s.on && !s.bar) {
+        const bar = document.createElement('div'); bar.className = 'setas-bar'; bar.setAttribute('role', 'toolbar'); bar.setAttribute('aria-label', 'Desenhar no tabuleiro');
+        bar.innerHTML = `<span class="small muted">Arraste de uma casa a outra para uma seta; toque numa casa para pintá-la.</span><div class="setas-row">${Object.keys(COLORS).map((k) => `<button class="setas-cor" type="button" data-cor="${k}" style="--c:${COLORS[k]}" role="radio" aria-checked="${k === s.color}" aria-label="${NAMES[k]}"></button>`).join('')}<button class="btn sm" type="button" data-clear>Limpar</button><button class="btn sm primary" type="button" data-done>Pronto</button></div>`;
+        bar.addEventListener('click', (e) => {
+          const c = e.target.closest('[data-cor]');
+          if (c) { s.color = c.dataset.cor; bar.querySelectorAll('[data-cor]').forEach((b) => b.setAttribute('aria-checked', String(b === c))); }
+          else if (e.target.closest('[data-clear]')) this.clear(el);
+          else if (e.target.closest('[data-done]')) this.setOn(el, false);
+        });
+        el.insertAdjacentElement('afterend', bar); s.bar = bar;
+      }
+      if (!s.on && s.bar) { s.bar.remove(); s.bar = null; }
+      document.querySelectorAll('[data-setas]').forEach((b) => { const t = root.XD.Imagem && root.XD.Imagem.boardFor(b); if (t === el) { b.classList.toggle('on', s.on); b.setAttribute('aria-pressed', String(s.on)); } });
+      this.paint(el);
+    },
+
+    init() {
+      if (this.bound) return; this.bound = true;
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest && e.target.closest('[data-setas]'); if (!b) return;
+        e.preventDefault(); const el = XD.Imagem.boardFor(b);
+        if (!el) { XD.ui.toast('Não encontrei um tabuleiro para desenhar.', 'erro'); return; }
+        this.setOn(el, !state(el).on);
+      });
+      // ao trocar de tela, desliga o modo de desenho dos tabuleiros que ficaram escondidos
+      root.addEventListener('hashchange', () => { document.querySelectorAll('.board.setas-on').forEach((el) => { if (!el.offsetParent) this.setOn(el, false); }); });
+    }
+  };
+  XD.Setas = Setas; Setas.init();
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
 /* App instalável: registra o service worker (só em http/https) e cuida do botão "Instalar". */
 (function (root) {
   const XD = root.XD = root.XD || {};
@@ -5528,16 +6446,42 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       catch (e) { XD.ui.toast(e.message, 'erro'); }
     },
 
+    /** Preenche `box` com a abertura/gambito identificados nos lances `sans` (a partir da posição inicial). */
+    fillOpening(box, sans) {
+      if (!box) return;
+      const E = XD.Eco, tk = box._tk = (box._tk || 0) + 1;
+      const done = (html) => { if (tk === box._tk) box.innerHTML = html; };
+      if (!sans.length) { done('<p class="muted small">Sem lances.</p>'); return; }
+      const show = () => { try { done(XD.Play.openingHtml(E.classify(sans))); } catch (e) { done(`<p class="muted small">Não foi possível identificar a abertura (${esc(e.message)}).</p>`); } };
+      if (!E) { done('<p class="muted small">Módulo de aberturas indisponível.</p>'); return; }
+      if (E.state === 'ready' && E.byEpd) { show(); return; }
+      done('<p class="muted small"><span class="spinner" aria-hidden="true"></span> Identificando a abertura…</p>');
+      E.prepare().then(show).catch((e) => done(`<p class="muted small">A base de aberturas não pôde ser carregada (${esc(e.message)}).</p>`));
+    },
+
     /* ---------- Revisão de uma partida salva ---------- */
     showDetail(id) {
       const g = XD.Store.get(id);
       if (!g) return false;
+      return this.renderDetail(g, {});
+    },
+
+    /**
+     * Mostra uma partida que NÃO está salva (ex.: do Explorador/Chess.com) com o mesmo tabuleiro, lista de lances
+     * e análise do motor. opts: { back:{href,text}, sub:html, saveTitle }.
+     */
+    showExternal(g, opts) { return this.renderDetail(g, Object.assign({ external: true }, opts || {})); },
+
+    renderDetail(g, opts) {
+      const ext = !!opts.external;
       this.current = g;
+      const back = $('gd-back');
+      if (back) { back.setAttribute('href', ext && opts.back ? opts.back.href : '#/partidas'); back.textContent = ext && opts.back ? opts.back.text : '← Minhas partidas'; }
       const startIsDefault = g.startFen === root.Chess.START_FEN;
       $('game-detail').innerHTML = `
         <div class="game-head">
-          <div><h1 id="gd-title">${esc(g.title)}</h1>
-            <p class="muted small">Criada em ${esc(fmtDate(g.createdAt))} · ${g.moves.length} lance${g.moves.length === 1 ? '' : 's'}
+          <div><div class="fav-row"><h1 id="gd-title">${esc(g.title)}</h1>${ext && opts.fav && XD.Favoritos ? XD.Favoritos.starHtml('partida', opts.fav.ref, opts.fav.meta) : ''}</div>
+            <p class="muted small">${ext ? (opts.sub || '') : 'Criada em ' + esc(fmtDate(g.createdAt))} · ${g.moves.length} lance${g.moves.length === 1 ? '' : 's'}
               <span class="badge">${esc(RESULT[g.result] || '')}</span>${iaBadge(g)}</p></div>
         </div>
         <div class="detail-layout">
@@ -5547,23 +6491,25 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
             <div id="gd-eval" class="caption" aria-live="polite"></div>
             <div id="gd-nav">${XD.navRowHtml()}</div>
             <div class="game-actions" style="justify-content:center">
-              <button class="btn" id="gd-flip" type="button">⇅ Girar</button>
+              <button class="btn" id="gd-flip" type="button">⇅ Girar</button><button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
               <button class="btn primary" id="gd-continue" type="button">Continuar analisando</button>
+              ${ext ? '<button class="btn" id="gd-save-ext" type="button">✓ Salvar em Minhas partidas</button>' : ''}
               ${g.meta && g.meta.modo === 'ia' && g.result === '*' ? '<button class="btn" id="gd-continue-ia" type="button">Continuar contra a IA</button>' : ''}
             </div>
           </div>
           <aside class="side-col">
             <div class="panel"><h2>Análise do motor</h2><div id="gd-analise"></div></div>
+            <div class="panel op-box"><h2>Abertura</h2><div id="gd-op" aria-live="polite"></div></div>
             <div class="panel"><h2>Lances</h2><div id="gd-moves" class="move-box"></div></div>
             <div class="panel">
               <h2>Posições</h2>
               <label class="field"><span>Posição inicial ${startIsDefault ? '(padrão)' : '(personalizada)'}</span>
                 <input type="text" readonly value="${esc(g.startFen)}"></label>
               <label class="field"><span>Posição final</span><input type="text" readonly value="${esc(g.finalFen)}"></label>
-              <div class="game-actions">
+              ${ext ? '' : `<div class="game-actions">
                 <button class="btn" id="gd-rename" type="button">Renomear</button>
                 <button class="btn danger" id="gd-delete" type="button">Excluir</button>
-              </div>
+              </div>`}
             </div>
           </aside>
         </div>`;
@@ -5571,11 +6517,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       session.goTo(0);                                  // começa a revisão na posição inicial
       this.review = new XD.Review({ board: $('gd-board'), nav: $('gd-nav'), moves: $('gd-moves'), caption: $('gd-cap'), session, flipBtn: $('gd-flip') });
       XD.Analise.mount(g, this.review);
+      if (!ext) this.fillOpening($('gd-op'), g.moves.map((m) => m.san));
       $('gd-continue').addEventListener('click', () => {
         XD.Analise.stop();
         const s = this.review.session;
         const copy = new XD.GameSession({ startFen: s.startFen, moves: s.moves, cursor: s.cursor });
-        XD.pendingFree = { session: copy, linkedId: this.current.id, title: this.current.title };  // título atual (pode ter sido renomeado)
+        XD.pendingFree = { session: copy, linkedId: ext ? null : this.current.id, title: this.current.title };  // título atual (pode ter sido renomeado)
         XD.go('#/livre');
       });
       const ci = $('gd-continue-ia');
@@ -5584,6 +6531,18 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         XD.pendingPlay = { session: full, level: g.meta.nivel, color: g.meta.cor };
         XD.go('#/ia');
       });
+      if (ext) {
+        $('gd-save-ext').addEventListener('click', () => {
+          try {
+            const sess = new XD.GameSession({ startFen: g.startFen, moves: g.moves });
+            sess.goTo(sess.length);
+            const rec = XD.Store.save({ title: opts.saveTitle || g.title, session: sess, result: g.result });
+            XD.ui.toast('Partida salva em Minhas partidas.', 'ok'); XD.go('#/partidas/' + rec.id);
+          } catch (e) { XD.ui.toast(e.message, 'erro'); }
+        });
+        return true;
+      }
+      const id = g.id;
       $('gd-rename').addEventListener('click', () => this.rename(this.current, () => { this.current = XD.Store.get(id); $('gd-title').textContent = this.current.title; }));
       $('gd-delete').addEventListener('click', () => this.remove(this.current, () => { XD.go('#/partidas'); }));
       return true;
@@ -6225,6 +7184,316 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
 </script>
   <script>
 /*
+ * chesscom.js — Cliente da API pública do Chess.com (https://api.chess.com/pub/…) e utilitários.
+ *
+ * Endpoints usados (todos GET, sem login, sem custo):
+ *   /pub/player/{usuario}                      perfil
+ *   /pub/player/{usuario}/stats                estatísticas por modalidade
+ *   /pub/player/{usuario}/games/archives       lista de arquivos mensais (do mais antigo ao mais novo)
+ *   /pub/player/{usuario}/games/{AAAA}/{MM}    partidas do mês
+ *
+ * Cuidados:
+ *  - Requisições em fila (uma de cada vez, com intervalo mínimo) e cache em memória: não sobrecarrega a API.
+ *  - 404/410 = jogador inexistente; 429 = limite de requisições (espera e tenta de novo); falha de rede = erro claro.
+ *  - Nada é inventado: campos ausentes continuam ausentes (null).
+ * Parte pura (sem navegador): funciona em Node para os testes.
+ */
+(function (root) {
+  'use strict';
+  const BASE = 'https://api.chess.com/pub';
+
+  class ApiError extends Error {
+    constructor(kind, message, extra) { super(message); this.name = 'ApiError'; this.kind = kind; Object.assign(this, extra || {}); }
+  }
+
+  const USER_RE = /^[A-Za-z0-9_-]{2,25}$/;
+  const cleanUser = (u) => String(u || '').trim().replace(/^@/, '');
+
+  /** Cliente com fila, cache e novas tentativas. `o` permite injetar fetch/sleep (testes). */
+  function createClient(o) {
+    o = o || {};
+    const doFetch = o.fetch || ((...a) => root.fetch(...a));
+    const sleep = o.sleep || ((ms) => new Promise((r) => setTimeout(r, ms)));
+    const now = o.now || (() => Date.now());
+    const gap = o.minGapMs != null ? o.minGapMs : 250;
+    const timeout = o.timeoutMs || 15000;
+    const maxRetry = o.maxRetry != null ? o.maxRetry : 2;
+    const cache = new Map();           // url → {t, data}
+    let chain = Promise.resolve(), last = 0;
+    const stats = { requests: 0, cacheHits: 0, retries: 0 };
+
+    async function once(url, signal) {
+      const ctl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timer = ctl ? setTimeout(() => ctl.abort(), timeout) : null;
+      if (signal && ctl) signal.addEventListener('abort', () => ctl.abort(), { once: true });
+      try {
+        stats.requests++;
+        const resp = await doFetch(url, { headers: { Accept: 'application/json' }, signal: ctl ? ctl.signal : undefined });
+        return resp;
+      } catch (e) {
+        if (signal && signal.aborted) throw new ApiError('cancel', 'Busca cancelada.');
+        throw new ApiError('network', 'Não consegui falar com o Chess.com. Verifique sua conexão e tente de novo.');
+      } finally { if (timer) clearTimeout(timer); }
+    }
+
+    async function request(url, opts) {
+      opts = opts || {};
+      const ttl = opts.ttl != null ? opts.ttl : 10 * 60 * 1000;
+      const hit = cache.get(url);
+      if (hit && now() - hit.t < ttl) { stats.cacheHits++; return hit.data; }
+      for (let attempt = 0; ; attempt++) {
+        const wait = Math.max(0, last + gap - now());
+        if (wait) await sleep(wait);
+        if (opts.signal && opts.signal.aborted) throw new ApiError('cancel', 'Busca cancelada.');
+        last = now();
+        const resp = await once(url, opts.signal);
+        if (resp.status === 404 || resp.status === 410) throw new ApiError('notfound', 'Não encontrei esse jogador no Chess.com.', { status: resp.status });
+        if (resp.status === 429) {
+          if (attempt >= maxRetry) throw new ApiError('ratelimit', 'O Chess.com pediu para esperar (muitas requisições). Tente de novo em alguns segundos.', { status: 429 });
+          stats.retries++;
+          const ra = Number(resp.headers && resp.headers.get && resp.headers.get('Retry-After'));
+          await sleep(Math.min(10000, (ra > 0 ? ra * 1000 : 1500 * (attempt + 1))));
+          continue;
+        }
+        if (resp.status >= 500) {
+          if (attempt >= maxRetry) throw new ApiError('server', 'O Chess.com está com problemas agora. Tente mais tarde.', { status: resp.status });
+          stats.retries++; await sleep(1000 * (attempt + 1)); continue;
+        }
+        if (!resp.ok) throw new ApiError('http', `O Chess.com respondeu com erro ${resp.status}.`, { status: resp.status });
+        let data;
+        try { data = await resp.json(); } catch (e) { throw new ApiError('baddata', 'Resposta inesperada do Chess.com.'); }
+        cache.set(url, { t: now(), data });
+        return data;
+      }
+    }
+
+    // Serializa tudo: uma requisição por vez (respeita os limites da API).
+    const queued = (url, opts) => {
+      const run = () => request(url, opts);
+      const p = chain.then(run, run);
+      chain = p.catch(() => {});
+      return p;
+    };
+
+    const path = (u, rest) => `${BASE}/player/${encodeURIComponent(cleanUser(u).toLowerCase())}${rest || ''}`;
+    const check = (u) => { if (!USER_RE.test(cleanUser(u))) throw new ApiError('invalid', 'Digite um nome de usuário válido do Chess.com (letras, números, _ ou -).'); };
+    return {
+      stats, cache,
+      profile(u, opts) { check(u); return queued(path(u), opts); },
+      playerStats(u, opts) { check(u); return queued(path(u, '/stats'), opts); },
+      archives(u, opts) { check(u); return queued(path(u, '/games/archives'), Object.assign({ ttl: 5 * 60 * 1000 }, opts)).then((d) => (Array.isArray(d.archives) ? d.archives : [])); },
+      /** Partidas de um mês. `archiveUrl` vem de archives(); só aceita URLs da própria API. */
+      month(archiveUrl, opts) {
+        if (!/^https:\/\/api\.chess\.com\/pub\/player\/[^/]+\/games\/\d{4}\/\d{2}$/.test(archiveUrl)) return Promise.reject(new ApiError('invalid', 'Endereço de arquivo inválido.'));
+        return queued(archiveUrl, Object.assign({ ttl: 30 * 60 * 1000 }, opts)).then((d) => (Array.isArray(d.games) ? d.games : []));
+      }
+    };
+  }
+
+  /* ------------------------------------------------------------------ perfil e estatísticas */
+  const MODES = [['bullet', 'Bullet'], ['blitz', 'Blitz'], ['rapid', 'Rapid'], ['daily', 'Daily']];
+
+  function countryName(url) {
+    const m = /\/country\/([A-Za-z]{2})\/?$/.exec(url || '');
+    if (!m) return null;
+    const code = m[1].toUpperCase();
+    try { return { code, name: new Intl.DisplayNames(['pt-BR'], { type: 'region' }).of(code) || code }; } catch (e) { return { code, name: code }; }
+  }
+
+  /** Perfil simplificado; campos ausentes ficam null. */
+  function normalizeProfile(p) {
+    const c = countryName(p.country);
+    return {
+      username: p.username || null, name: p.name || null, avatar: p.avatar || null, url: p.url || null,
+      title: p.title || null, country: c, followers: Number.isFinite(p.followers) ? p.followers : null,
+      joined: p.joined ? p.joined * 1000 : null, lastOnline: p.last_online ? p.last_online * 1000 : null, status: p.status || null
+    };
+  }
+
+  /** Estatísticas por modalidade (bullet, blitz, rapid, daily) + totais. Sem dado → null (nunca zero inventado). */
+  function normalizeStats(s) {
+    const modes = [];
+    const tot = { win: 0, loss: 0, draw: 0, games: 0 };
+    for (const [key, label] of MODES) {
+      const m = s && s['chess_' + key];
+      if (!m) { modes.push({ key, label, available: false }); continue; }
+      const rec = m.record || null;
+      const win = rec && Number.isFinite(rec.win) ? rec.win : null;
+      const loss = rec && Number.isFinite(rec.loss) ? rec.loss : null;
+      const draw = rec && Number.isFinite(rec.draw) ? rec.draw : null;
+      const hasRec = win !== null && loss !== null && draw !== null;
+      const games = hasRec ? win + loss + draw : null;
+      if (hasRec) { tot.win += win; tot.loss += loss; tot.draw += draw; tot.games += games; }
+      modes.push({
+        key, label, available: true,
+        rating: m.last && Number.isFinite(m.last.rating) ? m.last.rating : null,
+        ratingDate: m.last && m.last.date ? m.last.date * 1000 : null,
+        best: m.best && Number.isFinite(m.best.rating) ? m.best.rating : null,
+        bestDate: m.best && m.best.date ? m.best.date * 1000 : null,
+        bestGame: m.best && m.best.game ? m.best.game : null,
+        win, loss, draw, games,
+        winPct: hasRec && games > 0 ? (win / games) * 100 : null
+      });
+    }
+    const any = modes.some((m) => m.available && m.games !== null);
+    return { modes, total: any ? Object.assign({ winPct: tot.games > 0 ? (tot.win / tot.games) * 100 : null }, tot) : null };
+  }
+
+  /* ------------------------------------------------------------------ partidas */
+  const DRAW_RESULTS = new Set(['agreed', 'repetition', 'stalemate', 'insufficient', '50move', 'timevsinsufficient']);
+  const RESULT_TXT = {
+    win: 'Vitória', checkmated: 'Perdeu (xeque-mate)', resigned: 'Desistiu', timeout: 'Perdeu no tempo', abandoned: 'Abandonou', lose: 'Derrota',
+    agreed: 'Empate (acordo)', repetition: 'Empate (repetição)', stalemate: 'Empate (afogamento)', insufficient: 'Empate (material insuficiente)',
+    '50move': 'Empate (50 lances)', timevsinsufficient: 'Empate (tempo × material)', kingofthehill: 'Perdeu (rei na colina)', threecheck: 'Perdeu (3 xeques)', bughousepartnerlose: 'Perdeu (parceiro)'
+  };
+  /** 'win' | 'loss' | 'draw' do ponto de vista de quem tem esse código de resultado. */
+  function resultKind(code) {
+    if (code === 'win') return 'win';
+    if (DRAW_RESULTS.has(code)) return 'draw';
+    return 'loss';
+  }
+  const resultText = (code) => RESULT_TXT[code] || (code === 'win' ? 'Vitória' : String(code || ''));
+
+  function headersOf(pgn) {
+    const h = {};
+    const re = /^\[(\w+)\s+"((?:[^"\\]|\\.)*)"\]\s*$/gm; let m;
+    while ((m = re.exec(pgn || ''))) h[m[1]] = m[2].replace(/\\(["\\])/g, '$1');
+    return h;
+  }
+
+  /** "https://www.chess.com/openings/Italian-Game-Giuoco-Piano-4.d3-Bc5" → "Italian Game Giuoco Piano". */
+  function openingFromUrl(url) {
+    const m = /\/openings\/([^/?#]+)/.exec(url || '');
+    if (!m) return null;
+    let slug = m[1];
+    const cut = slug.search(/-\d+\.{1,3}/);          // a URL traz os lances depois do nome
+    if (cut > 0) slug = slug.slice(0, cut);
+    const name = decodeURIComponent(slug).replace(/-/g, ' ').trim();
+    return name || null;
+  }
+
+  const tcText = (tc) => {
+    if (!tc) return '';
+    const m = /^(\d+)(?:\+(\d+))?$/.exec(tc);
+    if (m) { const s = +m[1], inc = m[2] ? +m[2] : 0; return (s >= 60 && s % 60 === 0 ? s / 60 : (s / 60).toFixed(1).replace('.0', '')) + (inc ? '+' + inc : '') + ' min'; }
+    const d = /^1\/(\d+)$/.exec(tc);
+    if (d) { const sec = +d[1]; return sec >= 86400 ? `${Math.round(sec / 86400)} dia(s)/lance` : tc; }
+    return tc;
+  };
+
+  /**
+   * Partida da API → registro simples, do ponto de vista do jogador pesquisado.
+   * Devolve null se o jogador não está na partida (dados inconsistentes).
+   */
+  function normalizeGame(g, username) {
+    if (!g || !g.white || !g.black) return null;
+    const u = String(username || '').toLowerCase();
+    const isW = String(g.white.username || '').toLowerCase() === u;
+    const isB = String(g.black.username || '').toLowerCase() === u;
+    if (!isW && !isB) return null;
+    const me = isW ? g.white : g.black, opp = isW ? g.black : g.white;
+    const idm = /\/(?:game\/)?(?:live|daily)?\/?(\d+)\/?$/.exec(g.url || '') || /(\d+)\/?$/.exec(g.url || '');
+    const hd = headersOf(g.pgn);
+    const rules = g.rules || 'chess';
+    return {
+      id: idm ? idm[1] : null, url: g.url || null, uuid: g.uuid || null,
+      color: isW ? 'w' : 'b', myName: me.username, oppName: opp.username || '?',
+      myRating: Number.isFinite(me.rating) ? me.rating : null, oppRating: Number.isFinite(opp.rating) ? opp.rating : null,
+      result: resultKind(me.result), myCode: me.result, oppCode: opp.result,
+      when: g.end_time ? g.end_time * 1000 : null, timeClass: g.time_class || null, rules, rated: !!g.rated,
+      timeControl: g.time_control || null, tc: tcText(g.time_control),
+      opening: openingFromUrl(g.eco) || openingFromUrl(hd.ECOUrl) || null, eco: hd.ECO || null,
+      pgn: g.pgn || null, supported: rules === 'chess' && !!g.pgn && !/^\[SetUp\s+"1"\]/mi.test(g.pgn) && !/^\[FEN\s/mi.test(g.pgn),
+      accuracy: g.accuracies ? (isW ? g.accuracies.white : g.accuracies.black) : null
+    };
+  }
+
+  /** Mês de um arquivo (para filtros por período): '…/games/2025/09' → {y:2025, m:9} */
+  function archiveMonth(url) {
+    const m = /\/(\d{4})\/(\d{2})$/.exec(url || '');
+    return m ? { y: +m[1], m: +m[2] } : null;
+  }
+
+  /** Período → instante mínimo (ms) ou null (sem limite). `now` injetável. */
+  function periodStart(period, now) {
+    const t = now || Date.now(), day = 86400000;
+    switch (period) {
+      case '7d': return t - 7 * day;
+      case '30d': return t - 30 * day;
+      case '90d': return t - 90 * day;
+      case '1y': return t - 365 * day;
+      default: return null;
+    }
+  }
+
+  /** Aplica filtros (modalidade, resultado, período) a partidas normalizadas. */
+  function filterGames(list, f, now) {
+    const t0 = periodStart(f.period, now);
+    return list.filter((g) =>
+      (!f.mode || g.timeClass === f.mode) &&
+      (!f.result || g.result === f.result) &&
+      (!t0 || (g.when !== null && g.when >= t0)));
+  }
+
+  /* ------------------------------------------------------------------ evolução do rating */
+  /**
+   * Série de rating do jogador numa modalidade, montada com as partidas (que trazem o rating dele no fim de cada uma).
+   * Só entram partidas de xadrez padrão, valendo rating, da modalidade pedida e com data e rating informados.
+   * Devolve pontos em ordem de tempo: { t, r, result, opp, oppRating, game }.
+   */
+  function ratingSeries(games, mode) {
+    return (games || []).filter((g) => g && g.timeClass === mode && g.rules === 'chess' && g.rated && g.when !== null && g.myRating !== null)
+      .map((g) => ({ t: g.when, r: g.myRating, result: g.result, opp: g.oppName, oppRating: g.oppRating, game: g }))
+      .sort((a, b) => a.t - b.t);
+  }
+
+  /** Resumo de uma série: primeiro, último, maior, menor, variação e período. null se vazia. */
+  function ratingSummary(series) {
+    if (!series || !series.length) return null;
+    let max = series[0], min = series[0];
+    for (const p of series) { if (p.r > max.r) max = p; if (p.r < min.r) min = p; }
+    const first = series[0], last = series[series.length - 1];
+    return { n: series.length, first: first.r, last: last.r, max: max.r, maxAt: max.t, min: min.r, minAt: min.t, delta: last.r - first.r, from: first.t, to: last.t };
+  }
+
+  /* ------------------------------------------------------------------ PGN → lances */
+  /**
+   * Lê um PGN do Chess.com (cabeçalhos, comentários {…} com relógio, variantes, NAGs, resultado).
+   * Valida cada lance com o motor de regras. Devolve { headers, sans } ou lança Error em português.
+   */
+  function parsePgn(pgn, ChessClass) {
+    const C = ChessClass || root.Chess;
+    if (!pgn || typeof pgn !== 'string') throw new Error('Esta partida não tem PGN.');
+    const headers = headersOf(pgn);
+    let body = pgn.replace(/^\s*\[[^\]]*\]\s*$/gm, ' ');
+    body = body.replace(/\{[^}]*\}/g, ' ').replace(/;[^\n]*/g, ' ');
+    let prev;
+    do { prev = body; body = body.replace(/\([^()]*\)/g, ' '); } while (body !== prev);      // variantes
+    body = body.replace(/\$\d+/g, ' ').replace(/\d+\s*\.(\.\.)?/g, ' ').replace(/(^|\s)(1-0|0-1|1\/2-1\/2|\*)(?=\s|$)/g, ' ');
+    const tokens = body.split(/\s+/).filter(Boolean);
+    const game = new C();
+    const sans = [];
+    for (const raw of tokens) {
+      const tk = raw.replace(/[!?]+$/g, '');
+      if (!tk) continue;
+      let mv;
+      try { mv = game.move(tk); } catch (e) { mv = null; }
+      if (!mv) throw new Error(`Lance inválido no PGN: ${raw}`);
+      sans.push(mv.san || tk);
+    }
+    if (!sans.length) throw new Error('O PGN não tem lances.');
+    return { headers, sans };
+  }
+
+  const api = { ApiError, createClient, USER_RE, cleanUser, MODES, countryName, normalizeProfile, normalizeStats, resultKind, resultText, openingFromUrl, tcText, headersOf,
+    normalizeGame, archiveMonth, periodStart, filterGames, ratingSeries, ratingSummary, parsePgn, BASE };
+  if (typeof module !== 'undefined' && module.exports) module.exports = api;
+  else { root.XD = root.XD || {}; root.XD.ChessCom = api; }
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
  * analise.js — Revisão de partidas com o motor.
  *
  * Para cada posição da partida o motor dá uma nota (centipeões) e o melhor lance. Comparando a nota
@@ -6253,11 +7522,11 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   const CLASSES = [
     { id: 'brilhante', nome: 'Brilhante', max: -1 },       // só por sacrifício (ver summarize)
     { id: 'melhor', nome: 'Melhor', max: 0 },              // só quando é o lance do motor
-    { id: 'excelente', nome: 'Excelente', max: 2 },
+    { id: 'genial', nome: 'Genial', max: -1 },              // só por "lance difícil" (ver summarize)
     { id: 'bom', nome: 'Bom', max: 5 },
     { id: 'imprecisao', nome: 'Imprecisão', max: 10 },
     { id: 'erro', nome: 'Erro', max: 20 },
-    { id: 'gafe', nome: 'Gafe', max: Infinity }
+    { id: 'gafe', nome: 'Erro grave', max: Infinity }
   ];
   function classify(loss, isBest) {
     if (isBest) return 'melhor';
@@ -6275,9 +7544,55 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
    * Sacrifício: depois do lance e da melhor resposta do adversário, quem jogou ficou com pelo menos
    * 3 pontos de material a menos do que tinha antes (uma peça menor). Heurística simples.
    */
-  function isSacrifice(fen, uci, reply) {
+  const VAL = { p: 1, n: 3, b: 3, r: 5, q: 9 };
+  const getChess = () => (typeof window !== 'undefined' ? window.Chess : require('./engine.js').Chess);
+
+  /** Casas de peças (não peões/rei) de `side` que o adversário pode capturar ganhando material à primeira vista. */
+  function hangingSquares(fen, side) {
+    const C = getChess(), out = new Set();
+    const parts = fen.split(' ');
+    parts[1] = side === 'w' ? 'b' : 'w'; parts[2] = '-'; parts[3] = '-';          // vez do adversário
+    let ch; try { ch = new C(parts.join(' ')); } catch (e) { return out; }
+    for (const m of ch.moves({ verbose: true })) {
+      if (!m.captured || !(VAL[m.captured] >= 3)) continue;
+      let gain = VAL[m.captured], rec = false;
+      try {
+        const c2 = new C(parts.join(' ')); c2.move({ from: m.from, to: m.to, promotion: m.promotion });
+        rec = c2.moves({ verbose: true }).some((x) => x.to === m.to);                // dá para recapturar?
+      } catch (e) { continue; }
+      if (rec) gain -= VAL[m.piece] || 0;
+      if (gain > 0) out.add(m.to);
+    }
+    return out;
+  }
+
+  /**
+   * "Peça oferecida": depois do lance, uma peça de quem jogou fica ao alcance de captura aparentemente
+   * vantajosa para o adversário (peça sem defesa, ou atacada por peça de menos valor), e isso é novo
+   * (não estava assim antes). É o caso do cavalo que vai a uma casa atacada porque a captura perde algo maior.
+   */
+  function offersPiece(fen, uci) {
     try {
-      const C = (typeof window !== 'undefined' ? window.Chess : require('./engine.js').Chess);
+      const C = getChess(), side = fen.split(' ')[1];
+      const before = hangingSquares(fen, side);
+      const ch = new C(fen);
+      const mv = ch.moves({ verbose: true }).find((x) => x.from + x.to + (x.promotion || '') === uci);
+      if (!mv) return false;
+      ch.move({ from: mv.from, to: mv.to, promotion: mv.promotion });
+      const after = hangingSquares(ch.fen(), side);
+      for (const sq of after) {
+        if (before.has(sq) && sq !== mv.to) continue;   // já estava assim antes (e não é a peça que se moveu)
+        if (sq === mv.to && mv.captured && VAL[mv.captured] >= VAL[mv.piece]) continue;   // troca equilibrada ou vantajosa
+        return true;
+      }
+      return false;
+    } catch (e) { return false; }
+  }
+
+  function isSacrifice(fen, uci, reply) {
+    if (offersPiece(fen, uci)) return true;
+    try {
+      const C = getChess();
       const side = fen.split(' ')[1];
       const diff = (f) => { const m = material(f); return side === 'w' ? m.w - m.b : m.b - m.w; };
       const before = diff(fen);
@@ -6295,31 +7610,126 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   }
 
   /**
-   * @param {{score:number, best:string|null}[]} pos  uma entrada por posição (0..n): nota para QUEM JOGA nela
+   * Sinais por lance, calculados no tabuleiro (fora da conta de notas):
+   *  sac      — o lance é um sacrifício voluntário de peça (bispo, cavalo, torre ou dama): a peça fica
+   *             oferecida ou o material cai ≥ 3 depois da melhor resposta;
+   *  obvious  — captura "óbvia": recaptura na mesma casa ou peça adversária sem defesa;
+   *  nlegal   — quantos lances legais havia (1 = lance forçado, nunca é "genial").
+   */
+  function moveFlags(fen, uci, prevUci, reply) {
+    const f = { sac: false, obvious: false, nlegal: 0 };
+    try {
+      const C = getChess(), ch = new C(fen);
+      const all = ch.moves({ verbose: true });
+      f.nlegal = all.length;
+      f.sac = isSacrifice(fen, uci, reply);
+      const mv = all.find((x) => x.from + x.to + (x.promotion || '') === uci);
+      if (mv && mv.captured) {
+        if (prevUci && prevUci.slice(2, 4) === mv.to) f.obvious = true;               // recaptura
+        else {
+          ch.move({ from: mv.from, to: mv.to, promotion: mv.promotion });
+          if (!ch.moves({ verbose: true }).some((x) => x.to === mv.to)) f.obvious = true;   // peça sem defesa
+        }
+      }
+    } catch (e) { /* sem sinais */ }
+    return f;
+  }
+
+  /**
+   * Critérios próprios (inspirados no chess.com, não idênticos):
+   *  BRILHANTE (!!)  sacrifício voluntário de peça (sac) + correto (perda < 3 pontos de chance de vitória,
+   *                  que dá folga para o ruído do motor) + compensação (a posição fica pelo menos
+   *                  "viva": chance ≥ 45%) + a posição anterior NÃO estava completamente ganha (< 85%).
+   *  GENIAL (!)      lance difícil de achar, sem precisar de sacrifício: é o melhor ou quase (perda < 1,5),
+   *                  não é captura óbvia nem lance forçado, a posição antes não estava ganha (< 85%) e
+   *                  o segundo melhor lance do motor é bem pior ("lance único"): diferença ≥ 15 pontos,
+   *                  ou ≥ 8 quando a posição estava ruim (≤ 40%) — um recurso que salva ou melhora a posição.
+   *                  Exige a nota do 2º melhor lance (pos[i].second); sem ela não há Genial.
+   * @param {{score:number, best:string|null, second?:number|null}[]} pos  uma entrada por posição (0..n): nota para QUEM JOGA nela
    * @param {string[]} played  lances jogados em UCI (n)
    * @param {string[]} turns   de quem era a vez em cada posição ('w'/'b'), tamanho n+1
-   * @param {boolean[]} [sacs] sacs[i] = o lance i foi um sacrifício (para o "Brilhante")
-   * @returns {{moves:{cls:string,loss:number,best:string|null,evalAfter:number}[], acc:{w:number,b:number}, counts:{w:object,b:object}, white:number[]}}
+   * @param {(boolean|{sac:boolean,obvious:boolean,nlegal:number})[]} [flags]  por lance (boolean = só "sac")
    */
-  function summarize(pos, played, turns, sacs) {
+  function summarize(pos, played, turns, flags) {
     const moves = [], accs = { w: [], b: [] };
     const counts = { w: {}, b: {} };
     for (const c of CLASSES) { counts.w[c.id] = 0; counts.b[c.id] = 0; }
     for (let i = 0; i < played.length; i++) {
       const side = turns[i];
+      const fl = flags && flags[i] !== undefined ? (typeof flags[i] === 'boolean' ? { sac: flags[i], obvious: false, nlegal: 99 } : flags[i]) : { sac: false, obvious: false, nlegal: 99 };
       const before = winPct(pos[i].score);              // com o melhor lance
       const after = winPct(-pos[i + 1].score);          // depois do lance jogado (vista de quem jogou)
       const loss = Math.max(0, before - after);
       const isBest = !!pos[i].best && pos[i].best === played[i];
+      const second = pos[i].second;
+      const gap = typeof second === 'number' ? before - winPct(second) : null;
       let cls = classify(loss, isBest);
-      if (sacs && sacs[i] && loss < 2 && before < 85 && after >= 45) cls = 'brilhante';   // sacrifício correto, sem estar ganhando fácil
-      moves.push({ cls, loss, best: pos[i].best, evalAfter: pos[i + 1].score * (turns[i + 1] === 'w' ? 1 : -1) });
-      accs[side].push(isBest || cls === 'brilhante' ? 100 : moveAccuracy(loss));
+      if (fl.sac && loss < 3 && before < 85 && after >= 45) cls = 'brilhante';
+      else if (gap !== null && (isBest || loss < 1.5) && !fl.obvious && fl.nlegal > 1 && before < 85 &&
+               (gap >= 15 || (gap >= 8 && before <= 40))) cls = 'genial';
+      moves.push({ cls, loss, gap, best: pos[i].best, evalAfter: pos[i + 1].score * (turns[i + 1] === 'w' ? 1 : -1) });
+      accs[side].push(isBest || cls === 'brilhante' || cls === 'genial' ? 100 : moveAccuracy(loss));
       counts[side][cls]++;
     }
     const avg = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : null);
     const white = pos.map((p, i) => (turns[i] === 'w' ? p.score : -p.score));
     return { moves, acc: { w: avg(accs.w), b: avg(accs.b) }, counts, white };
+  }
+
+  /**
+   * Resumo da partida a partir do resultado de summarize():
+   *  best[side]     melhor momento: o lance mais difícil/valioso (Brilhante > Genial > Melhor), desempate pela
+   *                 diferença para o 2º melhor lance e por quanto aproveitou o erro do adversário; nunca um lance ruim;
+   *  mistakes[side] até 3 maiores erros (Erro / Erro grave) por perda de chance de vitória;
+   *  decisive[]     até 3 maiores viradas na avaliação (≥ 15 pontos de chance de vitória), de quem for;
+   *  overall        texto curto com precisão, balanço dos lances e quem jogou melhor.
+   * Índices são de lances (0 = 1º lance da partida).
+   */
+  function describe(sum, turns, names) {
+    names = names || { w: 'Brancas', b: 'Pretas' };
+    const RANK = { brilhante: 3, genial: 2, melhor: 1 };
+    const wp = sum.white.map((c) => winPct(c));                 // chance das brancas em cada posição
+    const mine = (i, side) => (side === 'w' ? wp[i] : 100 - wp[i]);
+    const out = { best: { w: null, b: null }, mistakes: { w: [], b: [] }, decisive: [], overall: {} };
+    for (const side of ['w', 'b']) {
+      let best = null, bestScore = -1;
+      const bad = [];
+      sum.moves.forEach((m, i) => {
+        if (turns[i] !== side) return;
+        if (m.cls === 'erro' || m.cls === 'gafe') bad.push({ i, loss: m.loss, cls: m.cls });
+        if (m.loss >= 3) return;
+        const swing = i >= 1 ? Math.max(0, mine(i + 1, side) - mine(i - 1, side)) : 0;
+        const sc = (RANK[m.cls] || 0) * 1000 + (m.gap || 0) + swing;
+        if ((RANK[m.cls] || swing >= 10) && sc > bestScore) { bestScore = sc; best = { i, cls: m.cls, gap: m.gap, swing }; }
+      });
+      out.best[side] = best;
+      out.mistakes[side] = bad.sort((a, b) => b.loss - a.loss).slice(0, 3);
+    }
+    const sw = [];
+    for (let i = 0; i < sum.moves.length; i++) {
+      const d = wp[i + 1] - wp[i];
+      if (Math.abs(d) >= 15) sw.push({ i, delta: d, side: turns[i], favors: d > 0 ? 'w' : 'b', cls: sum.moves[i].cls });
+    }
+    out.decisive = sw.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta)).slice(0, 3).sort((a, b) => a.i - b.i);
+    const nb = (side) => { const c = sum.counts[side]; return { bril: c.brilhante, gen: c.genial, bad: c.erro + c.gafe, imp: c.imprecisao }; };
+    const fmtSide = (side) => {
+      const a = sum.acc[side], c = nb(side);
+      if (a === null) return `${names[side]}: sem lances.`;
+      const parts = [];
+      if (c.bril) parts.push(`${c.bril} brilhante${c.bril > 1 ? 's' : ''}`);
+      if (c.gen) parts.push(`${c.gen} genia${c.gen > 1 ? 'is' : 'l'}`);
+      parts.push(c.bad ? `${c.bad} erro${c.bad > 1 ? 's' : ''}` : 'nenhum erro');
+      if (c.imp) parts.push(`${c.imp} imprecisõ${c.imp > 1 ? 'es' : 'o'}`);
+      return `${names[side]}: precisão ${Math.round(a)}% (${parts.join(', ')}).`;
+    };
+    let verdict = '';
+    if (sum.acc.w !== null && sum.acc.b !== null) {
+      const d = sum.acc.w - sum.acc.b;
+      verdict = Math.abs(d) < 5 ? 'Partida equilibrada: os dois jogaram em nível parecido.'
+        : `${d > 0 ? names.w : names.b} jogou melhor (${Math.abs(Math.round(d))} pontos de precisão a mais).`;
+    }
+    out.overall = { w: fmtSide('w'), b: fmtSide('b'), verdict };
+    return out;
   }
 
   /** "+0,35", "-1,20", "Mate". */
@@ -6329,7 +7739,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     return (white > 0 ? '+' : '') + v;
   }
 
-  const api = { winPct, classify, moveAccuracy, summarize, fmtScore, isSacrifice, material, CLASSES, MATE };
+  const api = { winPct, classify, moveAccuracy, summarize, fmtScore, isSacrifice, offersPiece, moveFlags, describe, material, CLASSES, MATE };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
 
   /* ===================================================================== parte de tela */
@@ -6337,8 +7747,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   const $ = (id) => document.getElementById(id);
   const esc = (s) => XD.ui.esc(s);
   const NIVEIS = { rapida: { nome: 'Rápida', ms: 150 }, normal: { nome: 'Normal', ms: 400 }, profunda: { nome: 'Profunda', ms: 1200 } };
-  const CLS_TXT = { brilhante: 'Brilhante', excelente: 'Excelente', melhor: 'Melhor', bom: 'Bom', imprecisao: 'Imprecisão', erro: 'Erro', gafe: 'Gafe' };
-  const CLS_ICO = { brilhante: '!!', excelente: '!', melhor: '★', bom: '✓', imprecisao: '?!', erro: '?', gafe: '??' };
+  const CLS_TXT = { brilhante: 'Brilhante', genial: 'Genial', melhor: 'Melhor', bom: 'Bom', imprecisao: 'Imprecisão', erro: 'Erro', gafe: 'Erro grave' };
+  const CLS_ICO = { brilhante: '!!', genial: '!', melhor: '★', bom: '✓', imprecisao: '?!', erro: '?', gafe: '??' };
 
   /* ---- guarda no aparelho (por partida) ---- */
   function loadAll() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } }
@@ -6352,7 +7762,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   const sig = (g) => g.startFen + '|' + g.moves.map((m) => m.from + m.to + (m.promotion || '')).join(',');
   function loadFor(g, nivel) {
     const r = loadAll()[g.id];
-    return r && r.sig === sig(g) && r.nivel === nivel ? r : null;
+    return r && r.v === 2 && r.sig === sig(g) && r.nivel === nivel ? r : null;   // v2: guarda também o 2º melhor lance (Genial)
   }
   function saveFor(g, r) { const o = loadAll(); o[g.id] = r; saveAll(o); }
   function clearFor(id) { const o = loadAll(); delete o[id]; saveAll(o); }
@@ -6368,6 +7778,10 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       uci.push(m.from + m.to + (m.promotion || ''));
     }
     return { pos: out, uci };
+  }
+  /** Sinais (sacrifício, captura óbvia, nº de lances legais) de cada lance. */
+  function flagsFor(fens, uci, posRes) {
+    return uci.map((u, i) => moveFlags(fens[i], u, i > 0 ? uci[i - 1] : null, posRes[i + 1] ? posRes[i + 1].best : null));
   }
   function sanOf(fen, uci) {
     try {
@@ -6388,6 +7802,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       this.result = null;
       this.render();
       review.els.onChange = () => this.onNav();
+    },
+
+    /** Começa a análise sozinha (se ainda não houver resultado guardado): usado ao abrir uma partida do Explorador. */
+    autoStart() {
+      if (!this.ctx) return;
+      this.render();
+      if (!this.result && this.ctx.g.moves.length) this.run();
     },
 
     stop() {
@@ -6431,9 +7852,10 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
             posRes.push({ score: ch.isCheck() ? -MATE : 0, best: null });
             continue;
           }
-          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, i), params: { movetime: ms, multipv: 1 } });
-          const l = res.lines && (res.lines[0] || res.lines[1]);
-          posRes.push({ score: l ? l.score : 0, best: res.bestmove || (l && l.move) || null });
+          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, i), params: { movetime: ms, multipv: 2 } });
+          const l = res.lines && res.lines[0];
+          const l2 = res.lines && res.lines[1];
+          posRes.push({ score: l ? l.score : 0, best: res.bestmove || (l && l.move) || null, second: l2 ? l2.score : null });
         }
       } catch (e) {
         if (!this.alive(tk)) return;
@@ -6442,7 +7864,30 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         return;
       }
       if (!this.alive(tk)) return;
-      const r = { sig: sig(g), nivel, kind, at: Date.now(), pos: posRes, turns: pos.map((p) => p.turn), uci };
+      /* 2ª passada: lances que pareceram ruins (perda ≥ 5) são conferidos com 4× mais tempo nas duas posições,
+         porque uma busca curta erra com facilidade em posições táticas. */
+      try {
+        const pre = summarize(posRes, uci, pos.map((p) => p.turn));
+        const dubios = new Set();
+        const fl0 = flagsFor(pos.map((p) => p.fen), uci, posRes);
+        pre.moves.forEach((m, i) => { if (m.loss >= 5 || fl0[i].sac) { dubios.add(i); dubios.add(i + 1); } });   // ruins ou sacrifícios
+        const lista = [...dubios].sort((a, b) => a - b).slice(0, 40);
+        const ms2 = Math.min(4000, ms * 4);
+        for (let k = 0; k < lista.length; k++) {
+          const j = lista[k];
+          if (!this.alive(tk)) return;
+          prog(`Conferindo lances duvidosos… ${k + 1} de ${lista.length}`, (k + 1) / (lista.length + 1) * 0.999);
+          if (posRes[j].best === null) continue;           // mate/afogamento
+          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, j), params: { movetime: ms2, multipv: 2 } });
+          const l = res.lines && res.lines[0];
+          const l2 = res.lines && res.lines[1];
+          if (l) posRes[j] = { score: l.score, best: res.bestmove || l.move || posRes[j].best, second: l2 ? l2.score : null };
+        }
+      } catch (e) {
+        if (!this.alive(tk)) return;              // se a conferência falhar, fica com a 1ª passada
+      }
+      if (!this.alive(tk)) return;
+      const r = { v: 2, sig: sig(g), nivel, kind, at: Date.now(), pos: posRes, turns: pos.map((p) => p.turn), uci };
       saveFor(g, r);
       this.stop();
       this.show(r);
@@ -6451,8 +7896,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     /** Recalcula o resumo a partir do que foi guardado. */
     show(r) {
       const P = positions(this.ctx.g).pos;
-      const sacs = r.uci.map((u, i) => isSacrifice(P[i].fen, u, r.pos[i + 1].best));   // lance + melhor resposta
-      this.result = Object.assign({}, r, { sum: summarize(r.pos, r.uci, r.turns, sacs) });
+      const flags = flagsFor(P.map((p) => p.fen), r.uci, r.pos);
+      this.result = Object.assign({}, r, { sum: summarize(r.pos, r.uci, r.turns, flags) });
       this.render();
       this.onNav();
     },
@@ -6477,23 +7922,45 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       }
       const r = this.result, s = r.sum, f = (v) => (v === null ? '—' : Math.round(v) + '%');
       const row = (id) => `<tr><th scope="row"><span class="q q-${id}">${CLS_ICO[id]}</span> ${CLS_TXT[id]}</th><td>${s.counts.w[id]}</td><td>${s.counts.b[id]}</td></tr>`;
-      const crit = s.moves.map((m, i) => ({ m, i })).filter((x) => x.m.cls === 'erro' || x.m.cls === 'gafe');
       const info = c.review.session.firstMoveInfo();
       const label = (i) => {                              // "12. Bc4" / "12… Nf6"
         const white = r.turns[i] === 'w';
         const num = info.number + Math.floor((i + (info.color === 'b' ? 1 : 0)) / 2);
         return `${num}${white ? '.' : '…'} ${c.g.moves[i].san}`;
       };
+      const nm = c.g.meta && c.g.meta.nomes ? c.g.meta.nomes : { w: 'Brancas', b: 'Pretas' };
+      const D = describe(s, r.turns, nm);
+      const jump = (i, extra) => `<button class="btn an-jump" data-an-go="${i + 1}" type="button"><span class="q q-${s.moves[i].cls}">${CLS_ICO[s.moves[i].cls]}</span> ${esc(label(i))}${extra ? ' <span class="small muted">· ' + extra + '</span>' : ''}</button>`;
+      const bestHtml = ['w', 'b'].map((sd) => {
+        const b = D.best[sd];
+        return `<li><b>${esc(nm[sd])}:</b> ${b ? jump(b.i, CLS_TXT[b.cls]) : '<span class="muted small">sem um lance de destaque</span>'}</li>`;
+      }).join('');
+      const misHtml = ['w', 'b'].map((sd) => {
+        const l = D.mistakes[sd];
+        return `<li><b>${esc(nm[sd])}:</b> ${l.length ? l.map((x) => jump(x.i, CLS_TXT[x.cls] + ', −' + Math.round(x.loss) + ' pts' + (s.moves[x.i].best ? '; melhor: ' + esc(sanOf(positions(c.g).pos[x.i].fen, s.moves[x.i].best)) : ''))).join(' ') : '<span class="muted small">nenhum erro grave</span>'}</li>`;
+      }).join('');
+      const decHtml = D.decisive.length ? D.decisive.map((x) => jump(x.i, 'favoreceu ' + esc(nm[x.favors]) + ' (' + Math.round(Math.abs(x.delta)) + ' pts)')).join(' ') : '<span class="muted small">Sem viradas grandes: a partida foi decidida aos poucos.</span>';
       box.innerHTML = `
-        <div class="an-acc"><div><span class="small muted">Brancas</span><strong>${f(s.acc.w)}</strong></div>
-          <div><span class="small muted">Pretas</span><strong>${f(s.acc.b)}</strong></div></div>
+        <div class="an-acc"><div><span class="small muted">${esc(nm.w)}</span><strong>${f(s.acc.w)}</strong></div>
+          <div><span class="small muted">${esc(nm.b)}</span><strong>${f(s.acc.b)}</strong></div></div>
+        <div class="an-summary">
+          <h3 class="an-h">Avaliação geral</h3>
+          <p class="small">${esc(D.overall.w)}<br>${esc(D.overall.b)}</p>
+          ${D.overall.verdict ? `<p><b>${esc(D.overall.verdict)}</b></p>` : ''}
+          <h3 class="an-h">Melhor momento de cada jogador</h3><ul class="an-list an-best">${bestHtml}</ul>
+          <h3 class="an-h">Principais erros</h3><ul class="an-list an-mis">${misHtml}</ul>
+          <h3 class="an-h">Momentos decisivos</h3><div class="an-decisive">${decHtml}</div>
+        </div>
         <p class="small muted">Precisão = quão perto do melhor lance você jogou. Motor: ${r.kind === 'stockfish' ? 'Stockfish' : 'interno'} · ${esc(NIVEIS[r.nivel].nome)}.</p>
         <div class="an-graph-wrap"><svg id="an-graph" viewBox="0 0 300 80" preserveAspectRatio="none" role="img" aria-label="Gráfico da vantagem ao longo da partida. Toque para ir a um lance."></svg></div>
         <table class="an-table"><thead><tr><th></th><th>Brancas</th><th>Pretas</th></tr></thead><tbody>
-          ${['brilhante', 'melhor', 'excelente', 'bom', 'imprecisao', 'erro', 'gafe'].map(row).join('')}</tbody></table>
-        <h3 class="an-h">Momentos críticos</h3>
-        ${crit.length ? '<ul class="an-crit">' + crit.map((x) => `<li><button class="btn" data-an-go="${x.i + 1}" type="button"><span class="q q-${x.m.cls}">${CLS_ICO[x.m.cls]}</span> ${esc(label(x.i))} <span class="small muted">· melhor: ${esc(x.m.best ? sanOf(positions(c.g).pos[x.i].fen, x.m.best) : '—')}</span></button></li>`).join('') + '</ul>'
-          : '<p class="small muted">Nenhum erro grave. Boa partida!</p>'}
+          ${['brilhante', 'genial', 'melhor', 'bom', 'imprecisao', 'erro', 'gafe'].map(row).join('')}</tbody></table>
+        <details class="an-how"><summary>Como cada classe é decidida</summary>
+          <ul class="small">
+            <li><b>!! Brilhante</b>: sacrifício voluntário de peça (bispo, cavalo, torre ou dama) que continua correto, com compensação (a posição segue viva) e quando você não estava com a partida completamente ganha.</li>
+            <li><b>! Genial</b>: lance difícil e sem sacrifício: é o melhor (ou quase) e o segundo melhor é bem pior, ou seja, um lance único que salva ou melhora a posição. Capturas óbvias e lances forçados não contam.</li>
+            <li><b>★ Melhor</b>: o lance que o motor escolheria. <b>✓ Bom</b>: perde pouco. <b>?! Imprecisão</b>, <b>? Erro</b> e <b>?? Gafe</b>: perdem cada vez mais chance de vitória.</li>
+          </ul></details>
         <div class="game-actions"><button class="btn" id="an-redo" type="button">Analisar de novo</button></div>`;
       this.drawGraph();
       box.querySelectorAll('[data-an-go]').forEach((b) => b.addEventListener('click', () => c.review.goTo(+b.dataset.anGo)));
@@ -6545,6 +8012,587 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   };
 
   XD.Analise = Analise;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * explorador.js — Explorador de jogadores do Chess.com.
+ * Pesquisa um jogador (API pública oficial), mostra perfil e estatísticas, lista as partidas aos poucos
+ * (um mês de cada vez, com filtros) e abre qualquer partida na análise com o motor.
+ * Os dados vêm de chesscom.js; nada é inventado: o que a API não traz fica fora da tela.
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'xadrez.explorador.v1';
+  const PERFIL_KEY = 'xadrez.perfil.v1';
+  const PAGE = 20;                      // partidas mostradas por vez
+  const MESES = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+  const KEYS = ['bullet', 'blitz', 'rapid', 'daily'];
+  const MODE_NAME = { bullet: 'Bullet', blitz: 'Blitz', rapid: 'Rapid', daily: 'Daily' };
+  const RES_LABEL = { win: 'Vitória', loss: 'Derrota', draw: 'Empate' };
+
+  const esc = (s) => XD.ui.esc(s == null ? '' : String(s));
+  const fmtDay = (ms) => (ms ? new Date(ms).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
+  const flag = (code) => (code && /^[A-Z]{2}$/.test(code) ? String.fromCodePoint(...[...code].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)) : '');
+  const monthLabel = (m) => (m ? `${MESES[m.m - 1]} de ${m.y}` : '');
+
+  /** Referência única de uma partida do Explorador: usuario/AAAA/MM/id (é o final do endereço da rota). */
+  const gameRef = (user, g) => `${user}/${g.arch.y}/${String(g.arch.m).padStart(2, '0')}/${g.id}`;
+  const gameMeta = (g) => {
+    const w = g.color === 'w' ? g.myName : g.oppName, b = g.color === 'w' ? g.oppName : g.myName;
+    return { titulo: `${w} × ${b}`, sub: [MODE_NAME[g.timeClass] || g.timeClass, g.tc, RES_LABEL[g.result] + ' de ' + g.myName, fmtDay(g.when), g.opening].filter(Boolean).join(' · ') };
+  };
+
+  const Explorador = {
+    ready: false, client: null,
+    s: null,                      // estado da pesquisa atual
+    token: 0,                     // invalida respostas antigas ao pesquisar de novo
+    gameKey: null,
+
+    init() {
+      if (this.ready) return;
+      this.ready = true;
+      this.client = XD.ChessCom.createClient({});
+      $('ex-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const u = XD.ChessCom.cleanUser($('ex-q').value);
+        if (!XD.ChessCom.USER_RE.test(u)) { this.msg('Digite um nome de usuário válido do Chess.com (letras, números, _ ou -).', 'erro'); $('ex-q').focus(); return; }
+        XD.go('#/explorador/' + encodeURIComponent(u.toLowerCase()));
+      });
+      $('ex-me').addEventListener('click', (e) => {
+        const o = e.target.closest('[data-me-open]'); if (o) { XD.go('#/explorador/' + encodeURIComponent(o.dataset.meOpen)); return; }
+        if (e.target.closest('[data-me-clear]')) { this.setMe(null); this.renderMe(); XD.ui.toast('Perfil removido. Pesquise e toque em “Este sou eu” para definir outro.', ''); }
+      });
+      $('ex-result').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-me]'); if (!b) return;
+        const u = b.dataset.me, now = this.me() === u;
+        if (this.setMe(now ? null : u)) { XD.ui.toast(now ? 'Este não é mais o seu perfil.' : 'Pronto: este é o seu perfil.', 'ok'); this.renderProfile(); this.renderMe(); }
+      });
+      $('ex-recent').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-u]'); if (b) { XD.go('#/explorador/' + encodeURIComponent(b.dataset.u)); return; }
+        if (e.target.closest('[data-clear]')) { this.saveRecent([]); this.renderRecent(); }
+      });
+    },
+
+    /* ------------------------------------------------------------- recentes (só nomes de usuário) */
+    recent() { try { const r = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(r.recentes) ? r.recentes.filter((x) => typeof x === 'string').slice(0, 8) : []; } catch (e) { return []; } },
+    saveRecent(list) { try { localStorage.setItem(KEY, JSON.stringify({ recentes: list.slice(0, 8) })); } catch (e) { /* sem espaço */ } },
+    addRecent(u) { this.saveRecent([u, ...this.recent().filter((x) => x !== u)]); },
+    renderRecent() {
+      const r = this.recent(), box = $('ex-recent');
+      box.innerHTML = r.length ? `<div class="ex-chips"><span class="small muted">Recentes:</span>${r.map((u) => `<button class="chip" type="button" data-u="${esc(u)}">${esc(u)}</button>`).join('')}<button class="chip ghost" type="button" data-clear="1" aria-label="Limpar recentes">limpar</button></div>` : '';
+    },
+
+    msg(text, kind, retry) {
+      const el = $('ex-msg');
+      el.className = 'ex-msg' + (kind ? ' ' + kind : '');
+      el.innerHTML = text ? `<span>${esc(text)}</span>${retry ? '<button class="btn" id="ex-retry" type="button">Tentar de novo</button>' : ''}` : '';
+      if (retry) $('ex-retry').addEventListener('click', retry);
+    },
+
+    leave() { this.token++; if (this.s) this.s.loading = false; },
+
+    /* ------------------------------------------------------------- entrada pela rota */
+    enter(user) {
+      this.init();
+      this.renderRecent(); this.renderMe();
+      if (!user) { this.token++; this.s = null; $('ex-q').value = ''; $('ex-result').hidden = true; $('ex-result').innerHTML = ''; this.msg(''); $('ex-intro').hidden = false; return; }
+      user = decodeURIComponent(user).toLowerCase();
+      $('ex-q').value = user;
+      $('ex-intro').hidden = true;
+      if (this.s && this.s.user === user && this.s.profile && this.s.archives && (this.s.stats || this.s.statsErr)) { this.msg(''); this.renderAll(); return; }   // já carregado: volta do jogo
+      this.search(user);
+    },
+
+    async search(user) {
+      const tk = ++this.token, cl = this.client;
+      this.s = { user, profile: null, stats: null, statsErr: null, archives: null, next: -1, games: [], shown: PAGE, loading: false, filters: { mode: '', result: '', period: '' }, gamesErr: null, months: 0 };
+      const res = $('ex-result'); res.hidden = false;
+      res.innerHTML = '<div class="ex-skel" aria-hidden="true"><i></i><i></i><i></i></div>';
+      this.msg('Buscando o jogador…', 'info');
+      try {
+        const prof = await cl.profile(user);
+        if (tk !== this.token) return;
+        this.s.profile = XD.ChessCom.normalizeProfile(prof);
+        this.addRecent(user); this.renderRecent();
+      } catch (e) {
+        if (tk !== this.token || e.kind === 'cancel') return;
+        res.hidden = true; res.innerHTML = '';
+        this.s = null;
+        this.msg(e.kind === 'notfound' ? `Não encontrei "${user}" no Chess.com. Confira o nome de usuário.` : e.message, 'erro', e.kind === 'notfound' || e.kind === 'invalid' ? null : () => this.search(user));
+        return;
+      }
+      this.msg('');
+      this.renderAll();
+      // estatísticas e arquivos em seguida (uma requisição por vez)
+      try { this.s.stats = XD.ChessCom.normalizeStats(await cl.playerStats(user)); } catch (e) { if (tk !== this.token) return; this.s.statsErr = e.message; }
+      if (tk !== this.token) return;
+      this.renderStatsBlock();
+      try {
+        const arch = await cl.archives(user);
+        if (tk !== this.token) return;
+        this.s.archives = arch; this.s.next = arch.length - 1;       // do mês mais novo para trás
+      } catch (e) { if (tk !== this.token) return; this.s.gamesErr = e.message; this.s.archives = []; }
+      this.renderGamesBlock();
+      if (this.s.archives.length) await this.ensure(PAGE);
+    },
+
+    /* ------------------------------------------------------------- partidas: um mês de cada vez */
+    filtered() { return XD.ChessCom.filterGames(this.s.games, this.s.filters); },
+
+    /** Há mais meses que ainda podem ter partidas dentro do período escolhido? */
+    moreMonths(opts) {
+      const s = this.s; if (!s || !s.archives || s.next < 0) return false;
+      const period = opts ? opts.period : s.filters.period;                // gráfico passa o próprio período; a lista usa o filtro dela
+      const t0 = XD.ChessCom.periodStart(period);
+      if (t0 === null) return true;
+      const m = XD.ChessCom.archiveMonth(s.archives[s.next]); if (!m) return true;
+      return Date.UTC(m.y, m.m, 1) > t0;                              // fim do mês ainda dentro do período
+    },
+
+    async loadMonth(opts) {
+      const s = this.s, tk = this.token;
+      if (!s || s.loading || !this.moreMonths(opts)) return false;
+      s.loading = true; this.renderGamesBlock();
+      const url = s.archives[s.next], mo = XD.ChessCom.archiveMonth(url);
+      try {
+        const raw = await this.client.month(url);
+        if (tk !== this.token) return false;
+        const list = raw.map((g) => XD.ChessCom.normalizeGame(g, s.user)).filter(Boolean).map((g) => Object.assign(g, { arch: mo }));
+        list.sort((a, b) => (b.when || 0) - (a.when || 0));
+        s.games = s.games.concat(list); s.next--; s.months++; s.gamesErr = null;
+      } catch (e) {
+        if (tk !== this.token || e.kind === 'cancel') return false;
+        s.gamesErr = e.message; s.loading = false; this.renderGamesBlock(); return false;
+      }
+      s.loading = false; this.renderGamesBlock(); return true;
+    },
+
+    /** Carrega meses (até 6 por vez) até haver `n` partidas que passam nos filtros. */
+    async ensure(n) {
+      const s = this.s; let guard = 0;
+      while (s && this.token && this.filtered().length < n && this.moreMonths() && guard++ < 6) { if (!(await this.loadMonth())) break; }
+    },
+
+    /* ------------------------------------------------------------- tela */
+    renderAll() {
+      const s = this.s, res = $('ex-result'); res.hidden = false;
+      res.innerHTML = '<div id="ex-profile"></div><div id="ex-stats"></div><div id="ex-chart"></div><div id="ex-games"></div>';
+      this.renderProfile(); this.renderStatsBlock(); this.renderGamesBlock();
+      if (s.archives && s.archives.length && !s.games.length && !s.loading && !s.gamesErr) this.ensure(PAGE);
+    },
+
+    renderProfile() {
+      const p = this.s.profile, box = $('ex-profile'); if (!box) return;
+      const initial = (p.username || '?').slice(0, 1).toUpperCase();
+      box.innerHTML = `<div class="panel ex-prof fade-in">
+        <div class="ex-ava">${p.avatar ? `<img src="${esc(p.avatar)}" alt="Foto de perfil de ${esc(p.username)}" referrerpolicy="no-referrer" loading="lazy" width="72" height="72">` : `<span aria-hidden="true">${esc(initial)}</span>`}</div>
+        ${XD.Favoritos ? `<div class="ex-fav">${XD.Favoritos.starHtml('jogador', (p.username || '').toLowerCase(), { titulo: p.username, sub: [p.name, p.country ? p.country.name : ''].filter(Boolean).join(' · '), extra: { avatar: p.avatar || '', titulo: p.title || '' } })}</div>` : ''}
+        <div class="ex-prof-info">
+          <h2>${p.title ? `<span class="tag gambito">${esc(p.title)}</span> ` : ''}${esc(p.username)}</h2>
+          ${p.name ? `<p class="ex-name">${esc(p.name)}</p>` : ''}
+          <p class="small muted">${p.country ? `${flag(p.country.code)} ${esc(p.country.name)}` : ''}${p.country && p.joined ? ' · ' : ''}${p.joined ? 'No Chess.com desde ' + esc(fmtDay(p.joined)) : ''}</p>
+          ${p.username ? `<button class="btn ex-me-btn${this.me() === p.username.toLowerCase() ? ' on' : ''}" type="button" data-me="${esc(p.username.toLowerCase())}" aria-pressed="${this.me() === p.username.toLowerCase()}">${this.me() === p.username.toLowerCase() ? '✓ Meu perfil' : '👤 Este sou eu'}</button>` : ''}
+          ${p.url ? `<a class="small" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Abrir perfil no Chess.com ↗</a>` : ''}
+        </div></div>`;
+      const img = box.querySelector('.ex-ava img');
+      if (img) img.addEventListener('error', () => { img.parentNode.innerHTML = `<span aria-hidden="true">${esc(initial)}</span>`; });
+    },
+
+    renderStatsBlock() {
+      const s = this.s, box = $('ex-stats'); if (!box) return;
+      if (!s.stats && !s.statsErr) { box.innerHTML = '<div class="panel ex-loading"><span class="spinner" aria-hidden="true"></span> Carregando estatísticas…</div>'; return; }
+      if (s.statsErr) { box.innerHTML = `<div class="panel"><h2>Estatísticas</h2><p class="muted small">Não consegui carregar as estatísticas: ${esc(s.statsErr)}</p></div>`; return; }
+      const st = s.stats, pct = (v) => (v === null ? '—' : v.toFixed(1).replace('.', ',') + '%');
+      const T = st.total;
+      const totals = T ? `<div class="ex-totals">
+          <div class="ex-card win"><strong>${T.win.toLocaleString('pt-BR')}</strong><span>Vitórias</span></div>
+          <div class="ex-card loss"><strong>${T.loss.toLocaleString('pt-BR')}</strong><span>Derrotas</span></div>
+          <div class="ex-card draw"><strong>${T.draw.toLocaleString('pt-BR')}</strong><span>Empates</span></div>
+          <div class="ex-card"><strong>${T.games.toLocaleString('pt-BR')}</strong><span>Partidas</span></div></div>
+        <p class="small muted">Somando Bullet, Blitz, Rapid e Daily · ${pct(T.winPct)} de vitórias</p>` : '<p class="muted small">O Chess.com não informou resultados deste jogador nas quatro modalidades.</p>';
+      const modes = st.modes.map((m) => {
+        if (!m.available) return `<div class="ex-mode off"><h3>${esc(m.label)}</h3><p class="small muted">Sem dados nesta modalidade.</p></div>`;
+        const bar = m.games ? `<div class="ex-bar" role="img" aria-label="${m.win} vitórias, ${m.draw} empates, ${m.loss} derrotas"><i class="w" style="width:${(m.win / m.games * 100).toFixed(1)}%"></i><i class="d" style="width:${(m.draw / m.games * 100).toFixed(1)}%"></i><i class="l" style="width:${(m.loss / m.games * 100).toFixed(1)}%"></i></div>` : '';
+        return `<div class="ex-mode"><h3>${esc(m.label)}</h3>
+          <p class="ex-rating">${m.rating !== null ? m.rating : '—'}<small>rating atual</small></p>
+          <p class="small muted">${m.best !== null ? `Maior: <b>${m.best}</b>${m.bestDate ? ' · ' + esc(fmtDay(m.bestDate)) : ''}` : 'Maior rating: não informado'}</p>
+          ${m.games !== null ? `${bar}<p class="small"><span class="cw">${m.win.toLocaleString('pt-BR')} V</span> · <span class="cd">${m.draw.toLocaleString('pt-BR')} E</span> · <span class="cl">${m.loss.toLocaleString('pt-BR')} D</span></p>
+          <p class="small muted">${m.games.toLocaleString('pt-BR')} partidas · ${pct(m.winPct)} de vitórias</p>` : '<p class="small muted">Resultados não informados.</p>'}</div>`;
+      }).join('');
+      box.innerHTML = `<div class="panel fade-in"><h2>Estatísticas</h2>${totals}<div class="ex-modes">${modes}</div></div>`;
+      this.renderChartBlock();
+    },
+
+    renderGamesBlock() {
+      const s = this.s, box = $('ex-games'); if (!box) return;
+      if (!s.archives) { box.innerHTML = '<div class="panel ex-loading"><span class="spinner" aria-hidden="true"></span> Procurando partidas…</div>'; return; }
+      const f = s.filters, list = this.filtered(), shown = list.slice(0, s.shown);
+      const sel = (id, label, opts, val) => `<label class="field ex-f"><span>${label}</span><select id="${id}">${opts.map(([v, t]) => `<option value="${v}"${v === val ? ' selected' : ''}>${t}</option>`).join('')}</select></label>`;
+      const filters = `<div class="ex-filters">
+        ${sel('ex-f-mode', 'Modalidade', [['', 'Todas'], ['bullet', 'Bullet'], ['blitz', 'Blitz'], ['rapid', 'Rapid'], ['daily', 'Daily']], f.mode)}
+        ${sel('ex-f-res', 'Resultado', [['', 'Todos'], ['win', 'Vitórias'], ['loss', 'Derrotas'], ['draw', 'Empates']], f.result)}
+        ${sel('ex-f-per', 'Período', [['', 'Todo o histórico'], ['7d', 'Últimos 7 dias'], ['30d', 'Últimos 30 dias'], ['90d', 'Últimos 90 dias'], ['1y', 'Último ano']], f.period)}</div>`;
+      const row = (g, i) => {
+        const when = fmtDay(g.when), op = g.opening ? `<span class="ex-op">${esc(g.opening)}</span>` : '';
+        const can = g.supported && g.arch && g.id;
+        return `<li class="ex-game ${g.result}"><div class="ex-g-top">
+            <span class="ex-col ${g.color}" title="${g.color === 'w' ? 'Brancas' : 'Pretas'}"></span>
+            <div class="ex-g-main"><strong>vs ${esc(g.oppName)}</strong> <span class="muted small">${g.oppRating !== null ? '(' + g.oppRating + ')' : ''}</span>
+              <div class="small muted">Você${g.myRating !== null ? ' (' + g.myRating + ')' : ''} · ${g.color === 'w' ? 'brancas' : 'pretas'} · ${esc(MODE_NAME[g.timeClass] || g.timeClass || '—')}${g.tc ? ' ' + esc(g.tc) : ''} · ${esc(when)}</div>
+              ${op}</div>
+            <span class="ex-res ${g.result}">${RES_LABEL[g.result]}</span></div>
+          <div class="ex-g-act">${can && XD.Favoritos ? XD.Favoritos.starHtml('partida', gameRef(s.user, g), gameMeta(g)) : ''}<span class="small muted ex-rtxt">${esc(XD.ChessCom.resultText(g.myCode))}</span>
+            <button class="btn ${can ? 'primary' : ''}" type="button" data-an="${i}" ${can ? '' : 'disabled'}>${can ? 'Analisar partida' : (g.rules !== 'chess' ? 'Variante não suportada' : 'Sem PGN')}</button></div></li>`;
+      };
+      const mais = this.moreMonths();
+      const nextM = mais ? monthLabel(XD.ChessCom.archiveMonth(s.archives[s.next])) : '';
+      let foot = '';
+      if (s.loading) foot = '<p class="ex-loading"><span class="spinner" aria-hidden="true"></span> Carregando partidas…</p>';
+      else if (list.length > shown.length) foot = `<button class="btn" id="ex-more" type="button">Mostrar mais ${Math.min(PAGE, list.length - shown.length)} partidas</button>`;
+      else if (mais) foot = `<button class="btn" id="ex-month" type="button">Carregar ${esc(nextM)}</button>`;
+      else foot = `<p class="small muted">${s.archives.length ? 'Fim do histórico' + (f.period ? ' neste período' : '') + '.' : ''}</p>`;
+      const total = s.games.length;
+      box.innerHTML = `<div class="panel fade-in"><h2>Partidas</h2>
+        ${!s.archives.length && !s.gamesErr ? '<p class="muted">Este jogador não tem partidas públicas.</p>' : `${filters}
+        <p class="small muted" id="ex-count">${list.length} partida${list.length === 1 ? '' : 's'} com esses filtros · ${total} carregada${total === 1 ? '' : 's'} de ${s.months} mês${s.months === 1 ? '' : 'es'}${mais ? ' · há meses mais antigos' : ''}</p>
+        ${s.gamesErr ? `<div class="ex-msg erro"><span>${esc(s.gamesErr)}</span><button class="btn" id="ex-gretry" type="button">Tentar de novo</button></div>` : ''}
+        ${list.length ? `<ul class="ex-games">${shown.map((g) => row(g, s.games.indexOf(g))).join('')}</ul>` : (s.loading ? '' : '<p class="muted">Nenhuma partida com esses filtros nos meses já carregados.</p>')}
+        <div class="ex-foot">${foot}</div>`}</div>`;
+      const on = (id, fn) => { const el = $(id); if (el) el.addEventListener('change', fn); };
+      const refilter = async () => {
+        s.filters = { mode: $('ex-f-mode').value, result: $('ex-f-res').value, period: $('ex-f-per').value }; s.shown = PAGE;
+        this.renderGamesBlock(); await this.ensure(PAGE);
+      };
+      on('ex-f-mode', refilter); on('ex-f-res', refilter); on('ex-f-per', refilter);
+      const more = $('ex-more'); if (more) more.addEventListener('click', () => { s.shown += PAGE; this.renderGamesBlock(); });
+      const mo = $('ex-month'); if (mo) mo.addEventListener('click', async () => { s.shown += PAGE; await this.loadMonth(); });
+      const gr = $('ex-gretry'); if (gr) gr.addEventListener('click', () => this.loadMonth());
+      this.renderChartBlock();
+      box.querySelectorAll('[data-an]').forEach((b) => b.addEventListener('click', () => {
+        const g = s.games[+b.dataset.an];
+        XD.go(`#/explorador/jogo/${encodeURIComponent(s.user)}/${g.arch.y}/${String(g.arch.m).padStart(2, '0')}/${g.id}`);
+      }));
+    },
+
+
+    /* ------------------------------------------------------------- gráfico de rating */
+    /** Modalidade mostrada: a escolhida; senão a de mais partidas nas estatísticas que tenha série; senão a de maior série. */
+    chartMode() {
+      const s = this.s, C = XD.ChessCom;
+      const cnt = Object.fromEntries(KEYS.map((m) => [m, C.ratingSeries(s.games, m).length]));
+      if (s.chartMode && KEYS.includes(s.chartMode)) return { mode: s.chartMode, cnt };
+      let best = null;
+      const byStats = s.stats ? s.stats.modes.filter((m) => m.available && cnt[m.key] > 0).sort((a, b) => (b.games || 0) - (a.games || 0)) : [];
+      if (byStats.length) best = byStats[0].key;
+      else best = KEYS.slice().sort((a, b) => cnt[b] - cnt[a])[0];
+      return { mode: best, cnt };
+    },
+
+    /** Meses que ainda faltam carregar para cobrir o período do gráfico ('' = todos). */
+    monthsLeft(period) {
+      const s = this.s, t0 = XD.ChessCom.periodStart(period); let n = 0;
+      for (let i = s.next; i >= 0; i--) { const m = XD.ChessCom.archiveMonth(s.archives[i]); if (t0 !== null && m && Date.UTC(m.y, m.m, 1) <= t0) break; n++; }
+      return n;
+    },
+
+    /** Carrega meses mais antigos para o gráfico (n = quantos; 0 = todos os que cobrem o período), com botão de parar. */
+    async loadRange(n, period) {
+      const s = this.s, tk = this.token; if (!s || s.chartBusy || s.loading) return;
+      const opts = { period: period || '' };
+      const total = this.monthsLeft(opts.period); if (!total) return;
+      s.chartBusy = true; s.chartStop = false; s.chartDone = 0; s.chartTotal = n ? Math.min(n, total) : total;
+      this.renderChartBlock();
+      while (tk === this.token && !s.chartStop && this.moreMonths(opts) && (!n || s.chartDone < n)) {
+        if (!(await this.loadMonth(opts))) break;
+        s.chartDone++; this.renderChartBlock();
+      }
+      if (tk !== this.token) return;
+      s.chartBusy = false; this.renderChartBlock();
+    },
+
+    chartSvg(series, sum) {
+      const W = 360, H = 210, L = 40, R = 12, T = 14, B = 26, iw = W - L - R, ih = H - T - B;
+      const t0 = series[0].t, t1 = series[series.length - 1].t, span = Math.max(1, t1 - t0);
+      let lo = sum.min, hi = sum.max; const pad = Math.max(8, Math.round((hi - lo) * 0.12)); lo -= pad; hi += pad;
+      const X = (t) => (series.length === 1 ? L + iw / 2 : L + ((t - t0) / span) * iw), Y = (r) => T + (1 - (r - lo) / (hi - lo)) * ih;
+      const pts = series.map((p) => `${X(p.t).toFixed(1)},${Y(p.r).toFixed(1)}`);
+      const grid = [0, 1, 2, 3].map((i) => { const v = Math.round(lo + (hi - lo) * i / 3), y = Y(v); return `<line x1="${L}" x2="${W - R}" y1="${y.toFixed(1)}" y2="${y.toFixed(1)}" class="g"/><text x="${L - 5}" y="${(y + 3.5).toFixed(1)}" text-anchor="end">${v}</text>`; }).join('');
+      const dl = (t) => new Date(t).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: '2-digit' });
+      const xl = `<text x="${L}" y="${H - 7}" text-anchor="start">${esc(dl(t0))}</text><text x="${W - R}" y="${H - 7}" text-anchor="end">${esc(dl(t1))}</text>`;
+      const mx = series.find((p) => p.r === sum.max);
+      const line = series.length > 1 ? `<path class="area" d="M${pts[0]} L${pts.join(' L')} L${X(t1).toFixed(1)},${T + ih} L${X(t0).toFixed(1)},${T + ih}Z"/><polyline class="ln" points="${pts.join(' ')}"/>` : '';
+      return `<svg class="ex-ch-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gráfico de linha do rating: de ${sum.first} para ${sum.last}, maior ${sum.max}, menor ${sum.min}, em ${sum.n} partidas" preserveAspectRatio="none">
+        <defs><linearGradient id="ex-grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4af37" stop-opacity=".28"/><stop offset="1" stop-color="#d4af37" stop-opacity="0"/></linearGradient></defs>
+        <g class="axis">${grid}${xl}</g>${line}
+        <circle class="mx" cx="${X(mx.t).toFixed(1)}" cy="${Y(mx.r).toFixed(1)}" r="3.6"/>
+        <g class="cur" hidden><line class="cl" y1="${T}" y2="${T + ih}"/><circle r="4.6"/></g>
+        <rect class="hit" x="${L}" y="${T}" width="${iw}" height="${ih}" fill="transparent"/></svg>`;
+    },
+
+    renderChartBlock() {
+      const s = this.s, box = $('ex-chart'); if (!s || !box) return;
+      if (!s.archives || (!s.stats && !s.statsErr) || (s.loading && !s.games.length)) { box.innerHTML = ''; return; }     // espera as estatísticas: elas definem a modalidade inicial
+      if (!s.archives.length) { box.innerHTML = ''; return; }
+      const C = XD.ChessCom, { mode, cnt } = this.chartMode(), per = s.chartPeriod || '', t0 = C.periodStart(per);
+      const series = C.ratingSeries(s.games, mode).filter((x) => t0 === null || x.t >= t0), sum = C.ratingSummary(series);
+      const perTxt = { '7d': 'nos últimos 7 dias', '30d': 'nos últimos 30 dias', '': 'em todo o histórico carregado' }[per];
+      const pchips = [['7d', '7 dias'], ['30d', '30 dias'], ['', 'Todo']].map(([v, t]) => `<button class="chip${v === per ? ' on' : ''}" type="button" role="tab" aria-selected="${v === per}" data-cp="${v}">${t}</button>`).join('');
+      const chips = KEYS.map((m) => `<button class="chip${m === mode ? ' on' : ''}" type="button" role="tab" aria-selected="${m === mode}" data-cm="${m}">${MODE_NAME[m]} <span class="fav-n">${cnt[m]}</span></button>`).join('');
+      const left = s.next + 1, mais = left > 0 && !per;
+      let body;
+      if (!sum) body = `<p class="muted small">Nenhuma partida valendo rating de ${esc(MODE_NAME[mode])} ${perTxt}.${per ? ' Tente um período maior.' : (mais ? ' Carregue meses mais antigos abaixo.' : '')}</p>`;
+      else if (sum.n < 2) body = `<p class="muted small">Só há 1 partida de ${esc(MODE_NAME[mode])} ${perTxt} (rating ${sum.last}). ${per ? 'Tente um período maior.' : 'Carregue mais meses para formar a linha.'}</p>${this.chartSvg(series, sum)}`;
+      else {
+        const d = sum.delta, sign = d > 0 ? '+' : d < 0 ? '−' : '';
+        body = `<div class="ex-ch-sum"><div><strong>${sum.last}</strong><span>Atual</span></div><div><strong>${sum.max}</strong><span>Maior</span></div><div><strong>${sum.min}</strong><span>Menor</span></div><div class="${d > 0 ? 'cw' : d < 0 ? 'cl' : ''}"><strong>${sign}${Math.abs(d)}</strong><span>Variação</span></div></div>
+          <div class="ex-ch-wrap">${this.chartSvg(series, sum)}</div><p class="small ex-ch-read" id="ex-ch-read" aria-live="polite"></p>`;
+      }
+      const prog = s.chartBusy ? `<div class="ex-ch-act"><span class="ex-loading"><span class="spinner" aria-hidden="true"></span> Carregando mês ${Math.min(s.chartDone + 1, s.chartTotal)} de ${s.chartTotal}…</span><button class="btn" type="button" id="ex-ch-stop">Parar</button></div>`
+        : mais ? `<div class="ex-ch-act"><button class="btn" type="button" id="ex-ch-3"${s.loading ? ' disabled' : ''}>+3 meses</button><button class="btn" type="button" id="ex-ch-all"${s.loading ? ' disabled' : ''}>Todo o histórico (${left} ${left === 1 ? 'mês' : 'meses'})</button></div>` : '';
+      box.innerHTML = `<div class="panel ex-chart fade-in"><h2>Evolução do rating</h2><div class="ex-chips" role="tablist" aria-label="Modalidade do gráfico">${chips}</div><div class="ex-chips" role="tablist" aria-label="Período do gráfico"><span class="small muted">Período:</span>${pchips}</div>${body}
+        <p class="small muted">Montado com o rating que aparece em cada partida valendo rating: ${sum ? sum.n : 0} partida${sum && sum.n === 1 ? '' : 's'} ${perTxt}${per ? '' : ` (${s.months} mês${s.months === 1 ? '' : 'es'} carregado${s.months === 1 ? '' : 's'})`}. Partidas de meses ainda não carregados não entram.</p>${prog}</div>`;
+      box.querySelectorAll('[data-cm]').forEach((b) => b.addEventListener('click', () => { s.chartMode = b.dataset.cm; this.renderChartBlock(); }));
+      box.querySelectorAll('[data-cp]').forEach((b) => b.addEventListener('click', () => { s.chartPeriod = b.dataset.cp; this.renderChartBlock(); if (s.chartPeriod) this.loadRange(0, s.chartPeriod); }));
+      const on = (id, fn) => { const el = $(id); if (el) el.addEventListener('click', fn); };
+      on('ex-ch-3', () => this.loadRange(3, '')); on('ex-ch-all', () => this.loadRange(0, '')); on('ex-ch-stop', () => { s.chartStop = true; });
+      if (sum && sum.n >= 2) this.bindChart(box, series);
+    },
+
+    /** Toque/arraste no gráfico: mostra o ponto mais próximo. */
+    bindChart(box, series) {
+      const svg = box.querySelector('.ex-ch-svg'), cur = svg.querySelector('.cur'), read = $('ex-ch-read'), hit = svg.querySelector('.hit');
+      const t0 = series[0].t, span = Math.max(1, series[series.length - 1].t - t0), L = 40, iw = 308;
+      const lo = Math.min(...series.map((p) => p.r)), hi = Math.max(...series.map((p) => p.r)), pad = Math.max(8, Math.round((hi - lo) * 0.12));
+      const Y = (r) => 14 + (1 - (r - (lo - pad)) / ((hi + pad) - (lo - pad))) * 170;
+      const show = (p) => {
+        const x = L + ((p.t - t0) / span) * iw;
+        cur.hidden = false; cur.querySelector('.cl').setAttribute('x1', x); cur.querySelector('.cl').setAttribute('x2', x);
+        const c = cur.querySelector('circle'); c.setAttribute('cx', x); c.setAttribute('cy', Y(p.r));
+        read.innerHTML = `<b>${p.r}</b> · ${esc(fmtDay(p.t))} · ${esc(RES_LABEL[p.result])} vs ${esc(p.opp)}${p.oppRating !== null ? ' (' + p.oppRating + ')' : ''}`;
+      };
+      const at = (ev) => {
+        const r = svg.getBoundingClientRect(), vx = ((ev.clientX - r.left) / r.width) * 360, tt = t0 + ((vx - L) / iw) * span;
+        let lo2 = 0, hi2 = series.length - 1;
+        while (hi2 - lo2 > 1) { const mid = (lo2 + hi2) >> 1; if (series[mid].t < tt) lo2 = mid; else hi2 = mid; }
+        show(Math.abs(series[lo2].t - tt) <= Math.abs(series[hi2].t - tt) ? series[lo2] : series[hi2]);
+      };
+      hit.addEventListener('pointerdown', (e) => { try { hit.setPointerCapture(e.pointerId); } catch (x) { /* ok */ } at(e); });
+      hit.addEventListener('pointermove', at);
+      show(series[series.length - 1]);
+    },
+
+    /* ------------------------------------------------------------- Meu perfil (só o nome de usuário, neste aparelho) */
+    me() { try { const r = JSON.parse(localStorage.getItem(PERFIL_KEY)); return r && typeof r.usuario === 'string' && XD.ChessCom.USER_RE.test(r.usuario) ? r.usuario.toLowerCase() : null; } catch (e) { return null; } },
+    setMe(u) { try { if (u) localStorage.setItem(PERFIL_KEY, JSON.stringify({ versao: 1, usuario: u })); else localStorage.removeItem(PERFIL_KEY); return true; } catch (e) { XD.ui.toast('Não consegui gravar o perfil neste navegador.', 'erro'); return false; } },
+    renderMe() {
+      const u = this.me(), box = $('ex-me'); if (!box) return;
+      box.innerHTML = u
+        ? `<div class="ex-me"><button class="btn primary" type="button" data-me-open="${esc(u)}">👤 Meu perfil · ${esc(u)}</button><button class="chip ghost" type="button" data-me-clear="1">trocar</button></div>`
+        : '<p class="small muted ex-me-hint">👤 Abra seu perfil e toque em <b>Este sou eu</b> para ele ficar a um toque de distância.</p>';
+    },
+
+    /* ------------------------------------------------------------- partida: abre na análise */
+    /** Rota #/explorador/jogo/<usuario>/<AAAA>/<MM>/<id>. Refaz a busca do mês (vem do cache se já foi visto). */
+    async openGame(user, y, mm, id, done) {
+      this.init();
+      const tk = ++this.token;
+      user = decodeURIComponent(user).toLowerCase();
+      const host = $('game-detail');
+      host.innerHTML = '<div class="panel ex-loading"><span class="spinner" aria-hidden="true"></span> Carregando a partida do Chess.com…</div>';
+      const back = $('gd-back'); back.setAttribute('href', '#/explorador/' + encodeURIComponent(user)); back.textContent = '← Explorador';
+      const fail = (m) => { host.innerHTML = `<div class="panel"><p>${esc(m)}</p><a class="btn" href="#/explorador/${encodeURIComponent(user)}">Voltar ao Explorador</a></div>`; };
+      try {
+        if (!/^\d{4}$/.test(y) || !/^\d{2}$/.test(mm) || !/^\d+$/.test(id)) throw new Error('Endereço de partida inválido.');
+        const raw = await this.client.month(`${XD.ChessCom.BASE}/player/${encodeURIComponent(user)}/games/${y}/${mm}`);
+        if (tk !== this.token) return;
+        const found = raw.find((g) => g && g.url && new RegExp('/' + id + '/?$').test(g.url));
+        const n = found && XD.ChessCom.normalizeGame(found, user);
+        if (!n) throw new Error('Não encontrei essa partida nos dados do Chess.com.');
+        if (!n.supported) throw new Error('Esta partida é de uma variante ou não tem PGN, e não dá para analisá-la aqui.');
+        const parsed = XD.ChessCom.parsePgn(n.pgn);
+        const sess = new XD.GameSession({ startFen: root.Chess.START_FEN, moves: parsed.sans });
+        const ser = sess.serialize();
+        const H = parsed.headers, w = H.White || (n.color === 'w' ? n.myName : n.oppName), b = H.Black || (n.color === 'b' ? n.myName : n.oppName);
+        const result = H.Result && /^(1-0|0-1|1\/2-1\/2)$/.test(H.Result) ? H.Result : (n.result === 'draw' ? '1/2-1/2' : (n.result === 'win') === (n.color === 'w') ? '1-0' : '0-1');
+        const g = { id: 'cc-' + n.id, title: `${w} × ${b}`, createdAt: new Date(n.when || Date.now()).toISOString(), startFen: sess.startFen, finalFen: ser.finalFen,
+          result, moves: ser.moves, meta: { nomes: { w: `${w}${H.WhiteElo ? ' (' + H.WhiteElo + ')' : ''}`, b: `${b}${H.BlackElo ? ' (' + H.BlackElo + ')' : ''}` }, modo: 'chesscom' } };
+        const plainSub = ['Chess.com', MODE_NAME[n.timeClass] || n.timeClass, n.tc, fmtDay(n.when), n.opening].filter(Boolean).join(' · ');
+        const sub = `Chess.com · ${esc(MODE_NAME[n.timeClass] || n.timeClass || '')}${n.tc ? ' ' + esc(n.tc) : ''} · ${esc(fmtDay(n.when))}${n.opening ? ' · ' + esc(n.opening) : ''}`;
+        XD.Games.showExternal(g, { fav: { ref: `${user}/${y}/${mm}/${id}`, meta: { titulo: g.title, sub: plainSub } }, back: { href: '#/explorador/' + encodeURIComponent(user), text: '← Explorador' }, sub, saveTitle: `${w} × ${b} (Chess.com)` });
+        XD.Games.fillOpening($('gd-op'), parsed.sans);
+        XD.activeReview = XD.Games.review;
+        if (done) done(g);
+        XD.Analise.autoStart();               // o usuário já pediu "Analisar partida": começa sozinho
+      } catch (e) {
+        if (tk !== this.token || e.kind === 'cancel') return;
+        fail(e.message || 'Não foi possível abrir a partida.');
+      }
+    }
+  };
+
+  XD.Explorador = Explorador;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * favoritos.js — Biblioteca pessoal: Aberturas e Gambitos, Partidas (do Explorador) e Jogadores (do Explorador).
+ *
+ * Cada favorito tem um id único "<tipo>:<referência>" (não duplica). Fica em localStorage (xadrez.favoritos.v1).
+ * A estrela (☆/★) é um botão comum com data-attributes; um único ouvinte global cuida de todas.
+ * Nada é preenchido sozinho: a lista só tem o que o usuário favoritou.
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'xadrez.favoritos.v1';
+  const MAX = 500;
+
+  const TIPOS = {
+    abertura: { slug: 'aberturas', nome: 'Aberturas e Gambitos', curto: 'Aberturas', ico: '♞', vazio: 'Você ainda não favoritou nenhuma abertura ou gambito.', dica: 'Abra uma abertura na Academia e toque na estrela ☆ ao lado do nome.', cta: ['#/academia', 'Ir para a Academia'] },
+    partida: { slug: 'partidas', nome: 'Partidas', curto: 'Partidas', ico: '♟', vazio: 'Você ainda não favoritou nenhuma partida.', dica: 'No Explorador, toque na estrela ☆ de uma partida para guardá-la e analisar depois.', cta: ['#/explorador', 'Ir para o Explorador'] },
+    jogador: { slug: 'jogadores', nome: 'Jogadores', curto: 'Jogadores', ico: '♚', vazio: 'Você ainda não favoritou nenhum jogador.', dica: 'Pesquise um jogador no Explorador e toque na estrela ☆ do perfil.', cta: ['#/explorador', 'Ir para o Explorador'] }
+  };
+  const BY_SLUG = Object.fromEntries(Object.entries(TIPOS).map(([k, v]) => [v.slug, k]));
+  const STAR = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7l-5.4 3.1 1.2-6.1L3.3 9.5l6.1-.7z" stroke-linejoin="round"/></svg>';
+
+  const esc = (s) => XD.ui.esc(s == null ? '' : String(s));
+  const norm = (s) => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const idOf = (tipo, ref) => tipo + ':' + ref;
+
+  /** Valida um registro lido do armazenamento (ignora o que estiver estragado). */
+  function clean(x) {
+    if (!x || typeof x !== 'object' || !TIPOS[x.tipo] || typeof x.ref !== 'string' || !x.ref || x.ref.length > 200) return null;
+    const titulo = typeof x.titulo === 'string' && x.titulo.trim() ? x.titulo.trim().slice(0, 120) : x.ref;
+    const extra = {};
+    if (x.extra && typeof x.extra === 'object') for (const k of ['avatar', 'titulo', 'pais']) if (typeof x.extra[k] === 'string') extra[k] = x.extra[k].slice(0, 300);
+    return { id: idOf(x.tipo, x.ref), tipo: x.tipo, ref: x.ref, titulo, sub: typeof x.sub === 'string' ? x.sub.slice(0, 200) : '', extra, addedAt: Number.isFinite(x.addedAt) ? x.addedAt : Date.now() };
+  }
+
+  const Favoritos = {
+    TIPOS, idOf, norm, mem: null, cat: 'abertura', query: '',
+
+    /* ---------------------------------------------------------------- armazenamento */
+    load() {
+      let raw = null;
+      try { raw = JSON.parse(localStorage.getItem(KEY)); } catch (e) { raw = null; }
+      if (!raw && this.mem) return this.mem;
+      const seen = new Set(), out = [];
+      for (const x of Array.isArray(raw && raw.itens) ? raw.itens : []) { const c = clean(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.push(c); } }
+      return out;
+    },
+    save(list) {
+      this.mem = list;
+      try { localStorage.setItem(KEY, JSON.stringify({ versao: 1, itens: list })); return true; }
+      catch (e) { XD.ui.toast('Não consegui gravar os favoritos neste navegador.', 'erro'); return false; }
+    },
+    items(tipo) { const l = this.load(); return tipo ? l.filter((x) => x.tipo === tipo) : l; },
+    has(tipo, ref) { return this.load().some((x) => x.id === idOf(tipo, ref)); },
+
+    /** Adiciona se não existe, remove se existe. Devolve true se ficou favoritado. */
+    toggle(tipo, ref, meta) {
+      if (!TIPOS[tipo] || !ref) return false;
+      const list = this.load(), id = idOf(tipo, ref), i = list.findIndex((x) => x.id === id);
+      if (i >= 0) { list.splice(i, 1); this.save(list); return false; }
+      if (list.length >= MAX) { XD.ui.toast(`Limite de ${MAX} favoritos atingido. Remova algum primeiro.`, 'erro'); return false; }
+      const c = clean(Object.assign({ tipo, ref, addedAt: Date.now() }, meta || {}));
+      if (!c) return false;
+      list.unshift(c);
+      return this.save(list) ? true : false;
+    },
+    remove(id) { const l = this.load(), n = l.filter((x) => x.id !== id); if (n.length !== l.length) this.save(n); },
+
+    /** Endereço para abrir o item. */
+    href(x) {
+      if (x.tipo === 'abertura') return '#/academia/' + encodeURIComponent(x.ref);
+      if (x.tipo === 'jogador') return '#/explorador/' + encodeURIComponent(x.ref);
+      return '#/explorador/jogo/' + x.ref.split('/').map(encodeURIComponent).join('/');
+    },
+
+    /* ---------------------------------------------------------------- estrela */
+    /** HTML da estrela. meta = { titulo, sub, extra:{…} } (guardado só ao favoritar). */
+    starHtml(tipo, ref, meta) {
+      const on = this.has(tipo, ref), nome = TIPOS[tipo].nome.toLowerCase();
+      return `<button class="fav-star${on ? ' on' : ''}" type="button" data-fav-tipo="${esc(tipo)}" data-fav-ref="${esc(ref)}" data-fav-meta="${esc(JSON.stringify(meta || {}))}" aria-pressed="${on}" aria-label="${on ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}" title="${on ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}">${STAR}</button>`;
+    },
+    syncStars(id, on) {
+      document.querySelectorAll('.fav-star').forEach((b) => {
+        if (idOf(b.dataset.favTipo, b.dataset.favRef) !== id) return;
+        b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on));
+        const t = on ? 'Remover dos favoritos' : 'Adicionar aos favoritos'; b.setAttribute('aria-label', t); b.title = t;
+        if (on) { b.classList.remove('pop'); void b.offsetWidth; b.classList.add('pop'); }
+      });
+    },
+
+    init() {
+      if (this.bound) return; this.bound = true;
+      document.addEventListener('click', (e) => {
+        const b = e.target.closest && e.target.closest('.fav-star'); if (!b) return;
+        e.preventDefault(); e.stopPropagation();
+        let meta = {}; try { meta = JSON.parse(b.dataset.favMeta || '{}'); } catch (x) { meta = {}; }
+        const tipo = b.dataset.favTipo, ref = b.dataset.favRef, id = idOf(tipo, ref);
+        const on = this.toggle(tipo, ref, meta);
+        this.syncStars(id, on);
+        if (on) XD.ui.toast('Adicionado aos Favoritos ★', 'ok'); else if (!this.has(tipo, ref)) XD.ui.toast('Removido dos Favoritos.', '');
+        if (!$('view-favoritos').hidden) this.render();
+      }, true);
+      $('fav-q').addEventListener('input', (e) => { this.query = e.target.value; this.render(); });
+      $('fav-tabs').addEventListener('click', (e) => {
+        const b = e.target.closest('[data-cat]'); if (b) XD.go('#/favoritos/' + TIPOS[b.dataset.cat].slug);
+      });
+      $('fav-list').addEventListener('click', (e) => {
+        const r = e.target.closest('[data-rm]'); if (!r) return;
+        this.remove(r.dataset.rm); this.syncStars(r.dataset.rm, false);
+        XD.ui.toast('Removido dos Favoritos.', ''); this.render();
+      });
+    },
+
+    /* ---------------------------------------------------------------- tela */
+    enter(slug) {
+      this.init();
+      if (slug && BY_SLUG[slug]) this.cat = BY_SLUG[slug];
+      this.render();
+    },
+
+    matches(x, q) { return !q || norm(x.titulo + ' ' + x.sub + ' ' + x.ref).includes(q); },
+
+    render() {
+      const q = norm(this.query.trim()), all = this.load();
+      $('fav-tabs').innerHTML = Object.keys(TIPOS).map((k) => {
+        const n = all.filter((x) => x.tipo === k && this.matches(x, q)).length;
+        return `<button class="chip${k === this.cat ? ' on' : ''}" type="button" role="tab" aria-selected="${k === this.cat}" data-cat="${k}">${TIPOS[k].ico} ${esc(TIPOS[k].curto)} <span class="fav-n">${n}</span></button>`;
+      }).join('');
+      this.renderList();
+    },
+
+    renderList() {
+      const T = TIPOS[this.cat], q = norm(this.query.trim());
+      const mine = this.items(this.cat), list = mine.filter((x) => this.matches(x, q));
+      $('fav-q').placeholder = `Pesquisar em ${T.curto.toLowerCase()}…`;
+      const box = $('fav-list');
+      if (!mine.length) {
+        box.innerHTML = `<div class="panel fav-empty fade-in"><div class="fav-empty-ico" aria-hidden="true">${STAR}</div><p><strong>${esc(T.vazio)}</strong></p><p class="muted small">${esc(T.dica)}</p><a class="btn primary" href="${T.cta[0]}">${esc(T.cta[1])}</a></div>`;
+        return;
+      }
+      if (!list.length) { box.innerHTML = `<div class="panel fav-empty"><p><strong>Nada encontrado para “${esc(this.query.trim())}”.</strong></p><p class="muted small">Tente outra palavra ou limpe a pesquisa.</p></div>`; return; }
+      box.innerHTML = `<ul class="fav-items">${list.map((x) => {
+        const ava = x.tipo === 'jogador'
+          ? `<span class="fav-ava">${x.extra.avatar ? `<img src="${esc(x.extra.avatar)}" alt="" referrerpolicy="no-referrer" loading="lazy">` : esc(x.titulo.slice(0, 1).toUpperCase())}</span>`
+          : `<span class="fav-ava ico" aria-hidden="true">${T.ico}</span>`;
+        return `<li class="fav-item fade-in">${ava}<div class="fav-main"><strong>${x.extra.titulo ? `<span class="tag gambito">${esc(x.extra.titulo)}</span> ` : ''}${esc(x.titulo)}</strong>${x.sub ? `<div class="small muted">${esc(x.sub)}</div>` : ''}</div>
+          <div class="fav-act"><a class="btn primary" href="${esc(this.href(x))}">Abrir</a>
+          <button class="btn fav-rm" type="button" data-rm="${esc(x.id)}" aria-label="Remover ${esc(x.titulo)} dos favoritos" title="Remover"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3m-8 0 1 13h8l1-13M10 11v6m4-6v6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div></li>`;
+      }).join('')}</ul>`;
+      box.querySelectorAll('.fav-ava img').forEach((img) => img.addEventListener('error', () => { img.parentNode.textContent = '♚'; }));
+    }
+  };
+
+  XD.Favoritos = Favoritos;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -7800,12 +9848,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   // Peças SVG disponíveis para todo o site
   document.body.insertAdjacentHTML('afterbegin', XD.Pieces.spriteMarkup());
 
-  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla'];
+  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla', 'relogio', 'explorador', 'favoritos'];
 
   /** Tela inicial: contadores reais e atalho para a partida em andamento. */
   XD.refreshHome = function () {
     $('home-ac-count').textContent = `${root.AcademiaData.OPENINGS.length} aberturas e gambitos com explicação lance a lance, mais um catálogo de 3.865 linhas (1.315 de gambitos) para estudar e treinar.`;
     if (XD.Repertorio) { const r = XD.Repertorio.count(); $('home-rp-count').textContent = r ? `${r} abertura${r === 1 ? '' : 's'} no seu repertório.` : 'Guarde suas próprias aberturas, variantes e anotações, e treine seus lances.'; }
+    if (XD.Favoritos) { const n = XD.Favoritos.items().length; $('home-fav-note').textContent = n ? `${n} favorito${n === 1 ? '' : 's'} guardado${n === 1 ? '' : 's'}.` : 'Aberturas, partidas e jogadores que você quer guardar.'; }
     if (XD.Backup) $('home-bk-note').textContent = XD.Backup.homeNote();
     const n = XD.Store.list().length;
     $('home-games-count').textContent = n ? `${n} partida${n === 1 ? '' : 's'} salva${n === 1 ? '' : 's'} neste navegador.` : 'Suas partidas salvas ficam guardadas neste navegador.';
@@ -7849,6 +9898,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     XD.activeReview = null; if (XD.Analise && XD.Analise.stop) XD.Analise.stop();
     if (XD.Academia) XD.Academia.leave();
     if (XD.Repertorio) XD.Repertorio.leave();
+    if (XD.Explorador) XD.Explorador.leave();
+    if (XD.Relogio) XD.Relogio.leave();   // pausa o relógio de xadrez e fecha a tela cheia
     if (XD.Dupla) XD.Dupla.leave();    // pausa o relógio ao sair da tela
     if (XD.Play) XD.Play.leave();      // cancela a IA se ela estiver pensando em outra tela
     const parts = (currentRoute().replace(/^#\/?/, '') || '').split('/');
@@ -7856,6 +9907,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     try {
       if (!section) { XD.refreshHome(); show('home', 'home'); document.title = 'Meu Xadrez'; }
       else if (section === 'dupla') { show('dupla', 'dupla'); document.title = 'Dois jogadores · Meu Xadrez'; XD.Dupla.enter(); }
+      else if (section === 'relogio') { show('relogio', 'relogio'); document.title = 'Relógio de xadrez · Meu Xadrez'; XD.Relogio.enter(id); }
       else if (section === 'livre') {
         show('livre', 'livre'); document.title = 'Modo Livre · Meu Xadrez';
         const p = XD.pendingFree; XD.pendingFree = null;
@@ -7882,6 +9934,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       } else if (section === 'repertorio') {
         show('repertorio', 'repertorio'); document.title = 'Meu Repertório · Meu Xadrez';
         if (!XD.Repertorio.enter(id, parts[2])) { XD.ui.toast('Abertura não encontrada no repertório.', 'erro'); XD.go('#/repertorio'); return; }
+      } else if (section === 'explorador' && id === 'jogo' && parts.length >= 6) {
+        show('partida', 'explorador'); document.title = 'Partida do Chess.com · Meu Xadrez';
+        XD.Explorador.openGame(parts[2], parts[3], parts[4], parts[5]);
+      } else if (section === 'explorador') {
+        show('explorador', 'explorador'); document.title = 'Explorador · Meu Xadrez'; XD.Explorador.enter(id);
+      } else if (section === 'favoritos') {
+        show('favoritos', 'favoritos'); document.title = 'Favoritos · Meu Xadrez'; XD.Favoritos.enter(id);
       } else if (section === 'backup') {
         show('backup', 'backup'); document.title = 'Backup · Meu Xadrez'; XD.Backup.enter();
       } else if (section === 'ajustes') {
