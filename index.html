@@ -495,6 +495,36 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 
 </style>
   <style>
+/* Jogar online */
+.on-lobby .row { margin-top: 10px; }
+.on-code { display: flex; align-items: baseline; gap: 12px; margin: 6px 0 12px; }
+.on-code span { color: var(--muted); font-size: .9rem; }
+.on-code b { font: 700 2.2rem/1 ui-monospace, "SF Mono", Menlo, Consolas, monospace; letter-spacing: .18em; color: var(--gold-2, #f0d77a); }
+#on-link { width: 100%; }
+.spin { display: inline-block; width: 16px; height: 16px; border: 3px solid rgba(240,215,122,.3); border-top-color: var(--gold-2, #f0d77a); border-radius: 50%; animation: on-spin .8s linear infinite; vertical-align: -3px; }
+@keyframes on-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation-duration: 2.4s; } }
+.on-off { color: #ff8a80; font-weight: 500; }
+.du-name small { font-weight: 500; color: var(--muted); }
+#on-game .toolbar { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+#on-game .toolbar .btn { padding-left: 4px; padding-right: 4px; white-space: nowrap; }
+#on-join-status .notice { margin-top: 8px; }
+.cards.sec-jogar .card.online-card { grid-column: 1 / -1; min-height: 0; }
+
+</style>
+  <style>
+/* Treino de erros */
+.er-list { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.er-list li { padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2, transparent); font-size: .92rem; }
+#er-prompt { font-size: 1.05rem; margin: 0 0 8px; }
+#er-play .row { margin-top: 10px; }
+#er-info { margin-top: 10px; }
+.cards.sec-aprender .card.erros-card { grid-column: 1 / -1; min-height: 0; }
+#er-home select { width: 100%; min-height: 44px; font-size: 1rem; }
+#er-home .du-names { margin: 10px 0; }
+
+</style>
+  <style>
 /* Relógio de xadrez */
 .rl-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0 6px; }
 .rl-pv { border-radius: 16px; padding: 16px 8px; text-align: center; font-size: clamp(1.9rem, 9vw, 2.6rem); font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -.01em; border: 1px solid var(--line); }
@@ -595,6 +625,7 @@ body.rl-open { overflow: hidden; }
   .cards .card.feature .ico { width: 40px; height: 40px; }
   .cards.sec-jogar .card:first-child .ico, .cards.sec-aprender .card:first-child .ico, .cards.sec-meu .card:first-child .ico { width: 40px; height: 40px; }
   .cards.sec-jogar .card:first-child { grid-column: span 2; }                 /* IA em destaque; 5 cartões = 3 + 3 */
+  .cards.sec-jogar .card.online-card, .cards.sec-aprender .card.erros-card { grid-column: 1 / -1; min-height: 0; }
   .cards.sec-meu .card:first-child { grid-column: span 2; }                   /* Partidas em destaque... */
   .cards.sec-meu .card:last-child { grid-column: span 2; }                    /* ...e Aparência: 4 cartões = 3 + 3 */
   .cards .card.feature .go { display: block; margin-top: auto; padding-top: 8px; }
@@ -606,7 +637,8 @@ body.rl-open { overflow: hidden; }
   .board, .status, .toolbar, .nav-row, .caption { width: 100%; max-width: none; margin-left: 0; margin-right: 0; }
   .toolbar { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .move-box { max-height: 360px; }
-  .du-wrap { max-width: 640px; }
+  .du-wrap { max-width: max(420px, min(640px, calc(100vh - 300px))); }
+  #view-online > div:not(#on-game) { max-width: 680px; margin-left: auto; margin-right: auto; }
 
   /* páginas de formulário/lista: não esticar até a borda */
   #rl-setup { max-width: 680px; margin: 0 auto; }
@@ -857,11 +889,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     <nav class="topnav" aria-label="Seções">
       <a href="#/livre" data-nav="livre">Livre</a>
       <a href="#/ia" data-nav="ia">IA</a>
+      <a href="#/online" data-nav="online">Online</a>
       <a href="#/dupla" data-nav="dupla">Dupla</a>
       <a href="#/relogio" data-nav="relogio">Relógio</a>
       <a href="#/academia" data-nav="academia">Academia</a>
       <a href="#/repertorio" data-nav="repertorio">Repertório</a>
       <a href="#/explorador" data-nav="explorador">Explorador</a>
+      <a href="#/erros" data-nav="erros">Erros</a>
       <a href="#/favoritos" data-nav="favoritos">Favoritos</a>
       <a href="#/partidas" data-nav="partidas">Partidas</a>
       <a href="#/laboratorio" data-nav="laboratorio">Laboratório</a>
@@ -916,6 +950,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <p>Para jogar no tabuleiro de verdade: dois lados, incremento e toque para passar a vez.</p>
           <span class="go">Abrir relógio →</span>
         </a>
+        <a class="card feature online-card" href="#/online">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#d4af37" stroke-width="1.8"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="#d4af37" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <h2>Jogar online</h2>
+          <p>Crie uma partida, mande o link para um amigo e joguem cada um no seu celular, com relógio.</p>
+          <span class="go">Criar partida →</span>
+        </a>
       </div>
 <h2 class="home-sec">Aprender <small>Aberturas, táticas e memória</small></h2>
       <div class="cards sec-aprender">
@@ -937,7 +977,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <p>Pesquise jogadores do Chess.com, veja estatísticas e analise as partidas deles.</p>
           <span class="go">Pesquisar →</span>
         </a>
-      </div>
+              <a class="card feature erros-card" href="#/erros">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#d4af37" stroke-width="1.8"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="#d4af37" stroke-width="1.8"/><circle cx="12" cy="12" r="1.2" fill="#d4af37"/></svg>
+          <h2>Treinar meus erros</h2>
+          <p id="home-er-note">O motor acha os erros das suas partidas (Chess.com e do site) e você treina até acertar.</p>
+          <span class="go">Treinar →</span>
+        </a>
+</div>
 <h2 class="home-sec">Meu espaço <small>Suas coisas, do seu jeito</small></h2>
       <div class="cards sec-meu">
 <a class="card feature" href="#/partidas">
@@ -1142,6 +1188,115 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
             <div class="row"><button class="btn primary" id="du-rematch" type="button">⟲ Revanche (trocar cores)</button><button class="btn" id="du-save" type="button">✓ Salvar partida</button><button class="btn" id="du-new" type="button">＋ Nova partida</button></div>
           </div>
           <div class="panel"><h2>Lances</h2><div id="du-moves" class="move-box" aria-label="Lista de lances"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== ONLINE (por link) ===================== -->
+    <section id="view-online" class="view" hidden>
+      <div id="on-setup">
+        <div class="page-head">
+          <h1>Jogar online</h1>
+          <p class="muted">Crie uma partida, mande o link para um amigo e joguem cada um no seu celular. Os lances passam direto de um aparelho para o outro.</p>
+        </div>
+        <div class="panel" id="on-resume-box" hidden><p id="on-resume-info"></p><div class="row"><button class="btn primary" id="on-resume" type="button">Voltar à partida online</button></div></div>
+        <div class="panel"><h2>Seu nome</h2>
+          <label class="field"><span>Como seu amigo vai ver você</span><input id="on-nome" type="text" maxlength="16" placeholder="Seu nome" autocomplete="off"></label></div>
+        <div class="panel"><h2>Tempo por jogador</h2><p class="muted small">"3 + 2" = 3 minutos e 2 segundos a mais a cada lance.</p>
+          <div id="on-time" class="opts du-time" role="radiogroup" aria-label="Tempo"></div></div>
+        <div class="panel"><h2>Sua cor</h2><div id="on-cor" class="opts du-time" role="radiogroup" aria-label="Sua cor"></div></div>
+        <div class="row"><button class="btn primary big" id="on-create" type="button">🔗 Criar partida e gerar link</button></div>
+        <div class="panel"><h2>Recebeu um código ou link?</h2>
+          <label class="field"><span>Cole aqui o link ou o código de 6 letras</span><input id="on-code" type="text" maxlength="120" placeholder="Ex.: K7M2QX" autocomplete="off" autocapitalize="characters"></label>
+          <div class="row"><button class="btn" id="on-enter" type="button">Entrar na partida</button></div></div>
+        <p class="muted small" id="on-offline-note" hidden>Você abriu o site como arquivo: para convidar por link, use o endereço publicado do site. Com o código de 6 letras o amigo também consegue entrar.</p>
+        <p class="muted small">Precisa de internet nos dois aparelhos. Em algumas redes de celular a conexão direta pode não funcionar; se isso acontecer, tente por Wi-Fi.</p>
+      </div>
+      <div id="on-lobby" hidden>
+        <div class="page-head"><h1>Aguardando o amigo</h1></div>
+        <div class="panel on-lobby">
+          <p id="on-lobby-status" role="status"></p>
+          <div id="on-link-box" hidden>
+            <div class="on-code" aria-label="Código da partida"><span>Código</span><b id="on-code-big"></b></div>
+            <label class="field"><span>Link para mandar ao amigo</span><input id="on-link" type="text" readonly></label>
+            <div class="row"><button class="btn primary" id="on-share" type="button">📤 Enviar o link</button><button class="btn" id="on-copy" type="button">📋 Copiar</button></div>
+            <p class="notice" id="on-offline-warn" hidden>Este site está aberto como arquivo, então o link não vai funcionar no outro aparelho. Passe o código de 6 letras: ele digita em "Jogar online".</p>
+            <p class="muted small">Deixe esta tela aberta até o seu amigo entrar. A partida começa sozinha.</p>
+          </div>
+          <div class="row"><button class="btn" id="on-cancel" type="button">Cancelar</button></div>
+        </div>
+      </div>
+      <div id="on-join" hidden>
+        <div class="page-head"><h1>Entrar na partida</h1><p class="muted">Sala <b id="on-join-code"></b></p></div>
+        <div class="panel">
+          <div id="on-join-form"><label class="field"><span>Seu nome</span><input id="on-join-nome" type="text" maxlength="16" placeholder="Seu nome" autocomplete="off"></label>
+            <div class="row"><button class="btn primary" id="on-join-go" type="button">Entrar</button></div></div>
+          <div id="on-join-status" role="status"></div>
+          <div class="row"><button class="btn" id="on-join-back" type="button">← Cancelar</button></div>
+        </div>
+      </div>
+      <div id="on-game" hidden>
+        <div class="du-wrap">
+          <div class="du-panel top" id="on-top">
+            <div class="du-name"></div>
+            <div class="du-clock" data-c="">0:00</div>
+            <div class="du-btns"><button class="btn sm" data-act="draw" type="button">½ Empate</button><button class="btn sm danger" data-act="resign" type="button">⚑ Desistir</button></div>
+          </div>
+          <div id="on-status" class="status" role="status" aria-live="polite"></div>
+          <p class="notice" id="on-conn" role="status" hidden></p>
+          <div id="on-board"></div>
+          <div class="du-panel bot" id="on-bot">
+            <div class="du-name"></div>
+            <div class="du-clock" data-c="">0:00</div>
+            <div class="du-btns"><button class="btn sm" data-act="draw" type="button">½ Empate</button><button class="btn sm danger" data-act="resign" type="button">⚑ Desistir</button></div>
+          </div>
+          <div class="toolbar" role="toolbar" aria-label="Controles">
+            <button class="btn" id="on-flip" type="button"><span aria-hidden="true">⇅</span> Girar</button>
+            <button class="btn" type="button" data-setas aria-pressed="false" aria-label="Desenhar setas e marcar casas">✏ Desenhar</button><button class="btn" type="button" data-foto aria-label="Foto da posição">📷 Foto</button>
+            <button class="btn" id="on-leave" type="button">☰ Sair</button>
+          </div>
+          <div class="panel du-result" id="on-result" hidden>
+            <h2 id="on-result-text"></h2>
+            <div class="row"><button class="btn primary" id="on-rematch" type="button">⟲ Revanche (trocar cores)</button><button class="btn" id="on-save" type="button">✓ Salvar partida</button><button class="btn" id="on-new" type="button">＋ Nova partida</button></div>
+          </div>
+          <div class="panel"><h2>Lances</h2><div id="on-moves" class="move-box" aria-label="Lista de lances"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TREINO DE ERROS ===================== -->
+    <section id="view-erros" class="view" hidden>
+      <div id="er-home">
+        <div class="page-head">
+          <h1>Treinar meus erros</h1>
+          <p class="muted">O motor revisa as suas partidas, guarda os seus erros e faz você treinar as posições até acertar. Cada erro volta em 1, 3, 7 e 14 dias.</p>
+        </div>
+        <div class="panel"><p id="er-summary"></p>
+          <div class="row"><button class="btn primary big" id="er-train" type="button">▶ Treinar agora</button><button class="btn" id="er-train-all" type="button" hidden>Treinar todos</button></div></div>
+        <div class="panel"><h2>Buscar erros nas minhas partidas</h2>
+          <div class="set-row"><div><b>Chess.com</b><span class="d">As partidas mais recentes do seu usuário.</span></div><button class="toggle" id="er-use-cc" role="switch" aria-checked="true" aria-label="Usar o Chess.com" type="button"></button></div>
+          <label class="field"><span>Seu usuário no Chess.com</span><input id="er-user" type="text" maxlength="40" placeholder="seu_usuario" autocomplete="off" autocapitalize="none"></label>
+          <div class="set-row"><div><b>Partidas deste site</b><span class="d" id="er-site-info"></span></div><button class="toggle" id="er-use-site" role="switch" aria-checked="true" aria-label="Usar as partidas deste site" type="button"></button></div>
+          <div class="du-names">
+            <label class="field"><span>Quantas partidas</span><select id="er-qtd"><option value="5">5</option><option value="10" selected>10</option><option value="20">20</option></select></label>
+            <label class="field"><span>Profundidade</span><select id="er-nivel"><option value="rapida" selected>Rápida</option><option value="normal">Normal (mais lenta)</option></select></label>
+          </div>
+          <div class="row"><button class="btn primary" id="er-go" type="button">Revisar com o motor</button><button class="btn" id="er-cancel" type="button" hidden>Cancelar</button></div>
+          <div class="an-bar" id="er-prog" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" hidden><i id="er-bar" style="width:0%"></i></div>
+          <p class="small" id="er-msg" role="status"></p>
+          <p class="muted small">A revisão roda no seu aparelho e leva uns 10 a 40 segundos por partida. Só os seus lances viram erros (o do adversário não). Com internet o Stockfish é usado; sem ele, o motor interno, mais fraco.</p>
+        </div>
+        <div class="panel"><h2>Erros guardados</h2><ul class="er-list" id="er-list"></ul>
+          <div class="row"><button class="btn" id="er-clear-mastered" type="button" hidden>Remover os dominados</button><button class="btn danger" id="er-clear" type="button" hidden>Apagar tudo</button></div></div>
+      </div>
+      <div id="er-play" hidden>
+        <div class="du-wrap">
+          <div class="page-head"><h1>Treino</h1><p class="muted" id="er-count"></p></div>
+          <p id="er-prompt"></p>
+          <div id="er-feedback" class="status" role="status" aria-live="polite"></div>
+          <div id="er-board"></div>
+          <p class="panel" id="er-info" hidden></p>
+          <div class="row"><button class="btn primary" id="er-next" type="button" hidden>Próximo erro →</button><button class="btn" id="er-show" type="button">Ver a resposta</button><button class="btn" id="er-stop" type="button">☰ Sair do treino</button></div>
         </div>
       </div>
     </section>
@@ -1438,10 +1593,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     <a href="#/livre" data-nav="livre"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-n" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Livre</span></a>
     <a href="#/ia" data-nav="ia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-k" style="--pf:currentColor;--ps:#0d1411"/></svg><span>IA</span></a>
     <a href="#/dupla" data-nav="dupla" aria-label="Dois jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm7 1a2.5 2.5 0 1 0 0-5M3 19c0-3 2.7-5 6-5s6 2 6 5M16 14.2c2.7.2 5 1.8 5 4.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Dupla</span></a>
+    <a href="#/online" data-nav="online" aria-label="Jogar online"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Online</span></a>
     <a href="#/relogio" data-nav="relogio"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 9.5v4.4l3 1.8M9.5 3h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Relógio</span></a>
     <a href="#/academia" data-nav="academia"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-b" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Academia</span></a>
     <a href="#/repertorio" data-nav="repertorio" aria-label="Meu Repertório"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-q" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Repert.</span></a>
     <a href="#/explorador" data-nav="explorador" aria-label="Explorador de jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Explorar</span></a>
+    <a href="#/erros" data-nav="erros" aria-label="Treinar meus erros"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg><span>Erros</span></a>
     <a href="#/favoritos" data-nav="favoritos"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7l-5.4 3.1 1.2-6.1L3.3 9.5l6.1-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Favoritos</span></a>
     <a href="#/partidas" data-nav="partidas"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-r" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Partidas</span></a>
     <a href="#/laboratorio" data-nav="laboratorio"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-p" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Lab</span></a>
@@ -2275,12 +2432,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
                    nivelNome: String(g.meta.nivelNome || '').slice(0, 20), cor: g.meta.cor === 'b' ? 'b' : 'w',
                    motor: String(g.meta.motor || '').slice(0, 20), abandonou: !!g.meta.abandonou };
         }
-        if (g.meta && g.meta.modo === 'dupla') {   // partida presencial (dois jogadores no mesmo celular)
-          meta = { modo: 'dupla', brancas: String(g.meta.brancas || 'Brancas').slice(0, 16), pretas: String(g.meta.pretas || 'Pretas').slice(0, 16), tempo: String(g.meta.tempo || '').slice(0, 20) };
+        if (g.meta && (g.meta.modo === 'dupla' || g.meta.modo === 'online')) {   // partida presencial ou online (dois jogadores no mesmo celular)
+          meta = { modo: g.meta.modo, brancas: String(g.meta.brancas || 'Brancas').slice(0, 16), pretas: String(g.meta.pretas || 'Pretas').slice(0, 16), tempo: String(g.meta.tempo || '').slice(0, 20) };
+          if (g.meta.modo === 'online' && (g.meta.eu === 'w' || g.meta.eu === 'b')) meta.eu = g.meta.eu;   // minha cor, para o treino de erros
         }
         // Resultado: o das regras; só um abandono (que as regras não conhecem) pode defini-lo à parte.
         // (partida presencial também pode terminar por tempo, desistência ou empate combinado)
-        const result = (st.result === '*' && meta && (meta.abandonou && ['1-0', '0-1'].includes(g.result) || meta.modo === 'dupla' && ['1-0', '0-1', '1/2-1/2'].includes(g.result))) ? g.result : st.result;
+        const result = (st.result === '*' && meta && (meta.abandonou && ['1-0', '0-1'].includes(g.result) || (meta.modo === 'dupla' || meta.modo === 'online') && ['1-0', '0-1', '1/2-1/2'].includes(g.result))) ? g.result : st.result;
         const rec = {
           id: g.id,
           title: String(g.title || 'Partida sem título').slice(0, 80),
@@ -3271,7 +3429,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   'use strict';
   const XD = root.XD = root.XD || {};
   const KEY = 'xadrez.ajustes.v1';
-  const DEFAULTS = { tema: 'escuro', som: true, volume: 60, vibrar: false, tabuleiro: 'verde', pecas: 'classico', coords: true, ultimoLance: true, destinos: true, animacao: true };
+  const DEFAULTS = { tema: 'escuro', som: true, volume: 60, vibrar: false, tabuleiro: 'verde', pecas: 'classico', coords: true, ultimoLance: true, destinos: true, animacao: true, autosalvar: true };
   const BOARDS = {
     verde: ['Verde clássico', '#e8dcb5', '#4e7b5a'], madeira: ['Madeira', '#f0d9b5', '#b58863'], azul: ['Azul', '#dee3e6', '#8ca2ad'],
     marmore: ['Mármore', '#e9e9e9', '#7c7c7c'], roxo: ['Ametista', '#efe6f7', '#8a6bb1'], noite: ['Noite', '#9aa6b2', '#4a5565']
@@ -3290,7 +3448,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       const b = (k) => (typeof o[k] === 'boolean' ? o[k] : DEFAULTS[k]);
       const vol = Number.isFinite(o.volume) ? Math.max(0, Math.min(100, Math.round(o.volume))) : DEFAULTS.volume;
       return { tema: ['escuro', 'claro', 'auto'].includes(o.tema) ? o.tema : DEFAULTS.tema, som: b('som'), volume: vol, vibrar: b('vibrar'), tabuleiro: ok(o.tabuleiro, BOARDS) || DEFAULTS.tabuleiro, pecas: ok(o.pecas, PIECES) || DEFAULTS.pecas,
-        coords: b('coords'), ultimoLance: b('ultimoLance'), destinos: b('destinos'), animacao: b('animacao') };
+        coords: b('coords'), ultimoLance: b('ultimoLance'), destinos: b('destinos'), animacao: b('animacao'), autosalvar: b('autosalvar') };
     },
     load() {
       let d = null; try { d = JSON.parse(XD.Store.raw.get(KEY) || 'null'); } catch (e) { d = null; }
@@ -5355,7 +5513,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     /* ---------- leitura do estado atual ---------- */
     current() {
       const Rep = XD.Repertorio; Rep.load();
-      return { partidas: XD.Store.list(), rascunho: readJson(K.rascunho), repertorio: Rep.data.slice(), ajustes: XD.Settings.hasSaved() ? XD.Settings.values : null };
+      return { partidas: XD.Store.list(), rascunho: readJson(K.rascunho), repertorio: Rep.data.slice(), ajustes: XD.Settings.hasSaved() ? XD.Settings.values : null, erros: XD.Erros ? XD.Erros.exportData() : null };
     },
     build() {
       const d = this.current();
@@ -5373,7 +5531,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       const d = j.dados;
       if (!d || typeof d !== 'object' || !Array.isArray(d.partidas) || !Array.isArray(d.repertorio)) return { ok: false, erro: 'O backup está incompleto (faltam partidas ou repertório). Nada foi importado.' };
       if (d.partidas.length > 5000 || d.repertorio.length > 1000) return { ok: false, erro: 'Backup grande demais. Nada foi importado.' };
-      const out = { partidas: [], repertorio: [], rascunho: null, ajustes: null };
+      const out = { partidas: [], repertorio: [], rascunho: null, ajustes: null, erros: null };
+      if (d.erros != null) { if (typeof d.erros !== 'object' || Array.isArray(d.erros)) return { ok: false, erro: 'Os erros de treino do arquivo são inválidos. Nada foi importado.' }; out.erros = XD.Erros.api.sanitize(d.erros); }   // itens inválidos são descartados
       if (d.ajustes != null) { if (typeof d.ajustes !== 'object' || Array.isArray(d.ajustes)) return { ok: false, erro: 'Os ajustes de aparência do arquivo são inválidos. Nada foi importado.' }; out.ajustes = XD.Settings.sanitize(d.ajustes); }
       const ids = new Set();
       for (let i = 0; i < d.partidas.length; i++) {
@@ -5400,11 +5559,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       XD.Store._write(d.partidas);
       XD.Repertorio.data = d.repertorio; if (!XD.Repertorio.save()) throw new Error('Não foi possível gravar o repertório.');
       if (d.rascunho) XD.Store.raw.set(K.rascunho, JSON.stringify(d.rascunho)); else XD.Store.raw.remove(K.rascunho);
+      if (XD.Erros) { XD.Erros.data = d.erros || { v: 1, items: [], done: {} }; if (d.erros || this._substituindo) XD.Erros.save(); }
       if (d.ajustes) XD.Settings.replaceAll(d.ajustes); else if (d.ajustes === null && this._substituindo) XD.Settings.reset();
     },
     _sig(o) { return JSON.stringify([o.nome, o.cor, o.variantes.map((v) => v.lances.join(' '))]); },
     _mesclar(atual, novo) {
-      const res = { partidas: atual.partidas.slice(), repertorio: atual.repertorio.slice(), rascunho: atual.rascunho };
+      const res = { partidas: atual.partidas.slice(), repertorio: atual.repertorio.slice(), rascunho: atual.rascunho, erros: atual.erros };
       const cont = { partidas: 0, repertorio: 0 };
       const novoId = () => XD.Store.newId();
       for (const g of novo.partidas) {
@@ -5419,6 +5579,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         if (res.repertorio.some((x) => x.id === o.id)) o.id = 'r' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
         res.repertorio.push(o); sigs.add(this._sig(o)); cont.repertorio++;
       }
+      if (novo.erros) res.erros = XD.Erros.api.merge(atual.erros || { v: 1, items: [], done: {} }, novo.erros).data;
       if (!res.rascunho && novo.rascunho) res.rascunho = novo.rascunho;
       if (!atual.ajustes && novo.ajustes) res.ajustes = novo.ajustes;       // só adota os ajustes da cópia se você nunca personalizou
       return { res, cont };
@@ -5574,12 +5735,13 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       $('aj-show').innerHTML = this.toggleHtml('aj-t-coords', 'Coordenadas', 'Letras e números nas bordas do tabuleiro.', v.coords) +
         this.toggleHtml('aj-t-last', 'Destacar o último lance', 'Pinta de dourado as casas do último lance.', v.ultimoLance) +
         this.toggleHtml('aj-t-legal', 'Mostrar lances possíveis', 'Bolinhas nas casas para onde a peça pode ir.', v.destinos) +
-        this.toggleHtml('aj-t-anim', 'Animação das peças', 'As peças deslizam de uma casa para a outra.', v.animacao);
+        this.toggleHtml('aj-t-anim', 'Animação das peças', 'As peças deslizam de uma casa para a outra.', v.animacao) +
+        this.toggleHtml('aj-t-auto', 'Salvar partidas automaticamente', 'Partidas contra a IA, online e presenciais vão sozinhas para "Minhas partidas" quando terminam.', v.autosalvar);
       $('aj-vol').addEventListener('input', (e) => { $('aj-vol-n').textContent = e.target.value; S().set('volume', parseInt(e.target.value, 10)); });
       $('aj-vol').addEventListener('change', () => XD.Sound.play('move'));
       const bindT = (id, key, after) => $(id).addEventListener('click', (e) => { const on = e.currentTarget.getAttribute('aria-checked') !== 'true'; e.currentTarget.setAttribute('aria-checked', String(on)); S().set(key, on); if (after) after(on); });
       bindT('aj-t-som', 'som', (on) => { if (on) XD.Sound.play('move'); }); bindT('aj-t-vib', 'vibrar', (on) => { if (on) XD.Sound.play('move'); });
-      bindT('aj-t-coords', 'coords'); bindT('aj-t-last', 'ultimoLance'); bindT('aj-t-legal', 'destinos'); bindT('aj-t-anim', 'animacao');
+      bindT('aj-t-coords', 'coords'); bindT('aj-t-last', 'ultimoLance'); bindT('aj-t-legal', 'destinos'); bindT('aj-t-anim', 'animacao'); bindT('aj-t-auto', 'autosalvar');
       document.querySelectorAll('[data-aj-board]').forEach((b) => b.addEventListener('click', () => { S().set('tabuleiro', b.dataset.ajBoard); this.mark('[data-aj-board]', b); }));
       document.querySelectorAll('[data-aj-pieces]').forEach((b) => b.addEventListener('click', () => { S().set('pecas', b.dataset.ajPieces); this.mark('[data-aj-pieces]', b); }));
     },
@@ -5755,6 +5917,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     finish(result, texto, kind) {
       if (this.over) return;
       this.over = { result, texto, kind }; this.paused = false; this.board.setInteractive(false); this.persist(); this.keepAwake(false);
+      this.autoSave();
       if (XD.Sound) XD.Sound.play(result === '1/2-1/2' ? 'draw' : 'win');
       this.render();
     },
@@ -5828,6 +5991,14 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       $('du-nb').value = this.cfg.nb === DEF.nb ? '' : this.cfg.nb; $('du-np').value = this.cfg.np === DEF.np ? '' : this.cfg.np;
       this.start();
     },
+    autoSave() {
+      try {
+        const s = this.session; if (!s || s.length < 2 || this.savedId || !XD.Settings.get('autosalvar')) return;
+        const rec = XD.Store.save({ title: `${this.cfg.nb} × ${this.cfg.np} · ${XD.ui.fmtDate(new Date().toISOString())}`, session: s, result: this.over ? this.over.result : undefined,
+          meta: { modo: 'dupla', brancas: this.cfg.nb, pretas: this.cfg.np, tempo: this.tc.nome } });
+        this.savedId = rec.id;
+      } catch (e) { /* o botão Salvar continua valendo */ }
+    },
     async save() {
       const s = this.session; if (!s || !s.length) return;
       const r = await XD.ui.promptBox('Salvar partida', 'Título da partida', `${this.cfg.nb} × ${this.cfg.np} · ${XD.ui.fmtDate(new Date().toISOString())}`, 'Salvar');
@@ -5846,6 +6017,559 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     }
   };
   XD.Dupla = Dupla; Dupla.TEMPOS = TEMPOS; Dupla.fmt = fmt;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * online.js — Jogar online por link (conexão direta entre os dois aparelhos, WebRTC via PeerJS).
+ *
+ * Como funciona: quem cria a partida abre uma "sala" (um código curto) no serviço gratuito de
+ * encontro do PeerJS; quem recebe o link se conecta a essa sala. Depois do encontro, os lances,
+ * o relógio e as ofertas de empate passam direto de um aparelho para o outro.
+ * O anfitrião é a "referência": quando o amigo reconecta, ele manda a partida inteira de volta.
+ *
+ * Mensagens (JSON): hi · start · move · state · sync · over · draw · drawr · rematch · ping · full
+ */
+(function (root) {
+  'use strict';
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'xadrez.online.v1', ROOM = 'xadrez.online.sala.v1';
+  const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', PREFIX = 'mxp-';
+  const SOURCES = [
+    'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.4/peerjs.min.js',
+    'https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js',
+    'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'
+  ];
+  const DEF = { nome: '', tempo: '10+0', cor: 'r' };
+  const COLORS = [{ id: 'w', nome: 'Brancas' }, { id: 'b', nome: 'Pretas' }, { id: 'r', nome: 'Sorteio' }];
+  const GRACE = 3000;          // folga para declarar o tempo do OUTRO jogador (a mensagem do lance pode estar a caminho)
+  const OPP_TIMEOUT = 16000;   // sem sinal do adversário por tanto tempo = "desconectado" (só aviso)
+
+  const genCode = () => { let s = ''; const a = new Uint32Array(6); (root.crypto || {}).getRandomValues ? root.crypto.getRandomValues(a) : a.forEach((_, i) => { a[i] = Math.random() * 4294967295; }); for (const n of a) s += ALPHA[n % ALPHA.length]; return s; };
+  const normCode = (s) => { s = String(s || '').trim(); const m = s.match(/#\/online\/([A-Za-z0-9]+)/); if (m) s = m[1]; s = s.toUpperCase().replace(/[^A-Z0-9]/g, ''); return /^[A-Z0-9]{6}$/.test(s) ? s : ''; };
+  const cleanName = (s, def) => String(s == null ? '' : s).replace(/[<>]/g, '').trim().slice(0, 16) || def;
+  const tcOf = (id) => (XD.Dupla.TEMPOS.find((t) => t.id === id) || XD.Dupla.TEMPOS[4]);
+
+  let libPromise = null;
+  function loadLib() {
+    if (root.Peer) return Promise.resolve();
+    if (libPromise) return libPromise;
+    libPromise = (async () => {
+      for (const src of SOURCES) {
+        try {
+          await new Promise((ok, fail) => {
+            const s = document.createElement('script'); s.src = src; s.async = true;
+            const t = setTimeout(() => { s.remove(); fail(new Error('tempo')); }, 9000);
+            s.onload = () => { clearTimeout(t); root.Peer ? ok() : fail(new Error('vazio')); };
+            s.onerror = () => { clearTimeout(t); s.remove(); fail(new Error('rede')); };
+            document.head.appendChild(s);
+          });
+          return;
+        } catch (e) { /* tenta a próxima fonte */ }
+      }
+      libPromise = null; throw new Error('Não foi possível carregar o serviço de partidas online. Verifique a internet e tente de novo.');
+    })();
+    return libPromise;
+  }
+
+  const Online = {
+    pingMs: 5000, oppTimeout: OPP_TIMEOUT, ready: false, cfg: Object.assign({}, DEF), peerOpts: { debug: 0 },
+    role: null, code: '', peer: null, conn: null, token: null, leaving: false,
+    me: { color: 'w', nome: 'Você' }, opp: { nome: 'Adversário', online: false }, tc: null,
+    session: null, board: null, clock: { w: 0, b: 0 }, over: null, inGame: false, phase: 'setup',
+    timer: null, last: 0, lastRx: 0, pingTimer: null, retry: null, lock: null, savedId: null,
+    drawOut: false, rematch: { me: false, opp: false }, joinTries: 0, hostTries: 0,
+
+    init() {
+      if (this.ready) return; this.ready = true;
+      this.board = new XD.Board($('on-board'), { interactive: true, getTargets: (sq) => (this.canMove() ? this.session.targetsFrom(sq) : []), onMove: (a, b) => this.tryMove(a, b) });
+      $('on-time').innerHTML = XD.Dupla.TEMPOS.map((t) => `<button class="opt compact" role="radio" data-t="${t.id}" type="button"><b>${t.nome}</b></button>`).join('');
+      $('on-time').querySelectorAll('[data-t]').forEach((b) => b.addEventListener('click', () => { this.readCfg(); this.cfg.tempo = b.dataset.t; this.persistCfg(); this.drawSetup(); }));
+      $('on-cor').innerHTML = COLORS.map((c) => `<button class="opt compact" role="radio" data-c="${c.id}" type="button"><b>${c.nome}</b></button>`).join('');
+      $('on-cor').querySelectorAll('[data-c]').forEach((b) => b.addEventListener('click', () => { this.readCfg(); this.cfg.cor = b.dataset.c; this.persistCfg(); this.drawSetup(); }));
+      $('on-create').addEventListener('click', () => this.create());
+      $('on-enter').addEventListener('click', () => { const c = normCode($('on-code').value); if (!c) { XD.ui.toast('Código inválido: são 6 letras e números, ou o link inteiro.', 'erro'); return; } this.readCfg(); this.persistCfg(); XD.go('#/online/' + c); });
+      $('on-resume').addEventListener('click', () => this.resumeRoom());
+      $('on-cancel').addEventListener('click', () => this.cancelLobby());
+      $('on-copy').addEventListener('click', () => this.copyLink());
+      $('on-share').addEventListener('click', () => this.shareLink());
+      $('on-join-go').addEventListener('click', () => { this.readJoinName(); this.joinStart($('on-join-code').dataset.code); });
+      $('on-join-back').addEventListener('click', () => { this.teardown(); XD.go('#/online'); });
+      $('on-flip').addEventListener('click', () => { this.board.flip(); this.render(); });
+      $('on-leave').addEventListener('click', () => this.leaveGame());
+      $('on-rematch').addEventListener('click', () => this.askRematch());
+      $('on-save').addEventListener('click', () => this.save());
+      $('on-new').addEventListener('click', () => { this.teardown(); this.showView('setup'); this.drawSetup(); });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden && this.inGame) { this.last = performance.now(); this.keepAwake(true); this.send({ t: 'ping' }); this.checkLink(); } });
+    },
+
+    /* ------------------------------------------------------------ Entrada / telas */
+    enter(code) {
+      this.init(); this.loadCfg();
+      if (this.inGame) { this.showView('game'); this.render(); return; }
+      code = normCode(code);
+      if (code) {
+        if (this.phase === 'join' && this.code === code) return;
+        if (this.role === 'host' && this.phase === 'lobby') { this.showView('lobby'); return; }
+        this.prepareJoin(code); return;
+      }
+      if (this.phase === 'lobby' || this.phase === 'join') return;   // continua onde estava (não perde a sala ao navegar)
+      this.showView('setup'); this.drawSetup();
+    },
+    leave() { /* a conexão continua viva ao sair da tela: a partida e o relógio seguem */ },
+    showView(v) { this.phase = v; ['setup', 'lobby', 'join', 'game'].forEach((x) => { $('on-' + x).hidden = x !== v; }); },
+
+    loadCfg() { try { const raw = XD.Store.raw.get(KEY); if (raw) this.cfg = Object.assign({}, DEF, JSON.parse(raw)); } catch (e) { /* padrão */ } },
+    persistCfg() { try { XD.Store.raw.set(KEY, JSON.stringify(this.cfg)); } catch (e) { /* conforto */ } },
+    readCfg() { const n = $('on-nome').value.trim(); this.cfg.nome = n.replace(/[<>]/g, '').slice(0, 16); },
+    readJoinName() { const n = $('on-join-nome').value.trim().replace(/[<>]/g, '').slice(0, 16); if (n) { this.cfg.nome = n; this.persistCfg(); } },
+
+    savedRoom() {
+      try { const o = JSON.parse(XD.Store.raw.get(ROOM) || 'null'); return o && o.code && o.role && !o.over && Date.now() - o.ts < 3 * 3600e3 ? o : null; } catch (e) { return null; }
+    },
+    persistRoom() {
+      try {
+        if (!this.inGame || !this.session) { XD.Store.raw.set(ROOM, ''); return; }
+        XD.Store.raw.set(ROOM, JSON.stringify({ role: this.role, code: this.code, token: this.token, nome: this.me.nome, cor: this.me.color, onome: this.opp.nome, tempo: this.tc.id,
+          moves: this.session.moves.slice(0, this.session.cursor).map((m) => ({ from: m.from, to: m.to, promotion: m.promotion })), clock: this.clock, over: !!this.over, ts: Date.now() }));
+      } catch (e) { /* conforto */ }
+    },
+
+    drawSetup() {
+      $('on-nome').value = this.cfg.nome || '';
+      $('on-time').querySelectorAll('[data-t]').forEach((b) => { const on = b.dataset.t === this.cfg.tempo; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+      $('on-cor').querySelectorAll('[data-c]').forEach((b) => { const on = b.dataset.c === this.cfg.cor; b.classList.toggle('on', on); b.setAttribute('aria-checked', on); });
+      const s = this.savedRoom(); $('on-resume-box').hidden = !s;
+      if (s) $('on-resume-info').textContent = `Você tem uma partida online em andamento (sala ${s.code}, ${s.moves.length} lance${s.moves.length === 1 ? '' : 's'}).`;
+      $('on-offline-note').hidden = /^https?:$/.test(location.protocol);
+    },
+
+    link() { return (/^https?:$/.test(location.protocol) ? location.origin + location.pathname : 'https://SEU-SITE/') + '#/online/' + this.code; },
+
+    /* ------------------------------------------------------------ Biblioteca e erros */
+    errText(e) {
+      const t = e && e.type;
+      if (t === 'peer-unavailable') return 'Partida não encontrada. O link pode estar errado, ou o anfitrião fechou o site.';
+      if (t === 'browser-incompatible') return 'Este navegador não suporta partidas online.';
+      if (t === 'network' || t === 'server-error' || t === 'socket-error' || t === 'socket-closed' || t === 'disconnected') return 'Sem conexão com o serviço de partidas. Verifique a internet.';
+      return (e && e.message) || 'Erro de conexão.';
+    },
+    fail(msg) {
+      this.teardown(true);
+      this.showView('join'); $('on-join-code').textContent = ''; $('on-join-form').hidden = true;
+      $('on-join-status').innerHTML = `<p class="notice" role="alert">${XD.ui.esc(msg)}</p>`; $('on-join-back').textContent = '← Voltar';
+      XD.ui.toast(msg, 'erro');
+    },
+
+    /* ------------------------------------------------------------ Anfitrião */
+    async create(resume) {
+      this.readCfg(); this.persistCfg();
+      this.teardown(true);
+      this.role = 'host'; this.leaving = false; this.hostTries = 0;
+      this.me = { color: this.cfg.cor === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : this.cfg.cor, nome: cleanName(this.cfg.nome, 'Anfitrião') };
+      this.opp = { nome: 'Amigo', online: false }; this.tc = tcOf(this.cfg.tempo);
+      this.session = new XD.GameSession(); this.clock = { w: this.tc.min * 60000, b: this.tc.min * 60000 }; this.over = null; this.token = null;
+      this.code = genCode();
+      this.showView('lobby'); $('on-lobby-status').textContent = 'Conectando ao serviço de partidas…'; $('on-link-box').hidden = true;
+      try { await loadLib(); } catch (e) { this.fail(e.message); return; }
+      this.openHostPeer();
+    },
+    openHostPeer() {
+      if (this.leaving) return;
+      let p;
+      try { p = new root.Peer(PREFIX + this.code, this.peerOpts); } catch (e) { this.fail(this.errText(e)); return; }
+      this.peer = p;
+      p.on('open', () => {
+        if (this.peer !== p) return;
+        if (!this.inGame) {
+          $('on-link').value = this.link(); $('on-code-big').textContent = this.code; $('on-link-box').hidden = false;
+          $('on-lobby-status').innerHTML = '<span class="spin" aria-hidden="true"></span> Aguardando o seu amigo abrir o link…';
+          $('on-offline-warn').hidden = /^https?:$/.test(location.protocol);
+        } else this.render();
+      });
+      p.on('connection', (c) => this.onIncoming(c));
+      p.on('disconnected', () => { if (this.peer === p && !this.leaving) setTimeout(() => { try { if (this.peer === p && p.disconnected && !p.destroyed) p.reconnect(); } catch (e) { /* tenta de novo no próximo ciclo */ } }, 1500); });
+      p.on('close', () => { if (this.peer === p && !this.leaving) setTimeout(() => this.openHostPeer(), 2000); });
+      p.on('error', (e) => {
+        if (this.peer !== p || this.leaving) return;
+        if (e.type === 'unavailable-id') {
+          if (++this.hostTries > 6) { this.fail('Não foi possível criar a sala. Tente de novo.'); return; }
+          if (this.inGame) { try { p.destroy(); } catch (x) { /* ok */ } setTimeout(() => this.openHostPeer(), 3000); }   // retomando: o serviço ainda segura o código antigo
+          else { try { p.destroy(); } catch (x) { /* ok */ } this.code = genCode(); this.openHostPeer(); }
+          return;
+        }
+        if (this.inGame) { this.render(); return; }   // com a partida rolando, erros de rede passam: ela reconecta sozinha
+        this.fail(this.errText(e));
+      });
+    },
+    onIncoming(c) {
+      c.on('data', (m) => this.onData(c, m));
+      c.on('close', () => this.onConnClose(c));
+      c.on('error', () => { /* o "close" cuida */ });
+    },
+    cancelLobby() { this.teardown(); this.showView('setup'); this.drawSetup(); },
+    async copyLink() {
+      const txt = this.link();
+      try { await navigator.clipboard.writeText(txt); XD.ui.toast('Link copiado.', 'ok'); }
+      catch (e) { const i = $('on-link'); i.focus(); i.select(); try { document.execCommand('copy'); XD.ui.toast('Link copiado.', 'ok'); } catch (x) { XD.ui.toast('Toque e segure no link para copiar.', 'info'); } }
+    },
+    async shareLink() {
+      const txt = `Vamos jogar xadrez? Abra o link para entrar na partida (${this.tc.nome === 'Sem relógio' ? 'sem relógio' : this.tc.nome}):`;
+      if (navigator.share) { try { await navigator.share({ title: 'Partida de xadrez', text: txt, url: this.link() }); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+      window.open('https://wa.me/?text=' + encodeURIComponent(txt + ' ' + this.link()), '_blank', 'noopener');
+    },
+
+    /* ------------------------------------------------------------ Convidado */
+    prepareJoin(code) {
+      this.teardown(true);
+      this.code = code; this.role = 'guest'; this.showView('join');
+      $('on-join-code').textContent = code; $('on-join-code').dataset.code = code;
+      $('on-join-nome').value = this.cfg.nome || ''; $('on-join-form').hidden = false; $('on-join-status').innerHTML = ''; $('on-join-back').textContent = '← Cancelar';
+      if (this.cfg.nome) this.joinStart(code);
+    },
+    async joinStart(code, resumeToken) {
+      this.role = 'guest'; this.code = code; this.leaving = false; this.joinTries = 0;
+      this.me = { color: 'b', nome: cleanName(this.cfg.nome, 'Convidado') };
+      if (!this.token) this.token = resumeToken || genCode() + genCode();
+      $('on-join-form').hidden = true; $('on-join-status').innerHTML = '<p><span class="spin" aria-hidden="true"></span> Conectando…</p>';
+      try { await loadLib(); } catch (e) { this.fail(e.message); return; }
+      this.openGuestPeer();
+    },
+    openGuestPeer() {
+      if (this.leaving) return;
+      let p;
+      try { p = new root.Peer(undefined, this.peerOpts); } catch (e) { this.fail(this.errText(e)); return; }
+      this.peer = p;
+      p.on('open', () => { if (this.peer === p) this.guestConnect(); });
+      p.on('disconnected', () => { if (this.peer === p && !this.leaving) setTimeout(() => { try { if (this.peer === p && p.disconnected && !p.destroyed) p.reconnect(); } catch (e) { /* ok */ } }, 1500); });
+      p.on('error', (e) => {
+        if (this.peer !== p || this.leaving) return;
+        if (this.inGame || this.resuming) { this.scheduleRetry(); return; }   // anfitrião sumiu por um instante: continua tentando
+        this.fail(this.errText(e));
+      });
+    },
+    guestConnect() {
+      if (this.leaving || !this.peer || this.peer.destroyed) return;
+      if (this.peer.disconnected) { try { this.peer.reconnect(); } catch (e) { /* ok */ } }
+      let c;
+      try { c = this.peer.connect(PREFIX + this.code, { reliable: true, serialization: 'json' }); } catch (e) { this.scheduleRetry(); return; }
+      this.conn = c; this.joinTries++;
+      c.on('open', () => { if (this.conn === c) c.send({ t: 'hi', nome: this.me.nome, token: this.token, v: 1 }); });
+      c.on('data', (m) => this.onData(c, m));
+      c.on('close', () => this.onConnClose(c));
+      c.on('error', () => { /* o "close" cuida */ });
+      clearTimeout(this.helloTimer);
+      this.helloTimer = setTimeout(() => { if (!this.leaving && this.conn === c && !this.opp.online) { try { c.close(); } catch (e) { /* ok */ } this.scheduleRetry(); } }, 12000);
+    },
+    scheduleRetry() {
+      if (this.leaving || this.retry || this.role !== 'guest') return;
+      if (!this.inGame && this.joinTries >= 4) { this.fail('Não foi possível entrar na partida. Confira o link e se o seu amigo ainda está com o site aberto.'); return; }
+      this.opp.online = false; if (this.inGame) this.render();
+      this.retry = setTimeout(() => {
+        this.retry = null; if (this.leaving) return;
+        if (!this.peer || this.peer.destroyed) this.openGuestPeer(); else this.guestConnect();
+      }, 2500);
+    },
+    resumeRoom() {
+      const s = this.savedRoom(); if (!s) return;
+      this.init(); this.loadCfg();
+      this.teardown(true);
+      this.leaving = false; this.resuming = false; this.code = s.code; this.token = s.token; this.tc = tcOf(s.tempo);
+      this.me = { color: s.cor, nome: s.nome }; this.opp = { nome: s.onome || 'Adversário', online: false };
+      if (s.role === 'host') {
+        try { this.session = new XD.GameSession({ moves: s.moves }); } catch (e) { XD.ui.toast('Não foi possível retomar a partida.', 'erro'); return; }
+        this.role = 'host'; this.clock = s.clock; this.over = null; this.hostTries = 0; this.inGame = true;
+        this.board.setOrientation(this.me.color); this.showView('game'); this.render(); this.startTimer(); this.keepAwake(true);
+        loadLib().then(() => this.openHostPeer(), (e) => this.fail(e.message));
+      } else {
+        this.cfg.nome = s.nome; this.role = 'guest'; this.resuming = true; this.showView('join'); $('on-join-code').textContent = s.code; $('on-join-form').hidden = true;
+        this.joinStart(s.code, s.token);
+      }
+    },
+
+    /* ------------------------------------------------------------ Mensagens */
+    send(o) { try { if (this.conn && this.conn.open) { this.conn.send(o); return true; } } catch (e) { /* conexão caiu */ } return false; },
+    onConnClose(c) {
+      if (this.conn !== c) return;
+      this.opp.online = false; this.conn = null;
+      if (this.inGame) this.render();
+      if (this.role === 'guest' && !this.leaving && !(this.over && !this.rematch.me)) this.scheduleRetry();
+      else if (this.role === 'guest' && !this.inGame && !this.leaving) this.scheduleRetry();
+    },
+    checkLink() {
+      if (!this.inGame) return;
+      if (this.role === 'guest' && (!this.conn || !this.conn.open) && !this.retry) this.scheduleRetry();
+      if (this.role === 'host' && this.peer && this.peer.disconnected && !this.peer.destroyed) { try { this.peer.reconnect(); } catch (e) { /* ok */ } }
+    },
+    startPing() {
+      clearInterval(this.pingTimer);
+      this.pingTimer = setInterval(() => {
+        this.send({ t: 'ping' });
+        const mudo = performance.now() - this.lastRx >= this.oppTimeout;
+        if (mudo && this.role === 'guest' && this.conn && !this.retry) {   // conexão "morta" sem aviso: derruba e tenta de novo
+          const c = this.conn; this.conn = null; try { c.close(); } catch (e) { /* ok */ } this.scheduleRetry();
+        }
+        const on = !!(this.conn && this.conn.open) && !mudo;
+        if (on !== this.opp.online) { this.opp.online = on; if (this.inGame) this.render(); }
+        this.checkLink();
+      }, this.pingMs);
+    },
+
+    onData(c, m) {
+      if (!m || typeof m !== 'object' || this.leaving) return;
+      this.lastRx = performance.now();
+      if (c !== this.conn && m.t !== 'hi') return;   // conexão antiga
+      switch (m.t) {
+        case 'hi': this.onHi(c, m); break;
+        case 'full': this.fail('Essa partida já tem dois jogadores.'); break;
+        case 'start': this.onStart(m); break;
+        case 'move': this.onMove(m); break;
+        case 'state': this.onState(m); break;
+        case 'sync': this.sendState('state'); break;
+        case 'over': if (this.inGame && !this.over && ['1-0', '0-1', '1/2-1/2'].includes(m.result)) this.finish(m.result, String(m.kind || ''), true); break;
+        case 'draw': this.onDraw(); break;
+        case 'drawr': this.drawOut = false; if (m.ok) this.finish('1/2-1/2', 'acordo', true); else { XD.ui.toast(`${this.opp.nome} recusou o empate.`, 'info'); this.render(); } break;
+        case 'rematch': this.rematch.opp = true; this.maybeRematch(); this.render(); break;
+        default: break;   // ping e desconhecidos
+      }
+      if (!this.opp.online && c === this.conn) { this.opp.online = true; if (this.inGame) this.render(); }
+    },
+
+    onHi(c, m) {
+      if (this.role !== 'host') return;
+      const token = String(m.token || '').slice(0, 40);
+      if (this.token && token !== this.token) { try { c.send({ t: 'full' }); } catch (e) { /* ok */ } setTimeout(() => { try { c.close(); } catch (e) { /* ok */ } }, 400); return; }
+      if (this.conn && this.conn !== c) { const old = this.conn; this.conn = null; try { old.close(); } catch (e) { /* ok */ } }
+      this.conn = c; this.token = token; this.opp.nome = cleanName(m.nome, 'Amigo'); this.opp.online = true; this.lastRx = performance.now();
+      if (!this.inGame) {
+        this.inGame = true; this.over = null; this.savedId = null; this.rematch = { me: false, opp: false }; this.drawOut = false;
+        this.board.setOrientation(this.me.color); this.showView('game'); this.startTimer(); this.startPing(); this.keepAwake(true);
+        if (XD.Sound) XD.Sound.play('start');
+      } else { this.startPing(); }
+      this.sendState('start'); this.persistRoom(); this.render();
+    },
+    sendState(kind) {
+      this.send({ t: kind, tempo: this.tc.id, cor: this.me.color === 'w' ? 'b' : 'w', nomeHost: this.me.nome, nomeGuest: this.opp.nome,
+        moves: this.session.moves.slice(0, this.session.cursor).map((x) => ({ from: x.from, to: x.to, promotion: x.promotion })), clock: this.clock, over: this.over ? { result: this.over.result, kind: this.over.kind } : null });
+    },
+    adopt(m) {   // aplica uma partida inteira recebida do outro lado
+      const sess = new XD.GameSession({ moves: (Array.isArray(m.moves) ? m.moves : []).slice(0, 600) });
+      this.session = sess;
+      if (m.clock && isFinite(m.clock.w) && isFinite(m.clock.b)) this.clock = { w: +m.clock.w, b: +m.clock.b };
+      if (m.over && ['1-0', '0-1', '1/2-1/2'].includes(m.over.result) && !this.over) this.finish(m.over.result, String(m.over.kind || ''), true);
+      else if (!m.over && this.over && this.over.kind !== 'rematch') { /* mantém o fim local */ }
+    },
+    onStart(m) {
+      if (this.role !== 'guest') return;
+      clearTimeout(this.helloTimer); this.joinTries = 0; this.resuming = false;
+      try {
+        this.tc = tcOf(m.tempo); this.me.color = m.cor === 'b' ? 'b' : 'w'; this.opp.nome = cleanName(m.nomeHost, 'Anfitrião'); this.opp.online = true;
+        const was = this.inGame; this.over = null; this.drawOut = false; this.rematch = { me: false, opp: false };
+        if (!was || (this.session && this.session.length > (m.moves || []).length) || !(m.moves || []).length) { this.savedId = null; }
+        this.adopt(m);
+        this.inGame = true; this.board.setOrientation(this.me.color); this.showView('game'); this.render();
+        this.startTimer(); this.startPing(); this.keepAwake(true); this.persistRoom();
+        if (!was && XD.Sound) XD.Sound.play('start');
+      } catch (e) { this.fail('A partida recebida é inválida: ' + e.message); }
+    },
+    onState(m) {
+      if (!this.inGame) return;
+      try {
+        const theirs = Array.isArray(m.moves) ? m.moves.length : 0;
+        if (theirs > this.session.length || (m.over && !this.over)) { this.adopt(m); this.persistRoom(); this.render(); }
+      } catch (e) { /* estado inválido: ignora */ }
+    },
+
+    /* ------------------------------------------------------------ Partida */
+    canMove() { return this.inGame && !this.over && !!this.session && this.session.turn === this.me.color; },
+    clocked() { return !!this.tc && this.tc.min > 0; },
+    running() { return this.inGame && !this.over && this.clocked() && this.session.length > 0; },
+    nameOf(c) { return c === this.me.color ? this.me.nome : this.opp.nome; },
+
+    startTimer() { clearInterval(this.timer); this.last = performance.now(); this.timer = setInterval(() => this.tick(), 100); },
+    tick() {
+      const now = performance.now(), dt = now - this.last; this.last = now;
+      if (!this.running()) return;
+      const c = this.session.turn; this.clock[c] -= dt;
+      const mine = c === this.me.color;
+      if (this.clock[c] <= (mine ? 0 : -GRACE)) {
+        this.clock[c] = 0; const result = c === 'w' ? '0-1' : '1-0';
+        this.send({ t: 'over', result, kind: 'tempo' }); this.finish(result, 'tempo'); return;
+      }
+      this.renderClocks();
+    },
+
+    async tryMove(from, to) {
+      if (!this.canMove()) { this.render(); return; }
+      try {
+        let promotion;
+        if (this.session.needsPromotion(from, to)) { promotion = await XD.ui.promotionBox(this.session.turn); if (!promotion) { this.render(); return; } }
+        if (!this.canMove()) { this.render(); return; }   // a partida pode ter mudado durante a escolha
+        const mover = this.session.turn;
+        this.session.play({ from, to, promotion });
+        if (this.clocked()) this.clock[mover] += this.tc.inc * 1000;
+        this.last = performance.now();
+        this.send({ t: 'move', n: this.session.length, from, to, promotion, clk: { w: this.clock.w, b: this.clock.b } });
+        const st = this.session.status();
+        if (st.over) this.finish(st.result, st.kind, false, st.text); else this.persistRoom();
+      } catch (e) { XD.ui.toast(e.message, 'erro'); }
+      this.render();
+    },
+    onMove(m) {
+      if (!this.inGame || this.over) return;
+      if (m.n !== this.session.length + 1) { if (m.n > this.session.length + 1) this.send({ t: 'sync' }); else this.sendState('state'); return; }
+      try {
+        const mover = this.session.turn;
+        if (mover === this.me.color) { this.send({ t: 'sync' }); return; }
+        this.session.play({ from: String(m.from), to: String(m.to), promotion: m.promotion ? String(m.promotion) : undefined });
+        if (this.clocked() && m.clk && isFinite(m.clk[mover])) this.clock[mover] = Math.max(0, +m.clk[mover]);
+        this.last = performance.now();
+        const st = this.session.status();
+        if (st.over) this.finish(st.result, st.kind, true, st.text); else this.persistRoom();
+      } catch (e) { this.send({ t: 'sync' }); return; }
+      this.render();
+    },
+
+    finish(result, kind, fromPeer, text) {
+      if (this.over) return;
+      const w = this.nameOf('w'), b = this.nameOf('b'), loser = result === '1-0' ? b : w, winner = result === '1-0' ? w : b;
+      const texto = text || (kind === 'tempo' ? `Tempo esgotado! ${loser} perdeu no relógio.` : kind === 'desistencia' ? `${loser} desistiu. ${winner} vence.`
+        : kind === 'acordo' ? 'Empate por acordo.' : result === '1/2-1/2' ? 'Empate.' : `${winner} venceu.`);
+      this.over = { result, kind, texto }; this.drawOut = false; this.rematch = { me: false, opp: false };
+      this.board.setInteractive(false); this.keepAwake(false);
+      try { XD.Store.raw.set(ROOM, ''); } catch (e) { /* ok */ }
+      this.autoSave();
+      if (XD.Sound) { const mine = (result === '1-0' && this.me.color === 'w') || (result === '0-1' && this.me.color === 'b'); XD.Sound.play(result === '1/2-1/2' ? 'draw' : mine ? 'win' : 'lose'); }
+      this.render();
+    },
+    async resign() {
+      if (!this.inGame || this.over) return;
+      if (!(await XD.ui.confirmBox('Desistir da partida?', `${this.opp.nome} vence.`, 'Desistir', true))) return;
+      if (this.over) return;
+      const result = this.me.color === 'w' ? '0-1' : '1-0';
+      this.send({ t: 'over', result, kind: 'desistencia' }); this.finish(result, 'desistencia');
+    },
+    offerDraw() {
+      if (!this.inGame || this.over || this.drawOut) return;
+      if (!this.send({ t: 'draw' })) { XD.ui.toast('Sem conexão com o adversário.', 'erro'); return; }
+      this.drawOut = true; XD.ui.toast('Empate proposto. Aguardando resposta…', 'info'); this.render();
+    },
+    async onDraw() {
+      if (!this.inGame || this.over || this.drawAsking) return;
+      this.drawAsking = true;
+      const ok = await XD.ui.confirmBox(`${this.opp.nome} propõe empate`, 'Você aceita o empate?', 'Aceitar empate', false);
+      this.drawAsking = false;
+      if (this.over) return;
+      this.send({ t: 'drawr', ok });
+      if (ok) this.finish('1/2-1/2', 'acordo');
+    },
+    askRematch() {
+      if (!this.over || this.rematch.me) return;
+      this.rematch.me = true; this.send({ t: 'rematch' }); this.maybeRematch(); this.render();
+    },
+    maybeRematch() {
+      if (!this.rematch.me || !this.rematch.opp || this.role !== 'host') return;
+      // anfitrião reinicia, trocando as cores, e manda a nova partida
+      this.me.color = this.me.color === 'w' ? 'b' : 'w'; this.session = new XD.GameSession(); this.tc = this.tc || tcOf(this.cfg.tempo);
+      this.clock = { w: this.tc.min * 60000, b: this.tc.min * 60000 }; this.over = null; this.savedId = null; this.drawOut = false; this.rematch = { me: false, opp: false };
+      this.board.setOrientation(this.me.color); this.keepAwake(true); this.last = performance.now();
+      this.sendState('start'); this.persistRoom(); this.render(); if (XD.Sound) XD.Sound.play('start');
+    },
+    async leaveGame() {
+      if (this.inGame && !this.over && this.session.length > 1) {
+        if (!(await XD.ui.confirmBox('Sair da partida?', 'Sair conta como desistência: seu adversário vence.', 'Sair e desistir', true))) return;
+        this.send({ t: 'over', result: this.me.color === 'w' ? '0-1' : '1-0', kind: 'desistencia' });
+        await new Promise((ok) => setTimeout(ok, 400));   // dá tempo da mensagem sair antes de fechar a conexão
+      }
+      this.teardown(); this.showView('setup'); this.drawSetup();
+    },
+    teardown(quiet) {
+      this.leaving = true; clearInterval(this.timer); clearInterval(this.pingTimer); clearTimeout(this.retry); clearTimeout(this.helloTimer); this.retry = null;
+      const c = this.conn, p = this.peer; this.conn = null; this.peer = null;
+      try { if (c) c.close(); } catch (e) { /* ok */ }
+      try { if (p) p.destroy(); } catch (e) { /* ok */ }
+      this.inGame = false; this.over = null; this.token = null; this.role = null; this.opp = { nome: 'Adversário', online: false }; this.drawOut = false;
+      this.rematch = { me: false, opp: false }; this.keepAwake(false);
+      try { XD.Store.raw.set(ROOM, ''); } catch (e) { /* ok */ }
+      if (!quiet) { this.code = ''; }
+      this.leaving = false;
+    },
+
+    /* ------------------------------------------------------------ Tela */
+    panel(pos, color) {
+      const el = $('on-' + pos), mine = color === this.me.color;
+      el.className = 'du-panel ' + pos + ' ' + (color === 'w' ? 'cw' : 'cb');
+      el.classList.toggle('turn', this.inGame && !this.over && this.session.turn === color);
+      const off = !mine && !this.opp.online ? ' <small class="on-off">· desconectado</small>' : '';
+      el.querySelector('.du-name').innerHTML = `<span class="dot ${color}" aria-hidden="true"></span>${XD.ui.esc(this.nameOf(color))}${mine ? ' <small>(você)</small>' : ''}${off}`;
+      el.querySelector('.du-clock').dataset.c = color; el.querySelector('.du-clock').hidden = !this.clocked();
+      el.querySelector('.du-btns').hidden = !mine;
+      const d = el.querySelector('[data-act="draw"]'), r = el.querySelector('[data-act="resign"]');
+      d.onclick = () => this.offerDraw(); r.onclick = () => this.resign();
+      d.disabled = !!this.over || this.drawOut || !this.opp.online; r.disabled = !!this.over;
+      d.textContent = this.drawOut ? '½ Proposto…' : '½ Empate';
+    },
+    render() {
+      if (!this.inGame) return;
+      const s = this.session, top = this.board.orientation === 'w' ? 'b' : 'w', bot = top === 'w' ? 'b' : 'w';
+      this.board.set({ board: s.chess.board(), lastMove: s.lastMove(), check: s.checkSquare() });
+      this.board.setInteractive(this.canMove());
+      this.panel('top', top); this.panel('bot', bot);
+      const st = s.status(), el = $('on-status');
+      el.className = 'status' + (this.over ? ' end' : st.check ? ' alert' : '');
+      const minha = s.turn === this.me.color;
+      el.innerHTML = this.over ? `<span>${XD.ui.esc(this.over.texto)}</span>`
+        : `<span class="dot ${s.turn}" aria-hidden="true"></span><span>${st.check ? 'Xeque! ' : ''}${minha ? 'Sua vez' : 'Vez de ' + XD.ui.esc(this.opp.nome)}${!s.length && this.clocked() ? ' (o relógio começa no 1º lance)' : ''}.</span>`;
+      $('on-conn').hidden = this.opp.online || !!this.over;
+      $('on-conn').textContent = this.role === 'guest' ? '📡 Sem conexão com o anfitrião. Tentando reconectar…' : '📡 Seu amigo está desconectado. Esperando ele voltar pelo mesmo link…';
+      $('on-result').hidden = !this.over;
+      if (this.over) {
+        const r = this.over.result, mine = (r === '1-0' && this.me.color === 'w') || (r === '0-1' && this.me.color === 'b');
+        $('on-result-text').textContent = r === '1/2-1/2' ? 'Empate.' : mine ? 'Você venceu! 🎉' : `${this.opp.nome} venceu.`;
+        $('on-rematch').disabled = this.rematch.me || !this.opp.online;
+        $('on-rematch').textContent = this.rematch.me ? '⟲ Aguardando o amigo…' : this.rematch.opp ? '⟲ Aceitar revanche' : '⟲ Revanche (trocar cores)';
+      }
+      XD.ui.renderMoveList($('on-moves'), s, () => {});
+      this.renderClocks();
+    },
+    renderClocks() {
+      for (const c of ['w', 'b']) {
+        const el = document.querySelector('#on-game .du-clock[data-c="' + c + '"]'); if (!el) continue;
+        el.textContent = XD.Dupla.fmt(this.clock[c]); el.classList.toggle('low', this.clocked() && this.clock[c] < 10000);
+        el.classList.toggle('run', this.running() && this.session.turn === c);
+      }
+    },
+
+    autoSave() {
+      try {
+        const s = this.session; if (!s || s.length < 2 || this.savedId || !XD.Settings.get('autosalvar')) return;
+        const w = this.nameOf('w'), b = this.nameOf('b');
+        const rec = XD.Store.save({ title: `Online: ${w} × ${b} · ${XD.ui.fmtDate(new Date().toISOString())}`, session: s, result: this.over ? this.over.result : undefined,
+          meta: { modo: 'online', brancas: w, pretas: b, tempo: this.tc.nome, eu: this.me.color } });
+        this.savedId = rec.id;
+      } catch (e) { /* o botão Salvar continua valendo */ }
+    },
+    async save() {
+      const s = this.session; if (!s || !s.length) return;
+      const w = this.nameOf('w'), b = this.nameOf('b');
+      const r = await XD.ui.promptBox('Salvar partida', 'Título da partida', `Online: ${w} × ${b} · ${XD.ui.fmtDate(new Date().toISOString())}`, 'Salvar');
+      if (!r) return;
+      try {
+        const rec = XD.Store.save({ id: this.savedId || undefined, title: r.text, session: s, result: this.over ? this.over.result : undefined,
+          meta: { modo: 'online', brancas: w, pretas: b, tempo: this.tc.nome, eu: this.me.color } });
+        this.savedId = rec.id; XD.ui.toast('Partida salva em "Minhas Partidas".', 'ok');
+      } catch (e) { XD.ui.toast(e.message, 'erro'); }
+    },
+    async keepAwake(on) {
+      try {
+        if (on && navigator.wakeLock && !this.lock) { this.lock = await navigator.wakeLock.request('screen'); this.lock.addEventListener('release', () => { this.lock = null; }); }
+        else if (!on && this.lock) { await this.lock.release(); this.lock = null; }
+      } catch (e) { /* sem suporte: tudo bem */ }
+    }
+  };
+  XD.Online = Online; Online.normCode = normCode; Online.genCode = genCode;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -6456,7 +7180,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   const RESULT = { '1-0': 'Brancas venceram', '0-1': 'Pretas venceram', '1/2-1/2': 'Empate', '*': 'Em andamento' };
 
   /** Selo "vs IA · Nível" para partidas jogadas contra a IA. */
-  const iaBadge = (g) => g.meta && g.meta.modo === 'dupla'
+  const iaBadge = (g) => g.meta && g.meta.modo === 'online'
+    ? `<span class="badge">Online · ${esc(g.meta.brancas || 'Brancas')} × ${esc(g.meta.pretas || 'Pretas')}${g.meta.tempo && g.meta.tempo !== 'Sem relógio' ? ' · ' + esc(g.meta.tempo) : ''}</span>`
+    : g.meta && g.meta.modo === 'dupla'
     ? `<span class="badge">Presencial · ${esc(g.meta.brancas || 'Brancas')} × ${esc(g.meta.pretas || 'Pretas')}${g.meta.tempo && g.meta.tempo !== 'Sem relógio' ? ' · ' + esc(g.meta.tempo) : ''}</span>`
     : g.meta && g.meta.modo === 'ia'
     ? `<span class="badge">vs IA · ${esc(g.meta.nivelNome || 'Nível ' + g.meta.nivel)} · você de ${g.meta.cor === 'b' ? 'pretas' : 'brancas'}${g.meta.abandonou ? ' · abandonou' : ''}</span>` : '';
@@ -7852,8 +8578,52 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     } catch (e) { return uci; }
   }
 
+  /**
+   * Busca do motor posição a posição + 2ª passada nos lances duvidosos. Devolve a lista de resultados por posição,
+   * ou null se `hooks.alive()` ficar falso (cancelado). `hooks.prog(texto, fração)` informa o andamento.
+   * Lança Error se a busca falhar na 1ª passada.
+   */
+  async function analyzeCore(eng, g, ms, hooks) {
+    const { pos, uci } = positions(g), alive = hooks.alive, prog = hooks.prog || (() => {});
+    const posRes = [];
+    for (let i = 0; i < pos.length; i++) {
+      if (!alive()) return null;
+      prog(`Analisando posição ${i + 1} de ${pos.length}…`, i / pos.length);
+      const ch = new root.Chess(pos[i].fen);
+      if (!ch.moves().length) { posRes.push({ score: ch.isCheck() ? -MATE : 0, best: null }); continue; }   // mate ou afogamento
+      const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, i), params: { movetime: ms, multipv: 2 } });
+      const l = res.lines && res.lines[0], l2 = res.lines && res.lines[1];
+      posRes.push({ score: l ? l.score : 0, best: res.bestmove || (l && l.move) || null, second: l2 ? l2.score : null });
+    }
+    if (!alive()) return null;
+    /* 2ª passada: lances que pareceram ruins (perda ≥ 5) são conferidos com 4× mais tempo nas duas posições,
+       porque uma busca curta erra com facilidade em posições táticas. */
+    try {
+      const pre = summarize(posRes, uci, pos.map((p) => p.turn));
+      const dubios = new Set();
+      const fl0 = flagsFor(pos.map((p) => p.fen), uci, posRes);
+      pre.moves.forEach((m, i) => { if (m.loss >= 5 || fl0[i].sac) { dubios.add(i); dubios.add(i + 1); } });   // ruins ou sacrifícios
+      const lista = [...dubios].sort((a, b) => a - b).slice(0, 40);
+      const ms2 = Math.min(4000, ms * 4);
+      for (let k = 0; k < lista.length; k++) {
+        const j = lista[k];
+        if (!alive()) return null;
+        prog(`Conferindo lances duvidosos… ${k + 1} de ${lista.length}`, (k + 1) / (lista.length + 1) * 0.999);
+        if (posRes[j].best === null) continue;           // mate/afogamento
+        const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, j), params: { movetime: ms2, multipv: 2 } });
+        const l = res.lines && res.lines[0], l2 = res.lines && res.lines[1];
+        if (l) posRes[j] = { score: l.score, best: res.bestmove || l.move || posRes[j].best, second: l2 ? l2.score : null };
+      }
+    } catch (e) {
+      if (!alive()) return null;              // se a conferência falhar, fica com a 1ª passada
+    }
+    return alive() ? posRes : null;
+  }
+
   const Analise = {
-    api, token: 0, engine: null, ctx: null, result: null,
+    api, analyzeCore, positions, sanOf, loadFor, token: 0,
+    /** Resultado guardado de uma partida (qualquer profundidade), se a partida não mudou. */
+    cached(g) { const r = loadAll()[g.id]; return r && r.v === 2 && r.sig === sig(g) ? r : null; }, engine: null, ctx: null, result: null,
 
     /** Liga o painel à partida g e ao Review r. Cancela qualquer análise anterior. */
     mount(g, review) {
@@ -7903,51 +8673,15 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         return;
       }
       const kind = eng.kind;
-      const posRes = [];
-      try {
-        for (let i = 0; i < pos.length; i++) {
-          if (!this.alive(tk)) return;
-          prog(`Analisando posição ${i + 1} de ${pos.length}…`, i / pos.length);
-          const ch = new root.Chess(pos[i].fen);
-          if (!ch.moves().length) {                      // mate ou afogamento: não há o que buscar
-            posRes.push({ score: ch.isCheck() ? -MATE : 0, best: null });
-            continue;
-          }
-          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, i), params: { movetime: ms, multipv: 2 } });
-          const l = res.lines && res.lines[0];
-          const l2 = res.lines && res.lines[1];
-          posRes.push({ score: l ? l.score : 0, best: res.bestmove || (l && l.move) || null, second: l2 ? l2.score : null });
-        }
-      } catch (e) {
+      let posRes;
+      try { posRes = await analyzeCore(eng, g, ms, { alive: () => this.alive(tk), prog }); }
+      catch (e) {
         if (!this.alive(tk)) return;
         box.innerHTML = `<p class="small">A análise parou: ${esc(e.message || 'erro')}.</p><button class="btn primary" id="an-go" type="button">Tentar de novo</button>`;
         $('an-go').addEventListener('click', () => this.run());
         return;
       }
-      if (!this.alive(tk)) return;
-      /* 2ª passada: lances que pareceram ruins (perda ≥ 5) são conferidos com 4× mais tempo nas duas posições,
-         porque uma busca curta erra com facilidade em posições táticas. */
-      try {
-        const pre = summarize(posRes, uci, pos.map((p) => p.turn));
-        const dubios = new Set();
-        const fl0 = flagsFor(pos.map((p) => p.fen), uci, posRes);
-        pre.moves.forEach((m, i) => { if (m.loss >= 5 || fl0[i].sac) { dubios.add(i); dubios.add(i + 1); } });   // ruins ou sacrifícios
-        const lista = [...dubios].sort((a, b) => a - b).slice(0, 40);
-        const ms2 = Math.min(4000, ms * 4);
-        for (let k = 0; k < lista.length; k++) {
-          const j = lista[k];
-          if (!this.alive(tk)) return;
-          prog(`Conferindo lances duvidosos… ${k + 1} de ${lista.length}`, (k + 1) / (lista.length + 1) * 0.999);
-          if (posRes[j].best === null) continue;           // mate/afogamento
-          const res = await eng.search({ startFen: g.startFen, moves: uci.slice(0, j), params: { movetime: ms2, multipv: 2 } });
-          const l = res.lines && res.lines[0];
-          const l2 = res.lines && res.lines[1];
-          if (l) posRes[j] = { score: l.score, best: res.bestmove || l.move || posRes[j].best, second: l2 ? l2.score : null };
-        }
-      } catch (e) {
-        if (!this.alive(tk)) return;              // se a conferência falhar, fica com a 1ª passada
-      }
-      if (!this.alive(tk)) return;
+      if (!posRes || !this.alive(tk)) return;
       const r = { v: 2, sig: sig(g), nivel, kind, at: Date.now(), pos: posRes, turns: pos.map((p) => p.turn), uci };
       saveFor(g, r);
       this.stop();
@@ -8073,6 +8807,335 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   };
 
   XD.Analise = Analise;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * erros.js — Treino de erros: o motor revisa as SUAS partidas (Chess.com e partidas jogadas no site),
+ * os seus erros viram posições de treino e voltam em intervalos crescentes (1, 3, 7, 14 dias).
+ *
+ * Parte pura (testada em Node): extractMistakes, sanitize, merge, grade, queue, sideOf.
+ * Parte de tela: XD.Erros (rota #/erros).
+ *
+ * Dados (xadrez.erros.v1): { v:1, items:[erro], done:{ chaveDaPartida:{at,n} } }
+ *   erro = { id, fen, side, played, playedSan, best, bestSan, loss, cls, src:'chesscom'|'ia'|'online', srcName, gameKey, ply,
+ *            when, motor, box, due, tries, seen, mastered }
+ */
+(function (root) {
+  'use strict';
+  const KEY = 'xadrez.erros.v1', MAX_ITEMS = 300, MAX_DONE = 600, DAY = 86400000;
+  const BOX_DAYS = [0, 1, 3, 7, 14];          // depois de acertar na caixa i, volta em BOX_DAYS[i+1] dias; passou da última = dominado
+  const SRC = ['chesscom', 'ia', 'online'];
+  const Chess = () => root.Chess || (typeof require !== 'undefined' ? require('./engine.js').Chess : null);
+  const A = () => (typeof module !== 'undefined' && module.exports ? require('./analise.js') : root.XD.Analise.api);
+
+  const epd = (fen) => String(fen).split(' ').slice(0, 4).join(' ');
+  const hash = (s) => { let h = 5381; for (let i = 0; i < s.length; i++) h = ((h << 5) + h + s.charCodeAt(i)) | 0; return (h >>> 0).toString(36); };
+  const idOf = (fen, side) => 'e' + hash(epd(fen) + '|' + side);
+
+  function sanOf(fen, uci) {
+    try {
+      const m = new (Chess())(fen).moves({ verbose: true }).find((x) => x.from + x.to + (x.promotion || '') === uci);
+      return m ? m.san : uci;
+    } catch (e) { return uci; }
+  }
+
+  /**
+   * Erros (Erro / Erro grave) do jogador `side` numa partida já revisada.
+   * g: { startFen, moves:[{from,to,promotion?,san?}] };  r: { pos:[{score,best,second}], turns:[], uci:[] } (resultado do motor).
+   * Ignora posições que já estavam perdidas (chance de vitória < 15%) e lances que coincidem com o melhor.
+   */
+  function extractMistakes(g, side, r, info) {
+    const a = A(), C = Chess(), out = [];
+    const sum = a.summarize(r.pos, r.uci, r.turns);
+    const ch = new C(g.startFen);
+    for (let i = 0; i < r.uci.length; i++) {
+      const fenBefore = ch.fen(), m = sum.moves[i];
+      if (r.turns[i] === side && (m.cls === 'erro' || m.cls === 'gafe') && m.best && m.best !== r.uci[i] && a.winPct(r.pos[i].score) >= 15) {
+        out.push({ id: idOf(fenBefore, side), fen: fenBefore, side, played: r.uci[i], playedSan: (g.moves[i] && g.moves[i].san) || sanOf(fenBefore, r.uci[i]),
+          best: m.best, bestSan: sanOf(fenBefore, m.best), loss: Math.round(m.loss), cls: m.cls, src: info.src, srcName: String(info.srcName || '').slice(0, 40),
+          gameKey: info.gameKey, ply: i + 1, when: info.when || Date.now(), motor: info.motor || '', box: 0, due: 0, tries: 0, seen: 0, mastered: false });
+      }
+      const mv = g.moves[i]; ch.move({ from: mv.from, to: mv.to, promotion: mv.promotion });
+    }
+    return out;
+  }
+
+  const UCI_RE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
+  function cleanItem(x) {
+    if (!x || typeof x !== 'object') return null;
+    try {
+      if (typeof x.fen !== 'string' || (x.side !== 'w' && x.side !== 'b') || !UCI_RE.test(x.best) || !UCI_RE.test(x.played)) return null;
+      const C = Chess(), ch = new C(x.fen);
+      if (ch.turn() !== x.side) return null;
+      const legal = ch.moves({ verbose: true }).map((m) => m.from + m.to + (m.promotion || ''));
+      if (!legal.includes(x.best) || !legal.includes(x.played)) return null;
+    } catch (e) { return null; }
+    const n = (v, d) => (Number.isFinite(v) ? v : d), s = (v, k) => String(v == null ? '' : v).slice(0, k);
+    return { id: idOf(x.fen, x.side), fen: x.fen, side: x.side, played: x.played, playedSan: s(x.playedSan, 12), best: x.best, bestSan: s(x.bestSan, 12), loss: Math.max(0, Math.min(100, Math.round(n(x.loss, 0)))),
+      cls: x.cls === 'gafe' ? 'gafe' : 'erro', src: SRC.includes(x.src) ? x.src : 'chesscom', srcName: s(x.srcName, 40), gameKey: s(x.gameKey, 60), ply: Math.max(1, Math.round(n(x.ply, 1))), when: n(x.when, 0),
+      motor: s(x.motor, 12), box: Math.max(0, Math.min(BOX_DAYS.length, Math.round(n(x.box, 0)))), due: n(x.due, 0), tries: Math.max(0, Math.round(n(x.tries, 0))), seen: Math.max(0, Math.round(n(x.seen, 0))), mastered: !!x.mastered };
+  }
+  /** Valida e limpa os dados lidos do aparelho ou de um backup. Devolve { v:1, items, done } (itens inválidos somem). */
+  function sanitize(d) {
+    const out = { v: 1, items: [], done: {} };
+    if (!d || typeof d !== 'object') return out;
+    const seen = new Set();
+    for (const x of Array.isArray(d.items) ? d.items.slice(0, 2000) : []) { const c = cleanItem(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.items.push(c); } }
+    if (d.done && typeof d.done === 'object') for (const k of Object.keys(d.done).slice(0, 5000)) { const v = d.done[k]; out.done[String(k).slice(0, 60)] = { at: Number.isFinite(v && v.at) ? v.at : 0, n: Number.isFinite(v && v.n) ? v.n : 0 }; }
+    return trim(out);
+  }
+  function trim(d) {
+    if (d.items.length > MAX_ITEMS) {          // some primeiro os dominados, depois os mais antigos
+      d.items.sort((a, b) => (a.mastered === b.mastered ? (b.when || 0) - (a.when || 0) : a.mastered ? 1 : -1));
+      d.items.length = MAX_ITEMS;
+    }
+    const ks = Object.keys(d.done);
+    if (ks.length > MAX_DONE) { ks.sort((a, b) => d.done[a].at - d.done[b].at).slice(0, ks.length - MAX_DONE).forEach((k) => delete d.done[k]); }
+    return d;
+  }
+  /** Junta dois conjuntos (backup "juntar"): o que já existe aqui tem prioridade; itens novos entram. */
+  function merge(atual, novo) {
+    const out = { v: 1, items: atual.items.slice(), done: Object.assign({}, novo.done, atual.done) };
+    const ids = new Set(out.items.map((x) => x.id)); let add = 0;
+    for (const x of novo.items) if (!ids.has(x.id)) { out.items.push(x); ids.add(x.id); add++; }
+    return { data: trim(out), added: add };
+  }
+  /** Adiciona erros novos a uma coleção (sem repetir a mesma posição). Devolve quantos entraram. */
+  function addItems(d, list) {
+    const ids = new Set(d.items.map((x) => x.id)); let n = 0;
+    for (const x of list) if (!ids.has(x.id)) { d.items.unshift(x); ids.add(x.id); n++; }
+    trim(d); return n;
+  }
+  /** Resultado de uma tentativa: 'ok' (acertou de 1ª), 'retry' (acertou na 2ª), 'fail'. Altera o item. */
+  function grade(it, result, now) {
+    now = now == null ? Date.now() : now; it.seen++; it.tries += result === 'ok' ? 1 : 2;
+    if (result === 'ok') {
+      it.box++; if (it.box >= BOX_DAYS.length) { it.mastered = true; it.due = Infinity; } else it.due = now + BOX_DAYS[it.box] * DAY;
+    } else if (result === 'retry') { it.due = now + DAY; }
+    else { it.box = 0; it.due = now; it.mastered = false; }
+    return it;
+  }
+  /** Fila de treino: vencidos primeiro (mais atrasados antes). `todos` = inclui os que ainda não venceram. */
+  function queue(items, now, todos) {
+    now = now == null ? Date.now() : now;
+    return items.filter((x) => !x.mastered && (todos || x.due <= now)).sort((a, b) => a.due - b.due || b.loss - a.loss);
+  }
+  /** Minha cor numa partida salva no site (null se não dá para saber: Modo Livre / presencial). */
+  function sideOf(g) {
+    const m = g && g.meta; if (!m) return null;
+    if (m.modo === 'ia') return m.cor === 'b' ? 'b' : 'w';
+    if (m.modo === 'online' && (m.eu === 'w' || m.eu === 'b')) return m.eu;
+    return null;
+  }
+
+  const api = { KEY, BOX_DAYS, idOf, extractMistakes, sanitize, merge, addItems, grade, queue, sideOf, trim };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== parte de tela */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+  const NIVEIS = { rapida: { nome: 'Rápida', ms: 150 }, normal: { nome: 'Normal', ms: 400 } };
+  const SRC_TXT = { chesscom: 'Chess.com', ia: 'Contra a IA', online: 'Online' };
+
+  const Erros = {
+    api, data: null, ready: false, board: null, session: null, cur: null, list: [], idx: 0, token: 0, running: false, engine: null, tryN: 0, answered: false, stats: null,
+
+    load() { let d = null; try { d = JSON.parse(XD.Store.raw.get(KEY) || 'null'); } catch (e) { d = null; } this.data = sanitize(d); },
+    save() { try { XD.Store.raw.set(KEY, JSON.stringify(this.data)); return true; } catch (e) { XD.ui.toast('Não consegui guardar os erros neste navegador.', 'erro'); return false; } },
+    /** Para o Backup. */
+    exportData() { this.load(); return this.data.items.length || Object.keys(this.data.done).length ? this.data : null; },
+    count() { this.load(); return this.data.items.filter((x) => !x.mastered).length; },
+    dueCount() { this.load(); return queue(this.data.items).length; },
+
+    init() {
+      if (this.ready) return; this.ready = true;
+      this.board = new XD.Board($('er-board'), { interactive: true, getTargets: (sq) => (this.canMove() ? this.session.targetsFrom(sq) : []), onMove: (a, b) => this.tryMove(a, b) });
+      $('er-go').addEventListener('click', () => this.runSources());
+      $('er-train').addEventListener('click', () => this.startTraining(false));
+      $('er-train-all').addEventListener('click', () => this.startTraining(true));
+      $('er-stop').addEventListener('click', () => this.stopTraining());
+      $('er-next').addEventListener('click', () => this.next());
+      $('er-show').addEventListener('click', () => this.reveal('fail'));
+      $('er-clear-mastered').addEventListener('click', () => { this.load(); this.data.items = this.data.items.filter((x) => !x.mastered); this.save(); this.renderHome(); });
+      $('er-clear').addEventListener('click', async () => {
+        if (!(await XD.ui.confirmBox('Apagar todos os erros guardados?', 'A lista de erros e o controle de partidas já revisadas são apagados. Suas partidas não são afetadas.', 'Apagar', true))) return;
+        this.data = { v: 1, items: [], done: {} }; this.save(); this.renderHome();
+      });
+      ['er-use-cc', 'er-use-site'].forEach((id) => $(id).addEventListener('click', (e) => e.currentTarget.setAttribute('aria-checked', String(e.currentTarget.getAttribute('aria-checked') !== 'true'))));
+      $('er-user').addEventListener('keydown', (e) => { if (e.key === 'Enter') this.runSources(); });
+      $('er-cancel').addEventListener('click', () => { this.token++; this.setMsg('Cancelando…'); });
+    },
+
+    enter() { this.init(); this.load(); this.stopTraining(true); this.renderHome(); },
+    leave() { if (this.running) { this.token++; } },
+
+    /* ------------------------------------------------------------- início */
+    siteGames() {
+      return XD.Store.list().filter((g) => sideOf(g) && g.moves.length >= 4 && !this.data.done['site-' + g.id]).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+    },
+    renderHome() {
+      $('er-home').hidden = false; $('er-play').hidden = true;
+      const d = this.data, ativos = d.items.filter((x) => !x.mastered), due = queue(d.items), dom = d.items.length - ativos.length;
+      $('er-summary').innerHTML = d.items.length
+        ? `<b>${ativos.length}</b> erro${ativos.length === 1 ? '' : 's'} para treinar · <b>${due.length}</b> para hoje · <b>${dom}</b> dominado${dom === 1 ? '' : 's'}<br><span class="muted small">${Object.keys(d.done).length} partida${Object.keys(d.done).length === 1 ? '' : 's'} já revisada${Object.keys(d.done).length === 1 ? '' : 's'}.</span>`
+        : 'Você ainda não tem erros guardados. Revise suas partidas abaixo e os seus erros aparecem aqui para treinar.';
+      $('er-train').disabled = !due.length; $('er-train').textContent = due.length ? `▶ Treinar agora (${due.length})` : '▶ Treinar agora';
+      $('er-train-all').hidden = !ativos.length || ativos.length === due.length;
+      $('er-clear-mastered').hidden = !dom; $('er-clear').hidden = !d.items.length && !Object.keys(d.done).length;
+      const me = XD.Explorador && XD.Explorador.me ? XD.Explorador.me() : null;
+      if (!$('er-user').value) $('er-user').value = me || '';
+      const n = this.siteGames().length;
+      $('er-site-info').textContent = n ? `${n} partida${n === 1 ? '' : 's'} do site (contra a IA e online) ainda não revisada${n === 1 ? '' : 's'}.` : 'Nenhuma partida nova do site (contra a IA ou online) para revisar.';
+      $('er-list').innerHTML = ativos.length
+        ? ativos.slice().sort((a, b) => (b.when || 0) - (a.when || 0)).slice(0, 15).map((x) => `<li><b>${esc(x.playedSan)}</b> <span class="muted">no lance ${Math.ceil(x.ply / 2)} · melhor: ${esc(x.bestSan)} · −${x.loss}% · ${esc(SRC_TXT[x.src] || '')}${x.srcName ? ' vs ' + esc(x.srcName) : ''}</span></li>`).join('')
+        : '<li class="muted">Nada por aqui ainda.</li>';
+      this.setMsg('');
+    },
+    setMsg(t, frac) {
+      $('er-msg').textContent = t || ''; $('er-prog').hidden = !this.running;
+      if (frac != null) { $('er-bar').style.width = Math.round(frac * 100) + '%'; $('er-prog').setAttribute('aria-valuenow', String(Math.round(frac * 100))); }
+    },
+
+    /* ------------------------------------------------------------- revisão (Chess.com + site) */
+    async runSources() {
+      if (this.running) return;
+      this.load();
+      const nivel = $('er-nivel').value in NIVEIS ? $('er-nivel').value : 'rapida', ms = NIVEIS[nivel].ms, qtd = parseInt($('er-qtd').value, 10) || 10;
+      const user = $('er-user').value.trim().replace(/^@/, '');
+      const useSite = $('er-use-site').getAttribute('aria-checked') === 'true', useCc = $('er-use-cc').getAttribute('aria-checked') === 'true' && !!user;
+      if ($('er-use-cc').getAttribute('aria-checked') === 'true' && !user) { XD.ui.toast('Digite o seu usuário do Chess.com ou desligue essa fonte.', 'erro'); return; }
+      if (user && !XD.ChessCom.USER_RE.test(user)) { XD.ui.toast('Usuário do Chess.com inválido.', 'erro'); return; }
+      if (!useSite && !useCc) { XD.ui.toast('Escolha pelo menos uma fonte de partidas.', 'erro'); return; }
+      const tk = ++this.token; this.running = true; $('er-go').disabled = true; $('er-cancel').hidden = false;
+      const alive = () => tk === this.token;
+      let revisadas = 0, achados = 0, motor = '', erro = null;
+      try {
+        // 1) montar a lista de partidas a revisar
+        const jobs = [];
+        if (useSite) for (const g of this.siteGames().slice(0, qtd)) {
+          const side = sideOf(g), m = g.meta;
+          jobs.push({ key: 'site-' + g.id, g, side, src: m.modo, srcName: m.modo === 'ia' ? 'IA ' + (m.nivelNome || '') : (side === 'w' ? m.pretas : m.brancas), when: Date.parse(g.createdAt) || Date.now() });
+        }
+        if (useCc) {
+          this.setMsg('Buscando suas partidas no Chess.com…', 0);
+          const cl = XD.ChessCom.createClient({}); const arch = await cl.archives(user); if (!alive()) throw new Error('cancel');
+          const found = [];
+          for (let i = arch.length - 1; i >= 0 && found.length < qtd && i >= arch.length - 4; i--) {
+            const raw = await cl.month(arch[i]); if (!alive()) throw new Error('cancel');
+            const list = raw.map((x) => XD.ChessCom.normalizeGame(x, user)).filter((x) => x && x.supported && x.id && x.rules === 'chess').sort((a, b) => (b.when || 0) - (a.when || 0));
+            for (const n of list) { if (found.length >= qtd) break; if (!this.data.done['cc-' + n.id]) found.push(n); }
+          }
+          if (XD.Explorador && XD.Explorador.setMe && !XD.Explorador.me()) XD.Explorador.setMe(user.toLowerCase());
+          for (const n of found) {
+            try {
+              const parsed = XD.ChessCom.parsePgn(n.pgn), sess = new XD.GameSession({ startFen: root.Chess.START_FEN, moves: parsed.sans });
+              jobs.push({ key: 'cc-' + n.id, g: Object.assign({ id: 'cc-' + n.id }, sess.serialize()), side: n.color, src: 'chesscom', srcName: n.oppName, when: n.when || Date.now() });
+            } catch (e) { this.data.done['cc-' + n.id] = { at: Date.now(), n: 0 }; }   // PGN ruim: não tenta de novo
+          }
+        }
+        if (!jobs.length) { this.setMsg(useCc ? 'Nenhuma partida nova para revisar.' : 'Nenhuma partida nova para revisar.'); return; }
+        // 2) motor
+        this.setMsg('Carregando o motor…', 0);
+        const eng = this.engine = new XD.Ai.AiEngine({});
+        try { await eng.init(); } catch (e) { /* o estado fica em eng.status */ }
+        if (!alive()) throw new Error('cancel');
+        if (eng.status.state !== 'ready' && eng.status.state !== 'fallback') throw new Error('Não consegui carregar o motor. Tente de novo.');
+        motor = eng.kind || '';
+        // 3) revisar uma por uma, guardando a cada partida (se cancelar, o que já foi revisado fica)
+        for (let k = 0; k < jobs.length; k++) {
+          const j = jobs[k]; if (!alive()) throw new Error('cancel');
+          let r = XD.Analise.cached(j.g);
+          if (!r) {
+            const pos = XD.Analise.positions(j.g);
+            const pr = await XD.Analise.analyzeCore(eng, j.g, ms, { alive, prog: (t, f) => this.setMsg(`Partida ${k + 1} de ${jobs.length} · ${t}`, (k + f) / jobs.length) });
+            if (!pr) throw new Error('cancel');
+            r = { pos: pr, turns: pos.pos.map((p) => p.turn), uci: pos.uci };
+          }
+          const novos = extractMistakes(j.g, j.side, r, { src: j.src, srcName: j.srcName, gameKey: j.key, when: j.when, motor });
+          achados += addItems(this.data, novos); revisadas++;
+          this.data.done[j.key] = { at: Date.now(), n: novos.length }; trim(this.data); this.save();
+        }
+      } catch (e) {
+        if (e.message !== 'cancel') erro = e.message || 'Erro na revisão.';
+      } finally {
+        if (this.engine) { try { this.engine.dispose(); } catch (e) { /* ok */ } this.engine = null; }
+        this.running = false; $('er-go').disabled = false; $('er-cancel').hidden = true; this.save();
+      }
+      this.renderHome();
+      const aviso = motor === 'builtin' ? ' A revisão usou o motor interno (mais fraco): os lances sugeridos podem não ser os melhores. Com internet, o Stockfish é carregado e a revisão fica melhor.' : '';
+      this.setMsg(erro ? `A revisão parou: ${erro}${revisadas ? ` (antes disso, ${revisadas} partida${revisadas === 1 ? '' : 's'} foram revisadas)` : ''}` : `Revisei ${revisadas} partida${revisadas === 1 ? '' : 's'} e guardei ${achados} erro${achados === 1 ? '' : 's'} novo${achados === 1 ? '' : 's'}.${aviso}`);
+    },
+
+    /* ------------------------------------------------------------- treino */
+    startTraining(todos) {
+      this.load(); this.list = queue(this.data.items, Date.now(), todos).slice(0, 20); this.idx = 0; this.stats = { ok: 0, retry: 0, fail: 0 };
+      if (!this.list.length) { XD.ui.toast('Nenhum erro para treinar agora.', 'info'); return; }
+      $('er-home').hidden = true; $('er-play').hidden = false; this.show();
+    },
+    stopTraining(quiet) {
+      this.cur = null; this.session = null;
+      if (!quiet) { this.load(); this.renderHome(); }
+    },
+    show() {
+      const it = this.cur = this.list[this.idx]; this.answered = false; this.tryN = 0;
+      this.session = new XD.GameSession({ startFen: it.fen });
+      this.board.setOrientation(it.side);
+      this.board.set({ board: this.session.chess.board(), lastMove: null, check: this.session.checkSquare() });
+      this.board.setInteractive(true);
+      $('er-count').textContent = `Erro ${this.idx + 1} de ${this.list.length}`;
+      $('er-prompt').innerHTML = `Você joga de <b>${it.side === 'w' ? 'brancas' : 'pretas'}</b>. Qual é o melhor lance?`;
+      $('er-feedback').className = 'status'; $('er-feedback').innerHTML = '<span>Toque na peça e depois na casa.</span>';
+      $('er-info').hidden = true; $('er-next').hidden = true; $('er-show').hidden = false;
+    },
+    canMove() { return !!this.cur && !this.answered; },
+    async tryMove(from, to) {
+      if (!this.canMove()) return;
+      let promotion;
+      try { if (this.session.needsPromotion(from, to)) { promotion = await XD.ui.promotionBox(this.session.turn); if (!promotion) { this.board.set({ board: this.session.chess.board() }); return; } } } catch (e) { return; }
+      const uci = from + to + (promotion || ''), it = this.cur;
+      if (uci === it.best) {
+        try { this.session.play({ from, to, promotion }); } catch (e) { return; }
+        this.board.set({ board: this.session.chess.board(), lastMove: this.session.lastMove(), check: this.session.checkSquare() });
+        this.finish(this.tryN === 0 ? 'ok' : 'retry');
+      } else {
+        this.tryN++;
+        this.board.set({ board: this.session.chess.board() });   // a peça volta
+        const f = $('er-feedback'); f.className = 'status alert';
+        if (uci === it.played) f.innerHTML = '<span>Esse foi o lance que você jogou na partida. Tente outro!</span>';
+        else f.innerHTML = '<span>Não foi esse. Tente mais uma vez!</span>';
+        if (this.tryN >= 2) this.reveal('fail');
+      }
+    },
+    reveal(result) {
+      if (this.answered) return;
+      const it = this.cur; this.answered = true; this.board.setInteractive(false);
+      const m = { from: it.best.slice(0, 2), to: it.best.slice(2, 4) };
+      this.board.set({ board: this.session.chess.board(), lastMove: m });
+      this.finish(result, true);
+    },
+    finish(result, shown) {
+      const it = this.cur; this.answered = true; this.board.setInteractive(false);
+      grade(it, result); this.stats[result]++; this.save();
+      const f = $('er-feedback');
+      f.className = 'status' + (result === 'fail' ? ' alert' : ' end');
+      f.innerHTML = result === 'ok' ? '<span>✓ Correto! Volta a aparecer ' + (it.mastered ? 'nunca: você dominou este erro. 🎉' : 'em ' + BOX_DAYS[it.box] + ' dia' + (BOX_DAYS[it.box] === 1 ? '' : 's') + '.') + '</span>'
+        : result === 'retry' ? '<span>✓ Acertou na segunda tentativa. Volta amanhã.</span>'
+        : `<span>O melhor lance era <b>${esc(it.bestSan)}</b>. Ele aparece de novo hoje, mais tarde.</span>`;
+      const jogou = `Na partida você jogou <b>${esc(it.playedSan)}</b> e perdeu cerca de ${it.loss}% de chance de vitória${it.srcName ? ` (${esc(SRC_TXT[it.src] || '')} vs ${esc(it.srcName)})` : ''}.`;
+      $('er-info').hidden = false; $('er-info').innerHTML = jogou + (it.motor === 'builtin' ? ' <span class="muted">(Sugestão do motor interno: pode não ser a melhor possível.)</span>' : '');
+      $('er-next').hidden = false; $('er-show').hidden = true;
+      $('er-next').textContent = this.idx + 1 < this.list.length ? 'Próximo erro →' : 'Terminar';
+    },
+    next() {
+      if (this.idx + 1 < this.list.length) { this.idx++; this.show(); return; }
+      const s = this.stats, tot = s.ok + s.retry + s.fail;
+      this.stopTraining(); XD.ui.toast(`Treino terminado: ${s.ok} certo${s.ok === 1 ? '' : 's'} de primeira, ${s.retry} na 2ª tentativa, ${s.fail} errado${s.fail === 1 ? '' : 's'} (${tot}).`, 'ok');
+    }
+  };
+  XD.Erros = Erros;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -8762,7 +9825,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     startWith(session, level, color) {
       this.invalidate();
       this.session = session; this.level = level || 2; this.playerColor = color === 'b' ? 'b' : 'w';
-      this.abandoned = false; this.inGame = true; this.gameId = (this.gameId || 0) + 1; this.resKey = null;
+      this.abandoned = false; this.inGame = true; this.gameId = (this.gameId || 0) + 1; this.resKey = null; this.savedId = null;
       if (XD.Eco) XD.Eco.prepare().catch(() => { /* a falha aparece no fim da partida, sem atrapalhar o jogo */ });
       this.board.setOrientation(this.playerColor);
       this.engine.newGame();
@@ -8891,13 +9954,28 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         `Contra a IA (${lvl.nome}) · ${XD.ui.fmtDate(new Date().toISOString())}`, 'Salvar');
       if (!r) return;
       try {
-        XD.Store.save({
-          title: r.text, session: s,
+        const rec = XD.Store.save({
+          id: this.savedId || undefined, title: r.text, session: s,
           meta: { modo: 'ia', nivel: lvl.id, nivelNome: lvl.nome, cor: this.playerColor, motor: this.engine.kind || '', abandonou: this.abandoned },
           result: this.abandoned ? (this.playerColor === 'w' ? '0-1' : '1-0') : undefined
         });
+        this.savedId = rec.id;
         XD.ui.toast('Partida salva em "Minhas Partidas" com o nível ' + lvl.nome + '.', 'ok');
       } catch (e) { XD.ui.toast(e.message, 'erro'); }
+    },
+
+    /** Ao terminar (mate, empate ou abandono), guarda a partida sozinha, se o ajuste estiver ligado. */
+    autoSave() {
+      try {
+        const s = this.session; if (!s || !s.length || this.savedId || !XD.Settings.get('autosalvar')) return;
+        const lvl = XD.AiLevels.byId(this.level);
+        const rec = XD.Store.save({
+          title: `Contra a IA (${lvl.nome}) · ${XD.ui.fmtDate(new Date().toISOString())}`, session: s,
+          meta: { modo: 'ia', nivel: lvl.id, nivelNome: lvl.nome, cor: this.playerColor, motor: this.engine && this.engine.kind || '', abandonou: this.abandoned },
+          result: this.abandoned ? (this.playerColor === 'w' ? '0-1' : '1-0') : undefined
+        });
+        this.savedId = rec.id; XD.ui.toast('Partida salva automaticamente em "Minhas Partidas".', 'ok');
+      } catch (e) { /* sem espaço etc.: o botão Salvar continua valendo */ }
     },
 
     /* ---------------------------------------------------------------------- Tela */
@@ -8957,7 +10035,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (!this.session || !this.isOver()) { this.resKey = null; box.hidden = true; box.innerHTML = ''; return; }
       const s = this.session, key = this.gameId + ':' + s.cursor + ':' + (this.abandoned ? 'a' : '');
       if (this.resKey === key) return;
-      this.resKey = key;
+      this.resKey = key; this.autoSave();
       const r = this.resultInfo(), esc = XD.ui.esc;
       if (XD.Sound) XD.Sound.play(r.tipo === 'vitoria' ? 'win' : r.tipo === 'derrota' ? 'lose' : 'draw');
       const sans = s.moves.slice(0, s.cursor).map((m) => m.san);
@@ -9909,13 +10987,14 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   // Peças SVG disponíveis para todo o site
   document.body.insertAdjacentHTML('afterbegin', XD.Pieces.spriteMarkup());
 
-  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla', 'relogio', 'explorador', 'favoritos'];
+  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla', 'online', 'erros', 'relogio', 'explorador', 'favoritos'];
 
   /** Tela inicial: contadores reais e atalho para a partida em andamento. */
   XD.refreshHome = function () {
     $('home-ac-count').textContent = `${root.AcademiaData.OPENINGS.length} aberturas e gambitos com explicação lance a lance, mais um catálogo de 3.865 linhas (1.315 de gambitos) para estudar e treinar.`;
     if (XD.Repertorio) { const r = XD.Repertorio.count(); $('home-rp-count').textContent = r ? `${r} abertura${r === 1 ? '' : 's'} no seu repertório.` : 'Guarde suas próprias aberturas, variantes e anotações, e treine seus lances.'; }
     if (XD.Favoritos) { const n = XD.Favoritos.items().length; $('home-fav-note').textContent = n ? `${n} favorito${n === 1 ? '' : 's'} guardado${n === 1 ? '' : 's'}.` : 'Aberturas, partidas e jogadores que você quer guardar.'; }
+    if (XD.Erros) { const n = XD.Erros.dueCount(); if (n) $('home-er-note').textContent = `${n} erro${n === 1 ? '' : 's'} esperando por você hoje. Toque para treinar.`; }
     if (XD.Backup) $('home-bk-note').textContent = XD.Backup.homeNote();
     const n = XD.Store.list().length;
     $('home-games-count').textContent = n ? `${n} partida${n === 1 ? '' : 's'} salva${n === 1 ? '' : 's'} neste navegador.` : 'Suas partidas salvas ficam guardadas neste navegador.';
@@ -9961,6 +11040,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     if (XD.Repertorio) XD.Repertorio.leave();
     if (XD.Explorador) XD.Explorador.leave();
     if (XD.Relogio) XD.Relogio.leave();   // pausa o relógio de xadrez e fecha a tela cheia
+    if (XD.Erros) XD.Erros.leave();
+    if (XD.Online) XD.Online.leave();
     if (XD.Dupla) XD.Dupla.leave();    // pausa o relógio ao sair da tela
     if (XD.Play) XD.Play.leave();      // cancela a IA se ela estiver pensando em outra tela
     const parts = (currentRoute().replace(/^#\/?/, '') || '').split('/');
@@ -9968,6 +11049,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     try {
       if (!section) { XD.refreshHome(); show('home', 'home'); document.title = 'Meu Xadrez'; }
       else if (section === 'dupla') { show('dupla', 'dupla'); document.title = 'Dois jogadores · Meu Xadrez'; XD.Dupla.enter(); }
+      else if (section === 'erros') { show('erros', 'erros'); document.title = 'Treinar meus erros · Meu Xadrez'; XD.Erros.enter(); }
+      else if (section === 'online') { show('online', 'online'); document.title = 'Jogar online · Meu Xadrez'; XD.Online.enter(id); }
       else if (section === 'relogio') { show('relogio', 'relogio'); document.title = 'Relógio de xadrez · Meu Xadrez'; XD.Relogio.enter(id); }
       else if (section === 'livre') {
         show('livre', 'livre'); document.title = 'Modo Livre · Meu Xadrez';
