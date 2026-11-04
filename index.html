@@ -522,6 +522,99 @@ html[data-legal="off"] .sq.target::after, html[data-legal="off"] .sq.capture::af
 .cards.sec-aprender .card.erros-card { grid-column: 1 / -1; min-height: 0; }
 #er-home select { width: 100%; min-height: 44px; font-size: 1rem; }
 #er-home .du-names { margin: 10px 0; }
+.er-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.er-tile { border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; text-align: center; background: var(--surface-2, transparent); }
+.er-tile b { display: block; font-size: 1.15rem; color: var(--gold-2, #f0d77a); }
+.er-tile span { font-size: .8rem; color: var(--muted); }
+#view-erros h3 { margin: 14px 0 6px; font-size: 1rem; }
+.er-chart { width: 100%; max-width: 460px; display: block; }
+.er-bar { fill: var(--gold, #d4af37); }
+.er-t { fill: var(--text, #eee); font-size: 11px; font-weight: 700; }
+.er-t2 { fill: var(--muted, #999); font-size: 10px; }
+.er-phases { display: grid; gap: 8px; }
+.er-ph { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 10px; align-items: center; }
+.er-ph em { grid-column: 1 / -1; font-style: normal; font-size: .85rem; }
+.er-pbar { display: block; height: 10px; border-radius: 6px; background: var(--surface-2, #222); overflow: hidden; }
+.er-pbar b { display: block; height: 100%; background: var(--gold, #d4af37); }
+.er-ph.worst .er-pbar b { background: #e0645c; }
+.er-tab { width: 100%; border-collapse: collapse; font-size: .9rem; }
+.er-tab th, .er-tab td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.er-tab tr.worst td { color: #ff9b96; }
+.er-tips { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+</style>
+  <style>
+/* Desempenho por abertura */
+.cards.sec-aprender .card.desempenho-card { grid-column: 1 / -1; min-height: 0; }
+#view-desempenho .de-filters { display: grid; gap: 8px; margin: 0 0 12px; }
+#view-desempenho .chips { gap: 6px; }
+#view-desempenho .chip { padding: 6px 12px; min-height: 40px; font-size: .85rem; }
+.de-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-bottom: 10px; }
+.de-tile { border: 1px solid var(--line); border-radius: 12px; padding: 8px 2px; text-align: center; background: var(--surface-2); min-width: 0; }
+.de-tile b { display: block; font-size: 1.05rem; color: var(--text); }
+.de-tile span { font-size: .68rem; color: var(--muted); }
+.de-tile.w b { color: #6fcf8e; } .de-tile.l b { color: #ef7b74; } .de-tile.d b { color: #b9c3bb; } .de-tile.pct b { color: var(--gold-2); }
+.de-dist { display: flex; height: 10px; border-radius: 6px; overflow: hidden; background: var(--surface-2); }
+.de-dist i { display: block; height: 100%; } .de-dist i.w { background: #4f9a6a; } .de-dist i.d { background: #8d9a92; } .de-dist i.l { background: #d9534f; }
+.de-leg { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 6px 0 0; font-size: .78rem; color: var(--muted); }
+.de-leg .w { color: #6fcf8e; } .de-leg .l { color: #ef7b74; }
+.de-warn { margin: 10px 0 0; padding: 8px 10px; border: 1px solid var(--line); border-left: 3px solid var(--gold); border-radius: 8px; font-size: .85rem; color: var(--muted); }
+.de-hls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin: 0 0 14px; }
+.de-hl { appearance: none; text-align: left; font: inherit; color: var(--text); border: 1px solid var(--gold); border-radius: 14px; background: var(--surface); padding: 10px 12px; display: grid; gap: 2px; cursor: pointer; min-width: 0; }
+.de-hl small { color: var(--muted); font-size: .72rem; } .de-hl b { color: var(--gold-2); font-size: .95rem; overflow-wrap: anywhere; } .de-hl span { font-size: .78rem; color: var(--muted); }
+.de-hl.off { border-color: var(--line); cursor: default; }
+#view-desempenho select { width: 100%; min-height: 44px; font-size: 1rem; }
+.de-chart { width: 100%; max-width: 520px; display: block; margin: 6px auto 0; }
+.de-grid { stroke: var(--line); stroke-width: 1; } .de-grid.mid { stroke-dasharray: 4 4; stroke: var(--muted); opacity: .6; }
+.de-ax { fill: var(--muted); font-size: 9px; }
+.de-line { fill: none; stroke: var(--gold); stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round; }
+.de-dot { fill: var(--bg); stroke: var(--gold-2); stroke-width: 2.2; cursor: pointer; }
+.de-dot:focus, .de-dot:hover { fill: var(--gold); outline: none; }
+.de-pt { min-height: 1.2em; margin: 6px 0 0; font-weight: 700; color: var(--gold-2); text-align: center; }
+.de-note { margin: 4px 0 0; }
+.de-list, .de-games { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.de-row { appearance: none; width: 100%; text-align: left; font: inherit; color: var(--text); background: var(--surface-2); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; cursor: pointer; min-height: 56px; }
+.de-row.static { cursor: default; opacity: .85; }
+.de-rn { display: flex; flex-wrap: wrap; gap: 4px 8px; align-items: center; }
+.de-rn b { overflow-wrap: anywhere; }
+.de-rs { grid-column: 1; font-size: .8rem; color: var(--muted); }
+.de-rp { grid-row: 1 / 3; grid-column: 2; align-self: center; font-weight: 800; color: var(--gold-2); }
+.de-bar { grid-column: 1 / -1; height: 6px; border-radius: 4px; background: var(--bg); overflow: hidden; display: block; }
+.de-bar i { display: block; height: 100%; background: var(--gold); }
+.de-tag { font-size: .68rem; border: 1px solid var(--gold); color: var(--gold-2); border-radius: 999px; padding: 1px 7px; white-space: nowrap; }
+.de-tag.dim { border-color: var(--line); color: var(--muted); }
+.de-tab { width: 100%; border-collapse: collapse; font-size: .88rem; }
+.de-tab th, .de-tab td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); }
+.de-tab th:not(:first-child), .de-tab td:not(:first-child) { text-align: right; white-space: nowrap; }
+.de-game { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--surface-2); min-height: 52px; }
+.de-gi { flex: 1; min-width: 0; display: grid; } .de-gi b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } .de-gi small { color: var(--muted); }
+.de-res { font-size: .72rem; font-weight: 800; border-radius: 8px; padding: 3px 8px; }
+.de-res.w { background: rgba(79,154,106,.25); color: #6fcf8e; } .de-res.d { background: rgba(141,154,146,.25); color: #c1cac3; } .de-res.l { background: rgba(217,83,79,.25); color: #ef7b74; }
+.de-arrow { color: var(--muted); font-size: 1.3rem; }
+.de-reps { display: flex; flex-wrap: wrap; gap: 8px; }
+#de-msg.err { color: #ef7b74; }
+@media (min-width: 900px) { .de-hls { grid-template-columns: repeat(2, minmax(0, 320px)); } .de-list { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+/* Preparação contra um adversário */
+#view-preparacao .field input { width: 100%; }
+.pr-line { grid-column: 1 / -1; font-size: .82rem; }
+.pr-rep { color: var(--muted); } .pr-rep.ok { color: var(--gold-2); }
+.pr-rep a { color: var(--gold-2); }
+.pr-tips { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+#pr-msg.err { color: #ef7b74; }
+.ex-prep-btn { margin-top: 6px; }
+html[data-tema="claro"] #pr-msg.err { color: #b3261e; }
+/* Estilo de jogo e duelo */
+.es-list { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
+.es-list li { display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface-2); font-size: .9rem; }
+.es-list b { color: var(--gold-2); white-space: nowrap; }
+.es-wrap { overflow-x: auto; }
+.es-tab td:not(:first-child), .es-tab th:not(:first-child) { text-align: right; white-space: nowrap; }
+.es-tab tr.big td { color: var(--gold-2); font-weight: 700; }
+#view-estilo .field input, #gh-panel .chips { width: 100%; }
+#gh-panel { margin-top: 10px; }
+#gh-panel .chips { margin: 8px 0; }
+#es-msg.err { color: #ef7b74; }
+html[data-tema="claro"] #es-msg.err { color: #b3261e; }
 
 </style>
   <style>
@@ -625,7 +718,7 @@ body.rl-open { overflow: hidden; }
   .cards .card.feature .ico { width: 40px; height: 40px; }
   .cards.sec-jogar .card:first-child .ico, .cards.sec-aprender .card:first-child .ico, .cards.sec-meu .card:first-child .ico { width: 40px; height: 40px; }
   .cards.sec-jogar .card:first-child { grid-column: span 2; }                 /* IA em destaque; 5 cartões = 3 + 3 */
-  .cards.sec-jogar .card.online-card, .cards.sec-aprender .card.erros-card { grid-column: 1 / -1; min-height: 0; }
+  .cards.sec-jogar .card.online-card, .cards.sec-aprender .card.erros-card, .cards.sec-aprender .card.desempenho-card { grid-column: 1 / -1; min-height: 0; }
   .cards.sec-meu .card:first-child { grid-column: span 2; }                   /* Partidas em destaque... */
   .cards.sec-meu .card:last-child { grid-column: span 2; }                    /* ...e Aparência: 4 cartões = 3 + 3 */
   .cards .card.feature .go { display: block; margin-top: auto; padding-top: 8px; }
@@ -650,6 +743,7 @@ body.rl-open { overflow: hidden; }
 }
 @media (min-width: 900px) and (max-width: 1180px) { .topnav a { padding: 7px 8px; font-size: .84rem; } .topbar { padding: 8px 14px; } }
 @media (min-width: 1500px) { main { max-width: 1320px; } .play-layout, .detail-layout { grid-template-columns: min(calc(100vh - 330px), 780px) minmax(360px, 560px); } .cards .card.feature { min-height: 160px; } }
+@media (min-width: 1181px) and (max-width: 1440px) { .topnav { gap: 0; } .topnav a { padding: 7px 8px; font-size: .86rem; } }
 
 </style>
   <style>
@@ -710,6 +804,10 @@ html[data-tema="claro"] .rl-pv.b, html[data-tema="claro"] .rc-p.b { border-color
 html[data-tema="claro"] .rl-pre.on { background: linear-gradient(180deg, rgba(185,138,12,.2), rgba(185,138,12,.06)); }
 /* ouro usado como TEXTO precisa ser o tom escuro no fundo claro */
 html[data-tema="claro"] .tabbar a.on, html[data-tema="claro"] .cat-title, html[data-tema="claro"] .eyebrow, html[data-tema="claro"] .fav-star.on { color: var(--gold-2); }
+html[data-tema="claro"] .de-tile.w b, html[data-tema="claro"] .de-leg .w { color: #1f7a42; }
+html[data-tema="claro"] .de-tile.l b, html[data-tema="claro"] .de-leg .l, html[data-tema="claro"] #de-msg.err { color: #b3261e; }
+html[data-tema="claro"] .de-tile.d b { color: #56655b; }
+html[data-tema="claro"] .de-res.w { color: #1f7a42; } html[data-tema="claro"] .de-res.l { color: #b3261e; } html[data-tema="claro"] .de-res.d { color: #3e4a43; }
 
 </style>
   <style>
@@ -896,6 +994,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       <a href="#/repertorio" data-nav="repertorio">Repertório</a>
       <a href="#/explorador" data-nav="explorador">Explorador</a>
       <a href="#/erros" data-nav="erros">Erros</a>
+      <a href="#/desempenho" data-nav="desempenho">Desempenho</a>
       <a href="#/favoritos" data-nav="favoritos">Favoritos</a>
       <a href="#/partidas" data-nav="partidas">Partidas</a>
       <a href="#/laboratorio" data-nav="laboratorio">Laboratório</a>
@@ -983,6 +1082,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <p id="home-er-note">O motor acha os erros das suas partidas (Chess.com e do site) e você treina até acertar.</p>
           <span class="go">Treinar →</span>
         </a>
+              <a class="card feature desempenho-card" href="#/desempenho">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16" fill="none" stroke="#d4af37" stroke-width="1.8" stroke-linecap="round"/><path d="M7 15l4-5 3 3 5-7" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <h2>Desempenho por abertura</h2>
+          <p id="home-de-note">Veja com quais aberturas você ganha mais, por período e por cor.</p>
+          <span class="go">Ver →</span>
+        </a>
 </div>
 <h2 class="home-sec">Meu espaço <small>Suas coisas, do seu jeito</small></h2>
       <div class="cards sec-meu">
@@ -1035,6 +1140,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           <div id="ia-colors" class="opts row3" role="radiogroup" aria-label="Cor das suas peças"></div>
           <button class="btn primary big" id="ia-start" type="button" disabled>Aguarde o motor carregar…</button>
         </div>
+        <div class="panel" id="gh-panel"></div>
       </div>
 
       <div id="ia-game" class="play-layout" hidden>
@@ -1264,6 +1370,21 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       </div>
     </section>
 
+    <!-- ===================== DESEMPENHO POR ABERTURA ===================== -->
+    <section id="view-desempenho" class="view" hidden>
+      <div id="de-box"></div>
+    </section>
+
+    <!-- ===================== PREPARAÇÃO CONTRA UM ADVERSÁRIO ===================== -->
+    <section id="view-preparacao" class="view" hidden>
+      <div id="pr-box"></div>
+    </section>
+
+    <!-- ===================== ESTILO DE JOGO ===================== -->
+    <section id="view-estilo" class="view" hidden>
+      <div id="es-box"></div>
+    </section>
+
     <!-- ===================== TREINO DE ERROS ===================== -->
     <section id="view-erros" class="view" hidden>
       <div id="er-home">
@@ -1273,6 +1394,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         </div>
         <div class="panel"><p id="er-summary"></p>
           <div class="row"><button class="btn primary big" id="er-train" type="button">▶ Treinar agora</button><button class="btn" id="er-train-all" type="button" hidden>Treinar todos</button></div></div>
+        <div class="panel"><h2>Meu relatório</h2><div id="er-report-body"></div></div>
         <div class="panel"><h2>Buscar erros nas minhas partidas</h2>
           <div class="set-row"><div><b>Chess.com</b><span class="d">As partidas mais recentes do seu usuário.</span></div><button class="toggle" id="er-use-cc" role="switch" aria-checked="true" aria-label="Usar o Chess.com" type="button"></button></div>
           <label class="field"><span>Seu usuário no Chess.com</span><input id="er-user" type="text" maxlength="40" placeholder="seu_usuario" autocomplete="off" autocapitalize="none"></label>
@@ -1599,6 +1721,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     <a href="#/repertorio" data-nav="repertorio" aria-label="Meu Repertório"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-q" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Repert.</span></a>
     <a href="#/explorador" data-nav="explorador" aria-label="Explorador de jogadores"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2"/><path d="m15.5 15.5 5 5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg><span>Explorar</span></a>
     <a href="#/erros" data-nav="erros" aria-label="Treinar meus erros"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg><span>Erros</span></a>
+    <a href="#/desempenho" data-nav="desempenho" aria-label="Desempenho por abertura"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5m0 14h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M7 15l4-5 3 3 5-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Desempenho</span></a>
     <a href="#/favoritos" data-nav="favoritos"><svg class="t-ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2l2.6 5.6 6.1.7-4.5 4.2 1.2 6.1L12 16.7l-5.4 3.1 1.2-6.1L3.3 9.5l6.1-.7z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>Favoritos</span></a>
     <a href="#/partidas" data-nav="partidas"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-r" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Partidas</span></a>
     <a href="#/laboratorio" data-nav="laboratorio"><svg class="t-ico" viewBox="0 0 100 100" aria-hidden="true"><use href="#pc-p" style="--pf:currentColor;--ps:#0d1411"/></svg><span>Lab</span></a>
@@ -5278,6 +5401,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         <div class="page-head"><h1>${esc(o.nome)}</h1>
           <p><span class="tag cor-${o.cor}">${COR[o.cor]}</span>${o.tags.map((t) => `<span class="tag etq">#${esc(t)}</span>`).join('')}</p></div>
         <div class="row"><a class="btn" id="rpd-edit" href="#/repertorio/${esc(o.id)}/editar">✎ Editar</a>
+          <a class="btn" id="rpd-perf" href="#/desempenho/rep/${esc(o.id)}">📊 Ver desempenho</a>
           <button class="btn danger" id="rpd-del" type="button">🗑 Excluir</button></div>
         <div class="mode-tabs" role="tablist" aria-label="Modo">
           <button class="chip on" role="tab" data-rpmode="consultar" type="button">📖 Consultar</button>
@@ -8248,7 +8372,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
    * Lê um PGN do Chess.com (cabeçalhos, comentários {…} com relógio, variantes, NAGs, resultado).
    * Valida cada lance com o motor de regras. Devolve { headers, sans } ou lança Error em português.
    */
-  function parsePgn(pgn, ChessClass) {
+  function parsePgn(pgn, ChessClass, maxPlies) {
     const C = ChessClass || root.Chess;
     if (!pgn || typeof pgn !== 'string') throw new Error('Esta partida não tem PGN.');
     const headers = headersOf(pgn);
@@ -8261,6 +8385,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     const game = new C();
     const sans = [];
     for (const raw of tokens) {
+      if (maxPlies && sans.length >= maxPlies) break;           // só o começo da partida (usado para identificar a abertura)
       const tk = raw.replace(/[!?]+$/g, '');
       if (!tk) continue;
       let mv;
@@ -8862,6 +8987,72 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     return out;
   }
 
+
+  /* ------------------------------------------------------------------ estatísticas por partida (relatório) */
+  const PHASES = [{ id: 'abertura', nome: 'Abertura' }, { id: 'meio', nome: 'Meio-jogo' }, { id: 'final', nome: 'Final' }];
+  const VAL = { n: 3, b: 3, r: 5, q: 9 };
+  function pieceMaterial(fen) { let t = 0; for (const ch of String(fen).split(' ')[0]) { const v = VAL[ch.toLowerCase()]; if (v) t += v; } return t; }
+  const phaseOf = (ply, fen) => (ply <= 20 ? 0 : pieceMaterial(fen) <= 26 ? 2 : 1);   // abertura: 10 primeiros lances de cada um; final: pouco material de peças
+  const family = (name) => { const w = String(name || '').replace(/[^\p{L}\p{N}' ]/gu, ' ').split(/\s+/).filter((x) => x && !/\d/.test(x)); return w.slice(0, 2).join(' '); };
+
+  /**
+   * Resumo de UMA partida revisada, do ponto de vista de `side`: precisão, erros por fase, resultado e abertura.
+   * Guardado junto da partida em `done[chave]` e usado por buildReport.
+   */
+  function gameStats(g, side, r, info) {
+    const a = A(), C = Chess(), sum = a.summarize(r.pos, r.uci, r.turns), ch = new C(g.startFen);
+    const ph = PHASES.map(() => ({ m: 0, e: 0, a: 0 })); let tot = 0, n = 0;
+    for (let i = 0; i < r.uci.length; i++) {
+      if (r.turns[i] === side) {
+        const m = sum.moves[i], acc = ['melhor', 'brilhante', 'genial'].includes(m.cls) ? 100 : a.moveAccuracy(m.loss), k = phaseOf(i + 1, ch.fen());
+        ph[k].m++; ph[k].a += acc; if (m.cls === 'erro' || m.cls === 'gafe') ph[k].e++; tot += acc; n++;
+      }
+      const mv = g.moves[i]; ch.move({ from: mv.from, to: mv.to, promotion: mv.promotion });
+    }
+    return { when: info.when || 0, side, res: ['w', 'd', 'l'].includes(info.res) ? info.res : null, acc: n ? Math.round(tot / n * 10) / 10 : null, mv: n,
+      ph: ph.map((x) => ({ m: x.m, e: x.e, a: x.m ? Math.round(x.a / x.m * 10) / 10 : 0 })), op: String(info.opening || '').slice(0, 40) };
+  }
+  const hasStats = (x) => x && typeof x.acc === 'number' && Array.isArray(x.ph);
+  function weekStart(t) { const d = new Date(t); d.setUTCHours(0, 0, 0, 0); const wd = (d.getUTCDay() + 6) % 7; return d.getTime() - wd * DAY; }
+
+  /**
+   * Relatório a partir dos resumos guardados. Só mostra o que tem base: fases com 30+ lances, aberturas com 2+ partidas,
+   * "pior abertura" com 3+ partidas.
+   */
+  function buildReport(done) {
+    const gs = Object.keys(done || {}).map((k) => done[k]).filter(hasStats);
+    const rep = { n: gs.length, acc: null, res: { w: 0, d: 0, l: 0 }, color: { w: null, b: null }, weeks: [], phases: [], worstPhase: null, openings: [], worstOpening: null, tips: [] };
+    if (!gs.length) return rep;
+    const avg = (xs) => xs.reduce((s, x) => s + x, 0) / xs.length, r1 = (x) => Math.round(x * 10) / 10;
+    rep.acc = r1(avg(gs.map((x) => x.acc)));
+    for (const x of gs) if (x.res) rep.res[x.res]++;
+    const score = (list) => { const k = list.filter((x) => x.res); return k.length ? (k.filter((x) => x.res === 'w').length + k.filter((x) => x.res === 'd').length / 2) / k.length : null; };
+    for (const c of ['w', 'b']) { const l = gs.filter((x) => x.side === c); rep.color[c] = l.length ? { n: l.length, acc: r1(avg(l.map((x) => x.acc))), score: score(l) } : null; }
+    const byWeek = {};
+    for (const x of gs) if (x.when) (byWeek[weekStart(x.when)] = byWeek[weekStart(x.when)] || []).push(x.acc);
+    rep.weeks = Object.keys(byWeek).map(Number).sort((a, b) => a - b).slice(-8).map((t) => ({ t, n: byWeek[t].length, acc: r1(avg(byWeek[t])) }));
+    PHASES.forEach((P, i) => {
+      let m = 0, e = 0, a = 0; for (const x of gs) { const p = x.ph[i]; if (p) { m += p.m; e += p.e; a += p.a * p.m; } }
+      rep.phases.push({ id: P.id, nome: P.nome, moves: m, errors: e, rate: m ? r1(e / m * 100) : 0, acc: m ? r1(a / m) : null });
+    });
+    const okPh = rep.phases.filter((p) => p.moves >= 30);
+    if (okPh.length >= 2) { const w = okPh.slice().sort((a, b) => b.rate - a.rate)[0]; if (w.rate > 0) rep.worstPhase = w.id; }
+    const ops = {};
+    for (const x of gs) { const f = family(x.op); if (!f) continue; const o = ops[f] = ops[f] || { name: f, n: 0, w: 0, d: 0, l: 0, accs: [], list: [] }; o.n++; o.accs.push(x.acc); o.list.push(x); if (x.res) o[x.res]++; }
+    rep.openings = Object.keys(ops).map((k) => ops[k]).filter((o) => o.n >= 2).map((o) => ({ name: o.name, n: o.n, w: o.w, d: o.d, l: o.l, acc: r1(avg(o.accs)), score: score(o.list) }))
+      .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name)).slice(0, 6);
+    const cand = rep.openings.filter((o) => o.n >= 3 && o.score !== null && o.score < 0.5).sort((a, b) => a.score - b.score || b.n - a.n)[0];
+    if (cand) rep.worstOpening = cand.name;
+    // dicas
+    const wp = rep.phases.find((p) => p.id === rep.worstPhase);
+    if (wp) rep.tips.push(`A fase em que você mais erra é o ${wp.nome.toLowerCase()}: cerca de ${String(wp.rate).replace('.', ',')} erro${wp.rate === 1 ? '' : 's'} a cada 100 lances.`);
+    if (rep.worstOpening) { const o = rep.openings.find((x) => x.name === rep.worstOpening); rep.tips.push(`Sua abertura com pior resultado é "${o.name}" (${o.w}V ${o.d}E ${o.l}D em ${o.n} partidas). Vale revisar essa linha na Academia.`); }
+    const cw = rep.color.w, cb = rep.color.b;
+    if (cw && cb && cw.n >= 3 && cb.n >= 3 && Math.abs(cw.acc - cb.acc) >= 5) rep.tips.push(`Sua precisão é bem melhor de ${cw.acc > cb.acc ? 'brancas' : 'pretas'} (${String(Math.max(cw.acc, cb.acc)).replace('.', ',')}% contra ${String(Math.min(cw.acc, cb.acc)).replace('.', ',')}%).`);
+    if (rep.weeks.length >= 3) { const f = rep.weeks[0].acc, l = rep.weeks[rep.weeks.length - 1].acc; if (l - f >= 3) rep.tips.push('Sua precisão está subindo nas últimas semanas. Continue assim!'); else if (f - l >= 3) rep.tips.push('Sua precisão caiu nas últimas semanas: tente jogar com mais calma e treinar os erros guardados.'); }
+    return rep;
+  }
+
   const UCI_RE = /^[a-h][1-8][a-h][1-8][qrbn]?$/;
   function cleanItem(x) {
     if (!x || typeof x !== 'object') return null;
@@ -8877,13 +9068,23 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       cls: x.cls === 'gafe' ? 'gafe' : 'erro', src: SRC.includes(x.src) ? x.src : 'chesscom', srcName: s(x.srcName, 40), gameKey: s(x.gameKey, 60), ply: Math.max(1, Math.round(n(x.ply, 1))), when: n(x.when, 0),
       motor: s(x.motor, 12), box: Math.max(0, Math.min(BOX_DAYS.length, Math.round(n(x.box, 0)))), due: n(x.due, 0), tries: Math.max(0, Math.round(n(x.tries, 0))), seen: Math.max(0, Math.round(n(x.seen, 0))), mastered: !!x.mastered };
   }
+  function cleanDone(v) {
+    const e = { at: Number.isFinite(v && v.at) ? v.at : 0, n: Number.isFinite(v && v.n) ? v.n : 0 };
+    if (v && v.bad) e.bad = true;
+    if (hasStats(v) && v.ph.length === 3 && (v.side === 'w' || v.side === 'b') && v.acc >= 0 && v.acc <= 100) {
+      const num = (x, lo, hi) => (Number.isFinite(x) ? Math.max(lo, Math.min(hi, x)) : 0);
+      e.when = num(v.when, 0, 1e14); e.side = v.side; e.res = ['w', 'd', 'l'].includes(v.res) ? v.res : null; e.acc = v.acc; e.mv = num(v.mv, 0, 1000);
+      e.ph = v.ph.map((p) => ({ m: num(p && p.m, 0, 1000), e: num(p && p.e, 0, 1000), a: num(p && p.a, 0, 100) })); e.op = String(v.op || '').slice(0, 40);
+    }
+    return e;
+  }
   /** Valida e limpa os dados lidos do aparelho ou de um backup. Devolve { v:1, items, done } (itens inválidos somem). */
   function sanitize(d) {
     const out = { v: 1, items: [], done: {} };
     if (!d || typeof d !== 'object') return out;
     const seen = new Set();
     for (const x of Array.isArray(d.items) ? d.items.slice(0, 2000) : []) { const c = cleanItem(x); if (c && !seen.has(c.id)) { seen.add(c.id); out.items.push(c); } }
-    if (d.done && typeof d.done === 'object') for (const k of Object.keys(d.done).slice(0, 5000)) { const v = d.done[k]; out.done[String(k).slice(0, 60)] = { at: Number.isFinite(v && v.at) ? v.at : 0, n: Number.isFinite(v && v.n) ? v.n : 0 }; }
+    if (d.done && typeof d.done === 'object') for (const k of Object.keys(d.done).slice(0, 5000)) out.done[String(k).slice(0, 60)] = cleanDone(d.done[k]);
     return trim(out);
   }
   function trim(d) {
@@ -8898,6 +9099,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   /** Junta dois conjuntos (backup "juntar"): o que já existe aqui tem prioridade; itens novos entram. */
   function merge(atual, novo) {
     const out = { v: 1, items: atual.items.slice(), done: Object.assign({}, novo.done, atual.done) };
+    for (const k of Object.keys(novo.done)) if (out.done[k] && !hasStats(out.done[k]) && hasStats(novo.done[k])) out.done[k] = novo.done[k];
     const ids = new Set(out.items.map((x) => x.id)); let add = 0;
     for (const x of novo.items) if (!ids.has(x.id)) { out.items.push(x); ids.add(x.id); add++; }
     return { data: trim(out), added: add };
@@ -8930,7 +9132,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     return null;
   }
 
-  const api = { KEY, BOX_DAYS, idOf, extractMistakes, sanitize, merge, addItems, grade, queue, sideOf, trim };
+  const api = { KEY, BOX_DAYS, gameStats, buildReport, hasStats, family, idOf, extractMistakes, sanitize, merge, addItems, grade, queue, sideOf, trim };
   if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
 
   /* ===================================================================== parte de tela */
@@ -8973,8 +9175,10 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     leave() { if (this.running) { this.token++; } },
 
     /* ------------------------------------------------------------- início */
+    /** Falta revisar esta partida? (nunca revisada, ou revisada antes do relatório existir). */
+    needs(key) { const d = this.data.done[key]; return !d || (!hasStats(d) && !d.bad); },
     siteGames() {
-      return XD.Store.list().filter((g) => sideOf(g) && g.moves.length >= 4 && !this.data.done['site-' + g.id]).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
+      return XD.Store.list().filter((g) => sideOf(g) && g.moves.length >= 4 && this.needs('site-' + g.id)).sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
     },
     renderHome() {
       $('er-home').hidden = false; $('er-play').hidden = true;
@@ -8992,7 +9196,29 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       $('er-list').innerHTML = ativos.length
         ? ativos.slice().sort((a, b) => (b.when || 0) - (a.when || 0)).slice(0, 15).map((x) => `<li><b>${esc(x.playedSan)}</b> <span class="muted">no lance ${Math.ceil(x.ply / 2)} · melhor: ${esc(x.bestSan)} · −${x.loss}% · ${esc(SRC_TXT[x.src] || '')}${x.srcName ? ' vs ' + esc(x.srcName) : ''}</span></li>`).join('')
         : '<li class="muted">Nada por aqui ainda.</li>';
-      this.setMsg('');
+      this.renderReport(); this.setMsg('');
+    },
+    renderReport() {
+      const box = $('er-report-body'); if (!box) return;
+      const rep = buildReport(this.data.done), pc = (x) => (x === null || x === undefined ? '—' : String(Math.round(x * 10) / 10).replace('.', ',') + '%');
+      if (rep.n < 3) { box.innerHTML = `<p class="muted">${rep.n ? `Só ${rep.n} partida${rep.n === 1 ? ' foi' : 's foram'} revisada${rep.n === 1 ? '' : 's'} com o relatório.` : 'Ainda não há partidas revisadas.'} Revise pelo menos 3 partidas (abaixo) para ver a sua precisão, a fase em que você mais erra e as suas aberturas.</p>`; return; }
+      const tile = (v, l) => `<div class="er-tile"><b>${v}</b><span>${l}</span></div>`;
+      const sc = (x) => (x === null ? '—' : Math.round(x * 100) + '%');
+      let h = `<div class="er-tiles">${tile(rep.n, `partida${rep.n === 1 ? '' : 's'} revisada${rep.n === 1 ? '' : 's'}`)}${tile(pc(rep.acc), 'precisão média')}${tile(`${rep.res.w}V ${rep.res.d}E ${rep.res.l}D`, 'resultados')}</div>`;
+      if (rep.color.w || rep.color.b) h += `<p class="small muted">${rep.color.w ? `De brancas: ${pc(rep.color.w.acc)} de precisão (${rep.color.w.n} partida${rep.color.w.n === 1 ? '' : 's'}${rep.color.w.score !== null ? ', ' + sc(rep.color.w.score) + ' de aproveitamento' : ''}).` : ''} ${rep.color.b ? `De pretas: ${pc(rep.color.b.acc)} (${rep.color.b.n} partida${rep.color.b.n === 1 ? '' : 's'}${rep.color.b.score !== null ? ', ' + sc(rep.color.b.score) + ' de aproveitamento' : ''}).` : ''}</p>`;
+      if (rep.weeks.length >= 2) {
+        const W = 360, H = 150, bw = Math.min(34, (W - 20) / rep.weeks.length - 8), gap = (W - 20 - bw * rep.weeks.length) / Math.max(1, rep.weeks.length - 1);
+        const bars = rep.weeks.map((w, i) => { const x = 10 + i * (bw + gap), hh = Math.max(2, w.acc / 100 * 100), y = 120 - hh, d = new Date(w.t);
+          return `<g><title>${w.n} partida${w.n === 1 ? '' : 's'}: ${pc(w.acc)}</title><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${hh.toFixed(1)}" rx="4" class="er-bar"/><text x="${(x + bw / 2).toFixed(1)}" y="${(y - 4).toFixed(1)}" text-anchor="middle" class="er-t">${Math.round(w.acc)}</text><text x="${(x + bw / 2).toFixed(1)}" y="138" text-anchor="middle" class="er-t2">${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}</text></g>`; }).join('');
+        h += `<h3>Precisão por semana</h3><svg class="er-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Precisão média por semana">${bars}</svg>`;
+      }
+      const maxRate = Math.max(1, ...rep.phases.map((p) => p.rate));
+      h += '<h3>Onde você mais erra</h3><div class="er-phases">' + rep.phases.map((p) => p.moves < 30
+        ? `<div class="er-ph"><span>${p.nome}</span><i class="er-pbar"><b style="width:0"></b></i><em class="muted">poucos lances (${p.moves})</em></div>`
+        : `<div class="er-ph${rep.worstPhase === p.id ? ' worst' : ''}"><span>${p.nome}${rep.worstPhase === p.id ? ' ⚠' : ''}</span><i class="er-pbar"><b style="width:${Math.round(p.rate / maxRate * 100)}%"></b></i><em>${String(p.rate).replace('.', ',')} erros/100 lances · ${pc(p.acc)}</em></div>`).join('') + '</div>';
+      if (rep.openings.length) h += `<h3>Suas aberturas</h3><table class="er-tab"><thead><tr><th>Abertura</th><th>Jogos</th><th>V·E·D</th><th>Precisão</th></tr></thead><tbody>${rep.openings.map((o) => `<tr${rep.worstOpening === o.name ? ' class="worst"' : ''}><td>${esc(o.name)}${rep.worstOpening === o.name ? ' ⚠' : ''}</td><td>${o.n}</td><td>${o.w}·${o.d}·${o.l}</td><td>${pc(o.acc)}</td></tr>`).join('')}</tbody></table><p class="small muted">Nomes das aberturas como no Chess.com (agrupadas pelas duas primeiras palavras).</p>`;
+      if (rep.tips.length) h += `<h3>O que estudar</h3><ul class="er-tips">${rep.tips.map((t) => `<li>${esc(t)}</li>`).join('')}</ul>`;
+      box.innerHTML = h;
     },
     setMsg(t, frac) {
       $('er-msg').textContent = t || ''; $('er-prog').hidden = !this.running;
@@ -9017,7 +9243,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         const jobs = [];
         if (useSite) for (const g of this.siteGames().slice(0, qtd)) {
           const side = sideOf(g), m = g.meta;
-          jobs.push({ key: 'site-' + g.id, g, side, src: m.modo, srcName: m.modo === 'ia' ? 'IA ' + (m.nivelNome || '') : (side === 'w' ? m.pretas : m.brancas), when: Date.parse(g.createdAt) || Date.now() });
+          jobs.push({ key: 'site-' + g.id, g, side, src: m.modo, srcName: m.modo === 'ia' ? 'IA ' + (m.nivelNome || '') : (side === 'w' ? m.pretas : m.brancas), when: Date.parse(g.createdAt) || Date.now(),
+            res: g.result === '1/2-1/2' ? 'd' : (g.result === '1-0' || g.result === '0-1') ? ((g.result === '1-0') === (side === 'w') ? 'w' : 'l') : null, opening: '' });
         }
         if (useCc) {
           this.setMsg('Buscando suas partidas no Chess.com…', 0);
@@ -9026,14 +9253,14 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           for (let i = arch.length - 1; i >= 0 && found.length < qtd && i >= arch.length - 4; i--) {
             const raw = await cl.month(arch[i]); if (!alive()) throw new Error('cancel');
             const list = raw.map((x) => XD.ChessCom.normalizeGame(x, user)).filter((x) => x && x.supported && x.id && x.rules === 'chess').sort((a, b) => (b.when || 0) - (a.when || 0));
-            for (const n of list) { if (found.length >= qtd) break; if (!this.data.done['cc-' + n.id]) found.push(n); }
+            for (const n of list) { if (found.length >= qtd) break; if (this.needs('cc-' + n.id)) found.push(n); }
           }
           if (XD.Explorador && XD.Explorador.setMe && !XD.Explorador.me()) XD.Explorador.setMe(user.toLowerCase());
           for (const n of found) {
             try {
               const parsed = XD.ChessCom.parsePgn(n.pgn), sess = new XD.GameSession({ startFen: root.Chess.START_FEN, moves: parsed.sans });
-              jobs.push({ key: 'cc-' + n.id, g: Object.assign({ id: 'cc-' + n.id }, sess.serialize()), side: n.color, src: 'chesscom', srcName: n.oppName, when: n.when || Date.now() });
-            } catch (e) { this.data.done['cc-' + n.id] = { at: Date.now(), n: 0 }; }   // PGN ruim: não tenta de novo
+              jobs.push({ key: 'cc-' + n.id, g: Object.assign({ id: 'cc-' + n.id }, sess.serialize()), side: n.color, src: 'chesscom', srcName: n.oppName, when: n.when || Date.now(), res: n.result === 'win' ? 'w' : n.result === 'draw' ? 'd' : 'l', opening: n.opening || '' });
+            } catch (e) { this.data.done['cc-' + n.id] = { at: Date.now(), n: 0, bad: true }; }   // PGN ruim: não tenta de novo
           }
         }
         if (!jobs.length) { this.setMsg(useCc ? 'Nenhuma partida nova para revisar.' : 'Nenhuma partida nova para revisar.'); return; }
@@ -9056,7 +9283,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           }
           const novos = extractMistakes(j.g, j.side, r, { src: j.src, srcName: j.srcName, gameKey: j.key, when: j.when, motor });
           achados += addItems(this.data, novos); revisadas++;
-          this.data.done[j.key] = { at: Date.now(), n: novos.length }; trim(this.data); this.save();
+          this.data.done[j.key] = Object.assign({ at: Date.now(), n: novos.length }, gameStats(j.g, j.side, r, { res: j.res, when: j.when, opening: j.opening })); trim(this.data); this.save();
         }
       } catch (e) {
         if (e.message !== 'cancel') erro = e.message || 'Erro na revisão.';
@@ -9136,6 +9363,881 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     }
   };
   XD.Erros = Erros;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * desempenho.js — Desempenho por abertura: como você vai com cada abertura (vitórias, derrotas, empates,
+ * aproveitamento), por período e por cor, com gráfico de evolução e a lista das partidas.
+ *
+ * De onde vêm as partidas (nada é inventado nem duplicado):
+ *   • partidas salvas neste site em que a SUA cor é conhecida (contra a IA e online) — lidas de XD.Store;
+ *   • partidas do Chess.com do seu usuário — o site não guarda essas partidas, então este módulo guarda só um
+ *     ÍNDICE pequeno (id, data, cor, resultado e os primeiros lances) em xadrez.desempenho.v1.
+ * A abertura é identificada pela base ECO offline (XD.Eco) usando os primeiros lances; se não der para
+ * identificar com segurança, a partida vai para "Abertura não identificada".
+ *
+ * Aproveitamento = (vitórias + 0,5 × empates) ÷ total × 100.
+ *
+ * Parte pura (testada em Node): tally, filterRecs, identify, groupBy, rank, series, repMatch, repFamily, siteRecords, sanitize.
+ * Parte de tela: XD.Desempenho (rotas #/desempenho, #/desempenho/a/<abertura>, #/desempenho/rep/<id>).
+ */
+(function (root) {
+  'use strict';
+  const KEY = 'xadrez.desempenho.v1', MAXP = 24, MAX_CC = 3000, MIN_RANK = 3, POUCAS = 5, DAY = 86400000;
+  const NID = '__nid', NID_NOME = 'Abertura não identificada';
+  const clean = (s) => String(s).replace(/[+#!?]/g, '');
+
+  /* ===================================================================== parte pura */
+  function tally(recs) {
+    let w = 0, d = 0, l = 0;
+    for (const r of recs) { if (r.res === 'w') w++; else if (r.res === 'd') d++; else l++; }
+    const n = w + d + l, pts = w + d * 0.5;
+    return { n, w, d, l, pts, pct: n ? (pts / n) * 100 : null };
+  }
+
+  /** Período ('7d' | '30d' | 'all') e cor ('w' | 'b' | 'all'). `now` injetável. */
+  function filterRecs(recs, f, now) {
+    const t = now == null ? Date.now() : now;
+    const min = f.period === '7d' ? t - 7 * DAY : f.period === '30d' ? t - 30 * DAY : null;
+    return recs.filter((r) => (min == null || r.when >= min) && (!f.side || f.side === 'all' || r.side === f.side));
+  }
+
+  /** Identifica a abertura pelos primeiros lances. Sem certeza → { k: '__nid' }. Nunca inventa. */
+  function identify(eco, sans) {
+    let c;
+    try { c = eco.classify(sans.slice(0, MAXP)); } catch (e) { c = null; }
+    if (!c || !c.entry || (c.status !== 'saiu' && c.status !== 'completa') || !c.familia) return { k: NID, nome: NID_NOME, variante: '', eco: '', ok: false };
+    return { k: c.familia, nome: c.familiaPt || c.familia, variante: c.variante || '', eco: c.eco || '', ok: true };
+  }
+
+  /** Agrupa por abertura (r.op já preenchido) e, dentro de cada uma, por variante. */
+  function groupBy(recs) {
+    const map = new Map();
+    for (const r of recs) {
+      const op = r.op || { k: NID, nome: NID_NOME, variante: '' };
+      let g = map.get(op.k); if (!g) { g = { k: op.k, nome: op.nome, ok: op.k !== NID, recs: [], vmap: new Map() }; map.set(op.k, g); }
+      g.recs.push(r);
+      const vn = op.variante || 'Linha principal / sem variante';
+      let v = g.vmap.get(vn); if (!v) { v = { nome: vn, recs: [] }; g.vmap.set(vn, v); }
+      v.recs.push(r);
+    }
+    const out = [];
+    for (const g of map.values()) {
+      const t = tally(g.recs);
+      const variantes = [...g.vmap.values()].map((v) => Object.assign({ nome: v.nome, recs: v.recs }, tally(v.recs)))
+        .sort((a, b) => b.n - a.n || (b.pct - a.pct) || a.nome.localeCompare(b.nome));
+      out.push(Object.assign({ k: g.k, nome: g.nome, ok: g.ok, recs: g.recs, variantes }, t));
+    }
+    return sortGroups(out, 'uso');
+  }
+  function sortGroups(groups, by) {
+    const a = groups.slice();
+    const nidLast = (x, y) => (x.ok === y.ok ? 0 : x.ok ? -1 : 1);
+    if (by === 'melhor') a.sort((x, y) => nidLast(x, y) || ((y.n >= MIN_RANK) - (x.n >= MIN_RANK)) || (y.pct - x.pct) || (y.n - x.n) || x.nome.localeCompare(y.nome));
+    else a.sort((x, y) => nidLast(x, y) || (y.n - x.n) || (y.pct - x.pct) || x.nome.localeCompare(y.nome));
+    return a;
+  }
+  /** Mais jogada e de melhor aproveitamento (mínimo de partidas para não destacar sorte). Ignora "não identificada". */
+  function rank(groups) {
+    const ids = groups.filter((g) => g.ok);
+    const mais = ids.length ? sortGroups(ids, 'uso')[0] : null;
+    const bons = ids.filter((g) => g.n >= MIN_RANK);
+    const melhor = bons.length ? sortGroups(bons, 'melhor')[0] : null;
+    return { mais, melhor };
+  }
+
+  /** Série do aproveitamento no tempo: por dia (≤ 45 dias de intervalo), por semana (≤ 200) ou por mês. */
+  function series(recs) {
+    if (!recs.length) return { unit: 'dia', pts: [] };
+    const ws = recs.map((r) => r.when), span = Math.max(...ws) - Math.min(...ws);
+    const unit = span <= 45 * DAY ? 'dia' : span <= 200 * DAY ? 'semana' : 'mês';
+    const startOf = (t) => {
+      const d = new Date(t); d.setHours(0, 0, 0, 0);
+      if (unit === 'semana') d.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+      if (unit === 'mês') d.setDate(1);
+      return d.getTime();
+    };
+    const by = new Map();
+    for (const r of recs.slice().sort((a, b) => a.when - b.when)) { const k = startOf(r.when); (by.get(k) || by.set(k, []).get(k)).push(r); }
+    const acc = []; const pts = [];
+    for (const [t0, rs] of [...by.entries()].sort((a, b) => a[0] - b[0])) {
+      acc.push(...rs);
+      const p = tally(rs), c = tally(acc);
+      pts.push({ t0, n: p.n, w: p.w, d: p.d, l: p.l, pct: p.pct, acc: c.pct, accN: c.n });
+    }
+    return { unit, pts };
+  }
+
+  /** Estas partidas seguiram alguma variante do Repertório (variante inteira jogada, na cor certa)? */
+  function repMatch(rep, recs) {
+    const vs = (rep.variantes || []).map((v) => ({ nome: v.nome, lances: (v.lances || []).map(clean) })).filter((v) => v.lances.length);
+    const out = vs.map((v) => ({ nome: v.nome, recs: [] })); const all = [];
+    for (const r of recs) {
+      if (r.side !== rep.cor) continue;
+      const mine = r.sans.map(clean); let best = -1;
+      vs.forEach((v, i) => {
+        const L = Math.min(v.lances.length, MAXP);
+        if (mine.length >= L && v.lances.slice(0, L).every((m, k) => m === mine[k]) && (best < 0 || L > Math.min(vs[best].lances.length, MAXP))) best = i;
+      });
+      if (best >= 0) { out[best].recs.push(r); all.push(r); }
+    }
+    return { recs: all, variantes: out.map((v) => Object.assign({ nome: v.nome, recs: v.recs }, tally(v.recs))) };
+  }
+  /** Família ECO de uma abertura do Repertório (para ligar uma linha do desempenho ao repertório). */
+  function repFamily(eco, rep) {
+    for (const v of rep.variantes || []) {
+      const id = identify(eco, (v.lances || []).slice());
+      if (id.ok) return id.k;
+    }
+    return null;
+  }
+
+  /** Partidas salvas no site → registros (só as de cor conhecida, terminadas, a partir da posição inicial). */
+  function siteRecords(games, sideOf, startFen) {
+    const out = [];
+    for (const g of games || []) {
+      const side = sideOf(g); if (!side || !g.moves || g.moves.length < 2) continue;
+      if (g.startFen && startFen && g.startFen.split(' ').slice(0, 4).join(' ') !== startFen.split(' ').slice(0, 4).join(' ')) continue;
+      if (g.result !== '1-0' && g.result !== '0-1' && g.result !== '1/2-1/2') continue;
+      const res = g.result === '1/2-1/2' ? 'd' : ((g.result === '1-0') === (side === 'w') ? 'w' : 'l');
+      const m = g.meta || {};
+      out.push({ key: 'site-' + g.id, src: 'site', id: g.id, when: Date.parse(g.createdAt) || 0, side, res, sans: g.moves.slice(0, MAXP).map((x) => x.san),
+        opp: m.modo === 'ia' ? 'IA ' + (m.nivelNome || '') : (side === 'w' ? m.pretas : m.brancas) || 'Online', modo: m.modo === 'ia' ? 'IA' : 'Online', href: '#/partidas/' + encodeURIComponent(g.id) });
+    }
+    return out;
+  }
+  /** Índice do Chess.com (guardado) → registros. */
+  function ccRecords(idx) {
+    const u = idx && idx.user ? idx.user : '';
+    return ((idx && idx.cc) || []).map((x) => ({ key: 'cc-' + x.id, src: 'cc', id: x.id, when: x.w, side: x.c, res: x.r, sans: x.s ? x.s.split(' ') : [], opp: x.o || '', modo: 'Chess.com',
+      href: `#/explorador/jogo/${encodeURIComponent(u)}/${x.y}/${String(x.m).padStart(2, '0')}/${x.id}` }));
+  }
+
+  function sanitize(d) {
+    const out = { v: 1, user: '', at: 0, sv: 0, months: {}, cc: [] };
+    if (!d || typeof d !== 'object') return out;
+    if (typeof d.user === 'string' && /^[A-Za-z0-9_-]{3,25}$/.test(d.user)) out.user = d.user.toLowerCase();
+    if (Number.isFinite(d.at)) out.at = d.at;
+    if (d.sv === 2) out.sv = 2;
+    if (d.months && typeof d.months === 'object') for (const k of Object.keys(d.months)) if (/^\d{4}\/\d{2}$/.test(k)) out.months[k] = true;
+    const seen = new Set();
+    for (const x of Array.isArray(d.cc) ? d.cc : []) {
+      if (!x || typeof x !== 'object' || !/^\d{3,20}$/.test(String(x.id)) || seen.has(String(x.id))) continue;
+      if ((x.c !== 'w' && x.c !== 'b') || !['w', 'd', 'l'].includes(x.r) || !Number.isFinite(x.w) || !Number.isInteger(x.y) || !Number.isInteger(x.m) || typeof x.s !== 'string') continue;
+      seen.add(String(x.id));
+      const e = { id: String(x.id), w: x.w, c: x.c, r: x.r, y: x.y, m: x.m, s: x.s.slice(0, 400), o: typeof x.o === 'string' ? x.o.slice(0, 30) : '' };
+      if (Array.isArray(x.st) && x.st.length === 9 && x.st.every((v) => Number.isInteger(v) && v >= 0 && v < 1000)) e.st = x.st;
+      out.cc.push(e);
+      if (out.cc.length >= MAX_CC) break;
+    }
+    return out;
+  }
+
+  const api = { clean, KEY, MAXP, MIN_RANK, POUCAS, NID, NID_NOME, tally, filterRecs, identify, groupBy, sortGroups, rank, series, repMatch, repFamily, siteRecords, ccRecords, sanitize };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== parte de tela */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+  const fmtPct = (p) => (p == null ? '—' : (Math.round(p * 10) / 10).toString().replace('.', ',') + '%');
+  const fmtDay = (t) => new Date(t).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  const PER = { '7d': 'Últimos 7 dias', '30d': 'Últimos 30 dias', all: 'Todo o período' };
+  const COR = { all: 'Todas as cores', w: 'Brancas', b: 'Pretas' };
+  const RES = { w: 'Vitória', d: 'Empate', l: 'Derrota' };
+  const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+
+  const Desempenho = {
+    api, idx: null, recs: [], ready: false, f: { period: 'all', side: 'all' }, sort: 'uso', chart: { sel: '*', mode: 'periodo' },
+    token: 0, syncing: false, memo: new Map(), view: null, showN: 30,
+
+    load() { let d = null; try { d = JSON.parse(XD.Store.raw.get(KEY) || 'null'); } catch (e) { d = null; } this.idx = sanitize(d); },
+    save() { try { XD.Store.raw.set(KEY, JSON.stringify(this.idx)); return true; } catch (e) { XD.ui.toast('Não consegui guardar o índice do Chess.com neste navegador.', 'erro'); return false; } },
+    /** Todas as suas partidas (site + índice do Chess.com), com os primeiros lances, para outros módulos. */
+    records() { this.load(); return siteRecords(XD.Store.list(), XD.Erros ? XD.Erros.api.sideOf : () => null, root.Chess.START_FEN).concat(ccRecords(this.idx)); },
+    /** Para o Backup: o índice é só um cache do Chess.com (volta a ser montado ao atualizar), então não entra. */
+    leave() { this.token++; this.syncing = false; },
+
+    init() {
+      if (this.ready) return; this.ready = true;
+      const box = $('de-box');
+      box.addEventListener('click', (e) => this.onClick(e));
+      box.addEventListener('change', (e) => this.onChange(e));
+      box.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'de-user') this.sync(); });
+    },
+
+    enter(sub, id) {
+      this.init(); this.load();
+      this.view = { sub: sub || '', id: id ? decodeURIComponent(id) : '' };
+      this.showN = 30;
+      const tk = ++this.token;
+      $('de-box').innerHTML = '<p class="muted"><span class="spinner" aria-hidden="true"></span> Identificando as aberturas das suas partidas…</p>';
+      this.prepare(tk).then((ok) => { if (ok && tk === this.token) this.render(); }).catch((e) => { if (tk === this.token) $('de-box').innerHTML = `<div class="panel"><p>Não foi possível carregar a base de aberturas (${esc(e.message)}).</p></div>`; });
+      return true;
+    },
+
+    /** Junta as fontes e identifica as aberturas aos poucos (sem travar a tela). Guarda o resultado em memória. */
+    async prepare(tk) {
+      await XD.Eco.prepare();
+      const site = siteRecords(XD.Store.list(), XD.Erros ? XD.Erros.api.sideOf : () => null, root.Chess.START_FEN);
+      const all = site.concat(ccRecords(this.idx));
+      let n = 0;
+      for (const r of all) {
+        const mk = r.sans.join(' ');
+        let op = this.memo.get(mk);
+        if (!op) { op = identify(XD.Eco, r.sans); this.memo.set(mk, op); if (++n % 25 === 0) { await new Promise((res) => setTimeout(res, 0)); if (tk !== this.token) return false; } }
+        r.op = op;
+      }
+      this.recs = all;
+      return tk === this.token;
+    },
+
+    onClick(e) {
+      const b = e.target.closest('[data-per],[data-cor],[data-sort],[data-mode],[data-more],#de-sync,[data-go]');
+      if (!b) return;
+      if (b.dataset.per) { this.f.period = b.dataset.per; this.render(); }
+      else if (b.dataset.cor) { this.f.side = b.dataset.cor; this.render(); }
+      else if (b.dataset.sort) { this.sort = b.dataset.sort; this.render(); }
+      else if (b.dataset.mode) { this.chart.mode = b.dataset.mode; this.render(); }
+      else if (b.dataset.more) { this.showN += 30; this.render(); }
+      else if (b.id === 'de-sync') this.sync();
+      else if (b.dataset.go) XD.go(b.dataset.go);
+    },
+    onChange(e) { if (e.target.id === 'de-sel') { this.chart.sel = e.target.value; this.render(); } },
+
+    /* ------------------------------------------------------------- Chess.com */
+    async sync() {
+      if (this.syncing) return;
+      const inp = $('de-user'); const user = String(inp ? inp.value : '').trim();
+      if (!XD.ChessCom.USER_RE.test(user)) { this.msg('Digite o seu usuário do Chess.com (3 a 25 letras, números, _ ou -).', true); return; }
+      const tk = this.token; this.syncing = true; $('de-sync').disabled = true;
+      const u = user.toLowerCase();
+      try {
+        if (this.idx.user && this.idx.user !== u) { this.idx.cc = []; this.idx.months = {}; }
+        this.idx.user = u;
+        this.msg('Buscando a lista de meses no Chess.com…');
+        const cl = XD.ChessCom.createClient({});
+        const arch = await cl.archives(u); if (tk !== this.token) return;
+        const urls = arch.slice(-12).reverse();
+        const have = new Map(this.idx.cc.map((x) => [x.id, x])); let novos = 0, k = 0, upd = 0, cnt = 0;
+        const E = XD.Estilo && XD.Estilo.api;
+        for (let i = 0; i < urls.length; i++) {
+          const ym = XD.ChessCom.archiveMonth(urls[i]); if (!ym) continue;
+          const mk = ym.y + '/' + String(ym.m).padStart(2, '0');
+          if (i >= 2 && this.idx.months[mk] && this.idx.sv === 2) continue;   // meses antigos já indexados não mudam
+          this.msg(`Lendo ${String(ym.m).padStart(2, '0')}/${ym.y} (${++k} de ${Math.min(urls.length, 12)})…`);
+          const raw = await cl.month(urls[i]); if (tk !== this.token) return;
+          for (const x of raw) {
+            const n = XD.ChessCom.normalizeGame(x, u);
+            if (!n || !n.supported || !n.id || n.rules !== 'chess' || !n.when) continue;
+            const old = have.get(n.id);
+            if (old && old.st) continue;
+            let p; try { p = XD.ChessCom.parsePgn(n.pgn); } catch (er) { continue; }
+            let st = null; try { st = E ? E.gameMetrics(p.sans, n.color) : null; } catch (er) { st = null; }
+            if (old) { if (st) { old.st = st; upd++; } continue; }
+            const e = { id: n.id, w: n.when, c: n.color, r: n.result === 'win' ? 'w' : n.result === 'draw' ? 'd' : 'l', y: ym.y, m: ym.m, s: p.sans.slice(0, MAXP).join(' '), o: n.oppName };
+            if (st) e.st = st;
+            this.idx.cc.push(e); have.set(n.id, e); novos++;
+            if (++cnt % 20 === 0) await new Promise((res) => setTimeout(res, 0));
+          }
+          if (i >= 1) this.idx.months[mk] = true;
+        }
+        this.idx.sv = 2;
+        this.idx.cc.sort((a, b) => b.w - a.w); this.idx.cc = this.idx.cc.slice(0, MAX_CC);
+        this.idx.at = Date.now(); this.save();
+        if (XD.Explorador && XD.Explorador.setMe && !XD.Explorador.me()) XD.Explorador.setMe(u);
+        this.syncing = false;
+        XD.ui.toast(novos ? `${plural(novos, 'partida nova', 'partidas novas')} do Chess.com.` : upd ? 'Resumos de estilo atualizados.' : 'Nenhuma partida nova no Chess.com.', 'ok');
+        if (tk === this.token && await this.prepare(tk)) this.render();
+      } catch (e) {
+        if (tk === this.token) this.msg('Não foi possível buscar no Chess.com: ' + (e && e.message ? e.message : e), true);
+      } finally { this.syncing = false; const b = $('de-sync'); if (b) b.disabled = false; }
+    },
+    msg(t, err) { const m = $('de-msg'); if (m) { m.textContent = t; m.classList.toggle('err', !!err); } },
+
+    /* ------------------------------------------------------------- tela */
+    filters() {
+      const chip = (a, v, cur, t) => `<button class="chip${cur === v ? ' on' : ''}" data-${a}="${v}" type="button" aria-pressed="${cur === v}">${t}</button>`;
+      return `<div class="de-filters">
+        <div class="chips" role="group" aria-label="Período">${Object.keys(PER).map((k) => chip('per', k, this.f.period, PER[k])).join('')}</div>
+        <div class="chips" role="group" aria-label="Cor">${Object.keys(COR).map((k) => chip('cor', k, this.f.side, COR[k])).join('')}</div></div>`;
+    },
+    tiles(t) {
+      return `<div class="de-tiles"><div class="de-tile"><b>${t.n}</b><span>partidas</span></div>
+        <div class="de-tile w"><b>${t.w}</b><span>vitórias</span></div><div class="de-tile l"><b>${t.l}</b><span>derrotas</span></div>
+        <div class="de-tile d"><b>${t.d}</b><span>empates</span></div><div class="de-tile pct"><b>${fmtPct(t.pct)}</b><span>aproveitamento</span></div></div>`;
+    },
+    dist(t) {
+      if (!t.n) return '';
+      const p = (x) => (x / t.n) * 100;
+      return `<div class="de-dist" role="img" aria-label="${t.w} vitórias, ${t.d} empates, ${t.l} derrotas"><i class="w" style="width:${p(t.w)}%"></i><i class="d" style="width:${p(t.d)}%"></i><i class="l" style="width:${p(t.l)}%"></i></div>
+        <p class="de-leg"><span class="w">● Vitórias ${Math.round(p(t.w))}%</span><span class="d">● Empates ${Math.round(p(t.d))}%</span><span class="l">● Derrotas ${Math.round(p(t.l))}%</span></p>`;
+    },
+    /** Gráfico de linha (SVG). Poucos pontos: avisa em vez de desenhar uma linha sem sentido. */
+    chartSvg(recs) {
+      const s = series(recs), mode = this.chart.mode, key = mode === 'acum' ? 'acc' : 'pct';
+      const tgl = `<div class="chips de-mode" role="group" aria-label="Tipo de gráfico"><button class="chip${mode === 'periodo' ? ' on' : ''}" data-mode="periodo" type="button">Por ${s.unit === 'mês' ? 'mês' : s.unit}</button><button class="chip${mode === 'acum' ? ' on' : ''}" data-mode="acum" type="button">Acumulado</button></div>`;
+      if (s.pts.length < 2) return tgl + `<p class="muted small">Para o gráfico de evolução são necessárias partidas em pelo menos 2 ${s.unit === 'dia' ? 'dias' : s.unit === 'semana' ? 'semanas' : 'meses'} diferentes. ${recs.length ? 'Por enquanto há ' + plural(recs.length, 'partida', 'partidas') + ' no mesmo intervalo.' : ''}</p>`;
+      const W = 340, H = 170, L = 30, R = 10, T = 10, B = 26, iw = W - L - R, ih = H - T - B, N = s.pts.length;
+      const X = (i) => L + (N === 1 ? iw / 2 : (iw * i) / (N - 1)), Y = (v) => T + ih - (v / 100) * ih;
+      const grid = [0, 50, 100].map((v) => `<line x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}" class="de-grid${v === 50 ? ' mid' : ''}"/><text x="${L - 5}" y="${Y(v) + 3}" text-anchor="end" class="de-ax">${v}%</text>`).join('');
+      const path = s.pts.map((p, i) => `${i ? 'L' : 'M'}${X(i).toFixed(1)} ${Y(p[key]).toFixed(1)}`).join(' ');
+      const lab = (p) => (s.unit === 'mês' ? new Date(p.t0).toLocaleDateString('pt-BR', { month: 'short', year: '2-digit' }) : fmtDay(p.t0).slice(0, 5));
+      const dots = s.pts.map((p, i) => `<circle cx="${X(i).toFixed(1)}" cy="${Y(p[key]).toFixed(1)}" r="4.5" class="de-dot" data-i="${i}" tabindex="0"><title>${esc(lab(p))}: ${fmtPct(p[key])} (${mode === 'acum' ? p.accN : p.n} partidas)</title></circle>`).join('');
+      const label = `Evolução do aproveitamento, ${N} pontos, de ${fmtPct(s.pts[0][key])} a ${fmtPct(s.pts[N - 1][key])}`;
+      return tgl + `<svg class="de-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}">${grid}<path d="${path}" class="de-line"/>${dots}
+        <text x="${L}" y="${H - 8}" class="de-ax">${esc(lab(s.pts[0]))}</text><text x="${W - R}" y="${H - 8}" text-anchor="end" class="de-ax">${esc(lab(s.pts[N - 1]))}</text></svg>
+        <p class="muted small de-note">Cada ponto é ${s.unit === 'dia' ? 'um dia' : s.unit === 'semana' ? 'uma semana' : 'um mês'}${mode === 'acum' ? ', somando tudo até ele' : ''}. Passe o dedo/mouse sobre um ponto para ver os números. A linha tracejada é 50%.</p>`;
+    },
+    gameRow(r) {
+      return `<li><a class="de-game" href="${esc(r.href)}"><span class="de-res ${r.res}">${RES[r.res]}</span>
+        <span class="de-gi"><b>${esc(r.opp ? 'vs ' + r.opp : r.modo)}</b><small>${esc(r.modo)} · ${r.side === 'w' ? 'Brancas' : 'Pretas'} · ${fmtDay(r.when)}</small></span><span class="de-arrow" aria-hidden="true">›</span></a></li>`;
+    },
+
+    render() {
+      const box = $('de-box'); if (!box) return;
+      const v = this.view || { sub: '' };
+      const base = filterRecs(this.recs, this.f);
+      let html;
+      if (v.sub === 'a') html = this.renderOpening(base, v.id);
+      else if (v.sub === 'rep') html = this.renderRep(base, v.id);
+      else html = this.renderMain(base);
+      const keep = document.activeElement && document.activeElement.id === 'de-user' ? $('de-user').value : null;
+      box.innerHTML = html;
+      if (keep != null && $('de-user')) $('de-user').value = keep;
+      const dots = box.querySelectorAll('.de-dot');
+      dots.forEach((c) => c.addEventListener('click', () => { const t = c.querySelector('title'); const o = $('de-pt'); if (o && t) o.textContent = t.textContent; }));
+    },
+
+    sourcePanel() {
+      const site = this.recs.filter((r) => r.src === 'site').length, cc = this.recs.filter((r) => r.src === 'cc').length;
+      const user = this.idx.user || (XD.Explorador && XD.Explorador.me ? XD.Explorador.me() : '') || '';
+      return `<div class="panel"><h2>De onde vêm as partidas</h2>
+        <p class="muted small">Contam as partidas terminadas em que a sua cor é conhecida: <b>${site}</b> deste site (contra a IA e online) e <b>${cc}</b> do Chess.com. Partidas do Modo Livre e de Dois jogadores não entram, porque o site não sabe qual lado é seu.</p>
+        <label class="field"><span>Seu usuário no Chess.com</span><input id="de-user" type="text" maxlength="25" placeholder="seu_usuario" value="${esc(user)}" autocomplete="off" autocapitalize="none"></label>
+        <div class="row"><button class="btn" id="de-sync" type="button">⟳ ${this.idx.at ? 'Atualizar' : 'Buscar'} partidas do Chess.com</button></div>
+        <p id="de-msg" class="muted small" role="status">${this.idx.at ? 'Última busca: ' + esc(new Date(this.idx.at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })) + '. Os 12 meses mais recentes são lidos.' : 'Ainda não buscou no Chess.com. Os 12 meses mais recentes são lidos; só um resumo de cada partida fica guardado aqui.'}</p></div>`;
+    },
+
+    renderMain(base) {
+      const groups = groupBy(base), t = tally(base), rk = rank(groups);
+      let h = `<div class="page-head"><h1>Desempenho por abertura</h1><p class="muted">Veja com quais aberturas você vai melhor. Aproveitamento: vitória = 1, empate = ½, derrota = 0.</p></div>${this.filters()}`;
+      if (!base.length) {
+        const any = this.recs.length;
+        h += `<div class="row"><a class="btn" href="#/preparacao">🎯 Preparar-me contra um adversário</a><a class="btn" href="#/estilo">🧬 Meu estilo de jogo</a></div><div class="panel de-empty"><h2>${any ? 'Nenhuma partida nesse filtro' : 'Ainda não há partidas para analisar'}</h2>
+          <p>${any ? 'Há partidas, mas nenhuma neste período e cor. Tente “Todo o período” e “Todas as cores”.' : 'Jogue contra a IA ou online neste site (com o salvamento automático ligado) ou busque as suas partidas do Chess.com logo abaixo. Quando houver partidas terminadas, o desempenho aparece aqui.'}</p></div>` + this.sourcePanel();
+        return h;
+      }
+      h += `<div class="row"><a class="btn" href="#/preparacao">🎯 Preparar-me contra um adversário</a><a class="btn" href="#/estilo">🧬 Meu estilo de jogo</a></div>`;
+      h += `<div class="panel"><h2>Resumo geral</h2>${this.tiles(t)}${this.dist(t)}
+        ${t.n < POUCAS ? `<p class="de-warn">Só ${plural(t.n, 'partida', 'partidas')} neste filtro: os números ainda dizem pouco. Com ${POUCAS} ou mais fica mais confiável.</p>` : ''}</div>`;
+      if (rk.mais || rk.melhor) {
+        const card = (tit, g, ic) => g ? `<button class="de-hl" data-go="#/desempenho/a/${encodeURIComponent(g.k)}" type="button"><small>${ic} ${tit}</small><b>${esc(g.nome)}</b><span>${plural(g.n, 'partida', 'partidas')} · ${fmtPct(g.pct)}</span></button>` : '';
+        h += `<div class="de-hls">${card('Mais jogada', rk.mais, '🔥')}${rk.melhor ? card('Melhor aproveitamento', rk.melhor, '🏆') : `<div class="de-hl off"><small>🏆 Melhor aproveitamento</small><span>Precisa de ${MIN_RANK}+ partidas na mesma abertura.</span></div>`}</div>`;
+      }
+      const opts = '<option value="*">Todas as aberturas</option>' + groups.filter((g) => g.ok).map((g) => `<option value="${esc(g.k)}"${this.chart.sel === g.k ? ' selected' : ''}>${esc(g.nome)} (${g.n})</option>`).join('');
+      if (this.chart.sel !== '*' && !groups.some((g) => g.ok && g.k === this.chart.sel)) this.chart.sel = '*';
+      const sel = this.chart.sel === '*' ? base : base.filter((r) => r.op && r.op.k === this.chart.sel);
+      h += `<div class="panel"><h2>Evolução do aproveitamento</h2>
+        <label class="field"><span>Abertura</span><select id="de-sel">${opts.replace('<option value="*">', '<option value="*"' + (this.chart.sel === '*' ? ' selected' : '') + '>')}</select></label>
+        ${this.chartSvg(sel)}<p id="de-pt" class="de-pt" role="status"></p></div>`;
+      const ord = sortGroups(groups, this.sort);
+      h += `<div class="panel"><h2>Minhas aberturas</h2>
+        <div class="chips de-sort" role="group" aria-label="Ordenar"><button class="chip${this.sort === 'uso' ? ' on' : ''}" data-sort="uso" type="button">Mais jogadas</button><button class="chip${this.sort === 'melhor' ? ' on' : ''}" data-sort="melhor" type="button">Melhor aproveitamento</button></div>
+        <ul class="de-list">${ord.map((g) => this.opRow(g, rk)).join('')}</ul>
+        ${groups.some((g) => !g.ok) ? '<p class="muted small">“Abertura não identificada” reúne as partidas cujos primeiros lances não batem com nenhuma abertura da base (ou só com um nome genérico). Nada é chutado.</p>' : ''}</div>` + this.sourcePanel();
+      return h;
+    },
+    opRow(g, rk) {
+      const tags = (rk.mais && rk.mais.k === g.k ? '<span class="de-tag">🔥 mais jogada</span>' : '') + (rk.melhor && rk.melhor.k === g.k ? '<span class="de-tag">🏆 melhor</span>' : '') + (g.n < MIN_RANK && g.ok ? '<span class="de-tag dim">poucas partidas</span>' : '');
+      const inner = `<span class="de-rn"><b>${esc(g.nome)}</b>${tags}</span><span class="de-rs">${plural(g.n, 'partida', 'partidas')} · ${g.w}V ${g.d}E ${g.l}D</span>
+        <span class="de-bar" aria-hidden="true"><i style="width:${g.pct}%"></i></span><span class="de-rp">${fmtPct(g.pct)}</span>`;
+      return g.ok ? `<li><button class="de-row" data-go="#/desempenho/a/${encodeURIComponent(g.k)}" type="button">${inner}</button></li>` : `<li><div class="de-row static">${inner}</div></li>`;
+    },
+
+    /** Painel de uma abertura: estatísticas, gráfico, distribuição, variantes e lista de partidas. */
+    detail(title, sub, recs, variantes, back, extra) {
+      const t = tally(recs);
+      let h = `<a class="back" href="${esc(back.href)}">${esc(back.text)}</a><div class="page-head"><h1>${esc(title)}</h1><p class="muted">${sub}</p></div>${this.filters()}`;
+      if (!recs.length) return h + `<div class="panel de-empty"><h2>Nenhuma partida com essa abertura neste filtro</h2><p>Mude o período ou a cor, ou jogue mais partidas com ela.</p></div>` + (extra || '');
+      h += `<div class="panel"><h2>Desempenho</h2>${this.tiles(t)}${this.dist(t)}${t.n < POUCAS ? `<p class="de-warn">Só ${plural(t.n, 'partida', 'partidas')}: ainda pouca amostra.</p>` : ''}</div>`;
+      h += `<div class="panel"><h2>Evolução</h2>${this.chartSvg(recs)}<p id="de-pt" class="de-pt" role="status"></p></div>`;
+      if (variantes.length) h += `<div class="panel"><h2>Variantes</h2><table class="de-tab"><thead><tr><th>Variante</th><th>Jogos</th><th>V</th><th>E</th><th>D</th><th>Aprov.</th></tr></thead><tbody>${variantes.filter((x) => x.n).map((x) => `<tr><td>${esc(x.nome)}</td><td>${x.n}</td><td>${x.w}</td><td>${x.d}</td><td>${x.l}</td><td>${fmtPct(x.pct)}</td></tr>`).join('')}</tbody></table></div>`;
+      const list = recs.slice().sort((a, b) => b.when - a.when);
+      h += `<div class="panel"><h2>Partidas (${list.length})</h2><p class="muted small">Toque numa partida para abri-la e analisá-la.</p><ul class="de-games">${list.slice(0, this.showN).map((r) => this.gameRow(r)).join('')}</ul>
+        ${list.length > this.showN ? '<div class="row"><button class="btn" data-more="1" type="button">Mostrar mais</button></div>' : ''}</div>`;
+      return h + (extra || '');
+    },
+    renderOpening(base, key) {
+      const g = groupBy(base).find((x) => x.k === key);
+      const all = groupBy(this.recs).find((x) => x.k === key);
+      if (!g && !all) return `<a class="back" href="#/desempenho">← Desempenho</a><div class="panel"><p>Abertura não encontrada nas suas partidas.</p></div>`;
+      const nome = (g || all).nome;
+      const reps = this.repsFor(key);
+      const extra = reps.length ? `<div class="panel"><h2>No meu repertório</h2><div class="de-reps">${reps.map((o) => `<a class="btn" href="#/desempenho/rep/${esc(o.id)}">📚 ${esc(o.nome)}</a>`).join('')}</div></div>` : '';
+      return this.detail(nome, g ? `${plural(g.n, 'partida', 'partidas')} neste filtro. A lista junta as variantes e sub-variantes que a base ECO reconhece.` : 'Nenhuma partida neste filtro.', g ? g.recs : [], g ? g.variantes : [], { href: '#/desempenho', text: '← Desempenho por abertura' }, extra);
+    },
+    repsFor(key) {
+      if (!XD.Repertorio) return [];
+      XD.Repertorio.load();
+      return XD.Repertorio.data.filter((o) => repFamily(XD.Eco, o) === key);
+    },
+    renderRep(base, id) {
+      if (XD.Repertorio) XD.Repertorio.load();
+      const o = XD.Repertorio && XD.Repertorio.get(id);
+      if (!o) return `<a class="back" href="#/repertorio">← Repertório</a><div class="panel"><p>Abertura do repertório não encontrada.</p></div>`;
+      const m = repMatch(o, base);
+      const fam = repFamily(XD.Eco, o);
+      const extra = fam ? `<div class="panel"><a class="btn" href="#/desempenho/a/${encodeURIComponent(fam)}">Ver tudo da família ECO “${esc(((groupBy(this.recs).find((x) => x.k === fam)) || {}).nome || fam)}”</a></div>` : '';
+      const cor = o.cor === 'w' ? 'brancas' : 'pretas';
+      return this.detail(o.nome, `Repertório · ${cor}. Contam as partidas em que você jogou de ${cor} e seguiu uma das variantes cadastradas do começo ao fim (até ${MAXP} meias-jogadas).`, m.recs, m.variantes, { href: '#/repertorio/' + o.id, text: '← ' + o.nome }, extra);
+    }
+  };
+  XD.Desempenho = Desempenho;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * preparacao.js — Preparação contra um adversário do Chess.com: com o usuário dele, o site lê as partidas
+ * recentes (últimos 3 meses), mostra as aberturas que ele mais joga de brancas e de pretas, onde ele vai bem
+ * ou mal e o que você já tem no Repertório contra isso. Nada é guardado: a busca vale só enquanto a tela está aberta.
+ *
+ * Reaproveita XD.Desempenho (identificação ECO, agrupamento, aproveitamento) e XD.Repertorio.
+ * Parte pura (testada em Node): firstMoves, replies, side, prep.   Parte de tela: XD.Preparacao (rota #/preparacao[/usuario]).
+ */
+(function (root) {
+  'use strict';
+  const D = typeof module !== 'undefined' && module.exports ? require('./desempenho.js') : root.XD.Desempenho.api;
+  const MIN_N = 3, BAD = 40, GOOD = 65, MONTHS = 3;
+  const other = (c) => (c === 'w' ? 'b' : 'w');
+
+  /** Primeiros lances do adversário quando joga de brancas: [{san, n, pct}] */
+  function firstMoves(recs) {
+    const m = new Map();
+    for (const r of recs) if (r.sans[0]) m.set(r.sans[0], (m.get(r.sans[0]) || 0) + 1);
+    return [...m.entries()].map(([san, n]) => ({ san, n, pct: (n / recs.length) * 100 })).sort((a, b) => b.n - a.n || a.san.localeCompare(b.san));
+  }
+  /** Respostas do adversário (de pretas) a 1.e4 e 1.d4: { e4: [...], d4: [...] } */
+  function replies(recs) {
+    const out = {};
+    for (const f of ['e4', 'd4']) {
+      const sub = recs.filter((r) => r.sans[0] === f && r.sans[1]);
+      if (!sub.length) continue;
+      const m = new Map(); for (const r of sub) m.set(r.sans[1], (m.get(r.sans[1]) || 0) + 1);
+      out[f] = { n: sub.length, list: [...m.entries()].map(([san, n]) => ({ san, n, pct: (n / sub.length) * 100 })).sort((a, b) => b.n - a.n || a.san.localeCompare(b.san)).slice(0, 3) };
+    }
+    return out;
+  }
+
+  /**
+   * recs: partidas do adversário ({side, res (do ponto de vista dele), sans, op}). reps: repertório do usuário. eco: XD.Eco.
+   * Devolve, para cada cor DO ADVERSÁRIO, o resumo, as aberturas (mais jogadas primeiro) com ponto forte/fraco e o que o usuário tem no repertório.
+   */
+  function prep(recs, reps, eco) {
+    const out = { n: recs.length };
+    for (const side of ['w', 'b']) {
+      const rs = recs.filter((r) => r.side === side);
+      const groups = D.groupBy(rs).map((g) => {
+        const mine = g.ok ? (reps || []).filter((o) => o.cor === other(side) && D.repFamily(eco, o) === g.k) : [];
+        const flag = !g.ok || g.n < MIN_N ? '' : g.pct <= BAD ? 'fraco' : g.pct >= GOOD ? 'forte' : '';
+        return Object.assign({}, g, { flag, mine: mine.map((o) => ({ id: o.id, nome: o.nome })) });
+      });
+      out[side] = { n: rs.length, tally: D.tally(rs), groups, first: side === 'w' ? firstMoves(rs) : [], replies: side === 'b' ? replies(rs) : {} };
+    }
+    return out;
+  }
+
+  const api = { MIN_N, BAD, GOOD, MONTHS, firstMoves, replies, prep };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== tela */
+  const XD = root.XD;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+  const fmtPct = (p) => (p == null ? '—' : (Math.round(p * 10) / 10).toString().replace('.', ',') + '%');
+  const plural = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+
+  const Preparacao = {
+    api, token: 0, running: false, user: '',
+    leave() { this.token++; this.running = false; },
+
+    enter(user) {
+      const box = $('pr-box');
+      if (!this.bound) { this.bound = true; box.addEventListener('click', (e) => { if (e.target.closest('#pr-go')) this.run(); }); box.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'pr-user') this.run(); }); }
+      const u = user ? decodeURIComponent(user) : '';
+      this.form(u, '');
+      if (u && XD.ChessCom.USER_RE.test(u)) this.run();
+    },
+    form(u, msg, err) {
+      $('pr-box').innerHTML = `<div class="page-head"><h1>Preparação contra um adversário</h1>
+        <p class="muted">Digite o usuário dele no Chess.com. O site lê as partidas dos últimos ${MONTHS} meses e mostra o que ele mais joga e onde vai pior.</p></div>
+        <div class="panel"><label class="field"><span>Usuário do adversário no Chess.com</span><input id="pr-user" type="text" maxlength="25" placeholder="usuario" value="${esc(u)}" autocomplete="off" autocapitalize="none"></label>
+        <div class="row"><button class="btn primary" id="pr-go" type="button">🎯 Analisar adversário</button></div>
+        <p id="pr-msg" class="muted small${err ? ' err' : ''}" role="status">${esc(msg)}</p></div><div id="pr-out"></div>`;
+    },
+    msg(t, err) { const m = $('pr-msg'); if (m) { m.textContent = t; m.classList.toggle('err', !!err); } },
+
+    async run() {
+      if (this.running) return;
+      const u = String($('pr-user').value || '').trim();
+      if (!XD.ChessCom.USER_RE.test(u)) { this.msg('Digite um usuário válido do Chess.com (3 a 25 letras, números, _ ou -).', true); return; }
+      const user = u.toLowerCase(), tk = ++this.token; this.running = true; $('pr-go').disabled = true; $('pr-out').innerHTML = '';
+      try {
+        this.msg('Buscando as partidas dele…');
+        const cl = XD.ChessCom.createClient({});
+        const arch = await cl.archives(user); if (tk !== this.token) return;
+        if (!arch.length) throw new Error('Esse jogador não tem partidas no Chess.com.');
+        const urls = arch.slice(-MONTHS).reverse(), recs = [], seen = new Set();
+        for (let i = 0; i < urls.length; i++) {
+          this.msg(`Lendo o mês ${i + 1} de ${urls.length}…`);
+          const raw = await cl.month(urls[i]); if (tk !== this.token) return;
+          for (const x of raw) {
+            const n = XD.ChessCom.normalizeGame(x, user);
+            if (!n || !n.supported || !n.id || n.rules !== 'chess' || seen.has(n.id)) continue;
+            let p; try { p = XD.ChessCom.parsePgn(n.pgn, null, D.MAXP); } catch (e) { continue; }
+            seen.add(n.id); recs.push({ side: n.color, res: n.result === 'win' ? 'w' : n.result === 'draw' ? 'd' : 'l', when: n.when || 0, sans: p.sans });
+          }
+        }
+        if (!recs.length) throw new Error('Não achei partidas de xadrez normal desse jogador nos últimos ' + MONTHS + ' meses.');
+        this.msg('Identificando as aberturas…'); await XD.Eco.prepare(); if (tk !== this.token) return;
+        for (const r of recs) r.op = D.identify(XD.Eco, r.sans);
+        if (XD.Repertorio) XD.Repertorio.load();
+        this.user = user;
+        this.msg(`${plural(recs.length, 'partida analisada', 'partidas analisadas')} de ${user} (últimos ${MONTHS} meses).`);
+        $('pr-out').innerHTML = this.render(user, prep(recs, XD.Repertorio ? XD.Repertorio.data : [], XD.Eco));
+      } catch (e) {
+        if (tk === this.token) this.msg(e && e.message ? e.message : String(e), true);
+      } finally { if (tk === this.token) { this.running = false; const b = $('pr-go'); if (b) b.disabled = false; } }
+    },
+
+    section(side, d, user) {
+      const tit = side === 'w' ? `Quando ${esc(user)} joga de brancas` : `Quando ${esc(user)} joga de pretas`;
+      if (!d.n) return `<div class="panel"><h2>${tit}</h2><p class="muted">Sem partidas nessa cor no período.</p></div>`;
+      const t = d.tally;
+      let h = `<div class="panel"><h2>${tit}</h2><p class="muted small">${plural(d.n, 'partida', 'partidas')} · ${t.w}V ${t.d}E ${t.l}D · aproveitamento dele ${fmtPct(t.pct)}</p>`;
+      if (d.first.length) h += `<p class="small">Primeiro lance: ${d.first.slice(0, 3).map((f) => `<b>${esc(f.san)}</b> (${Math.round(f.pct)}%)`).join(' · ')}</p>`;
+      for (const f of Object.keys(d.replies)) h += `<p class="small">Contra 1.${f} (${d.replies[f].n}x), ele responde ${d.replies[f].list.map((r) => `<b>${esc(r.san)}</b> (${Math.round(r.pct)}%)`).join(' · ')}</p>`;
+      h += '<ul class="de-list">' + d.groups.slice(0, 6).map((g) => {
+        const tag = g.flag === 'fraco' ? '<span class="de-tag">⚠ ponto fraco dele</span>' : g.flag === 'forte' ? '<span class="de-tag">💪 ponto forte dele</span>' : g.n < MIN_N && g.ok ? '<span class="de-tag dim">poucas partidas</span>' : '';
+        const rep = g.ok ? (g.mine.length ? `<span class="pr-rep ok">📚 Seu repertório: ${g.mine.map((m) => `<a href="#/repertorio/${esc(m.id)}">${esc(m.nome)}</a>`).join(', ')}</span>` : `<span class="pr-rep">Nada seu no repertório para isso (como ${side === 'w' ? 'pretas' : 'brancas'}). <a href="#/repertorio/novo">Criar</a></span>`) : '';
+        return `<li><div class="de-row static"><span class="de-rn"><b>${esc(g.nome)}</b>${tag}</span><span class="de-rs">ele jogou ${plural(g.n, 'vez', 'vezes')} · ${g.w}V ${g.d}E ${g.l}D</span><span class="de-rp">${fmtPct(g.pct)}</span>${rep ? `<span class="pr-line">${rep}</span>` : ''}</div></li>`;
+      }).join('') + '</ul></div>';
+      return h;
+    },
+    render(user, r) {
+      const weak = [].concat(...['w', 'b'].map((s) => r[s].groups.filter((g) => g.flag === 'fraco').map((g) => ({ g, s }))));
+      const tips = weak.length ? `<div class="panel"><h2>Onde ele vai pior</h2><ul class="pr-tips">${weak.map(({ g, s }) => `<li>De ${s === 'w' ? 'brancas' : 'pretas'}, ${esc(g.nome)}: ${g.w}V ${g.d}E ${g.l}D (${fmtPct(g.pct)}). ${s === 'w' ? 'Você joga de pretas.' : 'Você joga de brancas.'}</li>`).join('')}</ul></div>`
+        : `<div class="panel"><h2>Onde ele vai pior</h2><p class="muted">Nenhuma abertura com ${MIN_N}+ partidas e aproveitamento de ${BAD}% ou menos. Com poucos jogos nada é destacado, para não inventar tendência.</p></div>`;
+      return `<div class="row"><a class="btn" href="#/estilo/${encodeURIComponent(user)}">🧬 Comparar o estilo dele com o meu</a></div>` + tips + this.section('w', r.w, user) + this.section('b', r.b, user) +
+        `<p class="muted small">As aberturas vêm da base ECO offline do site (primeiros ${D.MAXP} lances). “Abertura não identificada” reúne o que não bate com segurança. Seu repertório é ligado à abertura pela família ECO e pela cor oposta à dele.</p>`;
+    }
+  };
+  XD.Preparacao = Preparacao;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * estilo.js — Estilo de jogo: números simples tirados dos SEUS lances (capturas, xeques, lances de dama e de peão,
+ * roque, troca de damas, tamanho das partidas). Não é avaliação do motor nem "personalidade" inventada: são contagens,
+ * comparadas entre suas brancas e pretas, seu período recente e o anterior, e você × um adversário do Chess.com.
+ *
+ * Por partida, o resumo é uma lista de 9 números (ST):
+ *   [plies, meusLances, capturas, xeques, lancesDeDama, lancesDePeão, roque(0 nenhum | 1 curto | 2 longo), lanceDoRoque, plyDaDamaCapturada(0 = nenhuma)]
+ *
+ * Parte pura (testada em Node): gameMetrics, valid, summarize, compare.   Parte de tela: XD.Estilo (rota #/estilo[/usuario]).
+ */
+(function (root) {
+  'use strict';
+  const DAY = 86400000, MIN_N = 5, MONTHS = 3, MAX_ADV = 150;
+  const Chess = () => root.Chess || (typeof require !== 'undefined' ? require('./engine.js').Chess : null);
+
+  /** Resumo de uma partida (lista ST) do ponto de vista de `side`. null se a partida não for legal. */
+  function gameMetrics(sans, side, ChessCls) {
+    const C = ChessCls || Chess(); const g = new C();
+    let my = 0, cap = 0, chk = 0, q = 0, p = 0, cas = 0, casAt = 0, qcap = 0;
+    for (let i = 0; i < sans.length; i++) {
+      let mv; try { mv = g.move(sans[i]); } catch (e) { mv = null; }
+      if (!mv) return null;
+      const mine = (i % 2 === 0) === (side === 'w');
+      if (mine) {
+        my++;
+        if (mv.captured) cap++;
+        if (/[+#]/.test(mv.san || sans[i])) chk++;
+        if (mv.piece === 'q') q++;
+        if (mv.piece === 'p') p++;
+        if (mv.flags && mv.flags.includes('k')) { cas = 1; casAt = my; } else if (mv.flags && mv.flags.includes('q')) { cas = 2; casAt = my; }
+      }
+      if (!qcap && mv.captured === 'q') qcap = i + 1;
+    }
+    return [sans.length, my, cap, chk, q, p, cas, casAt, qcap];
+  }
+  const valid = (st) => Array.isArray(st) && st.length === 9 && st.every((x) => Number.isInteger(x) && x >= 0 && x < 1000);
+
+  const median = (a) => { if (!a.length) return null; const s = a.slice().sort((x, y) => x - y), m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+  /** Definição das medidas: chave, rótulo, unidade e diferença mínima para dizer que "mudou". */
+  const METRICS = [
+    { k: 'len', label: 'Lances por partida (mediana)', unit: '', min: 4 },
+    { k: 'short', label: 'Partidas curtas (até 25 lances seus)', unit: '%', min: 10 },
+    { k: 'cap', label: 'Capturas (% dos seus lances)', unit: '%', min: 3 },
+    { k: 'chk', label: 'Xeques (% dos seus lances)', unit: '%', min: 2 },
+    { k: 'q', label: 'Lances de dama (% dos seus lances)', unit: '%', min: 2 },
+    { k: 'p', label: 'Lances de peão (% dos seus lances)', unit: '%', min: 4 },
+    { k: 'cshort', label: 'Roque curto (% das partidas)', unit: '%', min: 10 },
+    { k: 'clong', label: 'Roque longo (% das partidas)', unit: '%', min: 10 },
+    { k: 'ncas', label: 'Sem roque (% das partidas)', unit: '%', min: 10 },
+    { k: 'ecas', label: 'Roque até o lance 10 (% das partidas)', unit: '%', min: 10 },
+    { k: 'qt', label: 'Dama capturada até o lance 15 (% das partidas)', unit: '%', min: 10 }
+  ];
+
+  /** list: listas ST. Devolve { n, len, short, cap, ... } (null nas medidas sem base). */
+  function summarize(list) {
+    const L = list.filter(valid), n = L.length; if (!n) return { n: 0 };
+    const sum = (i) => L.reduce((a, x) => a + x[i], 0), my = sum(1), pc = (c) => (c / n) * 100, rate = (i) => (my ? (sum(i) / my) * 100 : null);
+    return { n, len: median(L.map((x) => x[1])), short: pc(L.filter((x) => x[1] <= 25).length), cap: rate(2), chk: rate(3), q: rate(4), p: rate(5),
+      cshort: pc(L.filter((x) => x[6] === 1).length), clong: pc(L.filter((x) => x[6] === 2).length), ncas: pc(L.filter((x) => x[6] === 0).length),
+      ecas: pc(L.filter((x) => x[6] > 0 && x[7] <= 10).length), qt: pc(L.filter((x) => x[8] > 0 && x[8] <= 30).length) };
+  }
+
+  /** Compara dois resumos: linhas {k,label,unit,a,b,diff,big} e frases só para as diferenças relevantes. */
+  function compare(A, B, nameA, nameB) {
+    const rows = [], notes = [];
+    for (const m of METRICS) {
+      const a = A[m.k], b = B[m.k]; if (a == null || b == null) continue;
+      const diff = b - a, big = Math.abs(diff) >= m.min;
+      rows.push({ k: m.k, label: m.label, unit: m.unit, a, b, diff, big });
+      if (big) notes.push({ k: m.k, text: `${m.label.replace(/ \(.*\)$/, '')}: ${diff > 0 ? nameB + ' tem mais' : nameB + ' tem menos'} que ${nameA} (${fmt(b, m.unit)} contra ${fmt(a, m.unit)}).` });
+    }
+    return { rows, notes };
+  }
+  const fmt = (v, unit) => (v == null ? '—' : (Math.round(v * 10) / 10).toString().replace('.', ',') + (unit === '%' ? '%' : ''));
+
+  const api = { MIN_N, MONTHS, METRICS, gameMetrics, valid, summarize, compare, median, fmt };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== tela */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+
+  const Estilo = {
+    api, token: 0, running: false, adv: null,
+    leave() { this.token++; this.running = false; },
+
+    /** Partidas suas com resumo: do site (lances completos) e do índice do Chess.com. */
+    mine() {
+      const out = [];
+      const sideOf = XD.Erros ? XD.Erros.api.sideOf : () => null;
+      for (const g of XD.Store.list()) {
+        const side = sideOf(g); if (!side || !g.moves || g.moves.length < 10) continue;
+        if (g.startFen && g.startFen.split(' ').slice(0, 4).join(' ') !== root.Chess.START_FEN.split(' ').slice(0, 4).join(' ')) continue;
+        const st = gameMetrics(g.moves.map((m) => m.san), side); if (st) out.push({ when: Date.parse(g.createdAt) || 0, side, st, src: 'site' });
+      }
+      const D = XD.Desempenho; D.load();
+      for (const x of D.idx.cc) if (valid(x.st)) out.push({ when: x.w, side: x.c, st: x.st, src: 'cc' });
+      const cc = D.idx.cc.length, sem = D.idx.cc.filter((x) => !valid(x.st)).length;
+      return { list: out, ccTotal: cc, ccSem: sem };
+    },
+
+    enter(user) {
+      const box = $('es-box');
+      if (!this.bound) { this.bound = true; box.addEventListener('click', (e) => { if (e.target.closest('#es-go')) this.compareWith(); }); box.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.id === 'es-user') this.compareWith(); }); }
+      const u = user ? decodeURIComponent(user) : '';
+      this.adv = null; this.render(u);
+      if (u && XD.ChessCom.USER_RE.test(u)) this.compareWith();
+    },
+
+    table(cmp, nameA, nameB) {
+      return `<div class="es-wrap"><table class="de-tab es-tab"><thead><tr><th>Medida</th><th>${esc(nameA)}</th><th>${esc(nameB)}</th></tr></thead><tbody>${cmp.rows.map((r) =>
+        `<tr${r.big ? ' class="big"' : ''}><td>${esc(r.label)}</td><td>${fmt(r.a, r.unit)}</td><td>${fmt(r.b, r.unit)}</td></tr>`).join('')}</tbody></table></div>
+        ${cmp.notes.length ? `<ul class="pr-tips">${cmp.notes.map((n) => `<li>${esc(n.text)}</li>`).join('')}</ul>` : '<p class="muted small">Nenhuma diferença relevante entre as duas colunas (as linhas destacadas são as que mudam de forma notável).</p>'}`;
+    },
+
+    render(userPrefill) {
+      const { list, ccTotal, ccSem } = this.mine(), all = summarize(list.map((x) => x.st));
+      let h = `<div class="page-head"><h1>Meu estilo de jogo</h1><p class="muted">Contagens dos seus lances, sem avaliação do motor. Servem para comparar você com você mesmo e com um adversário.</p></div>`;
+      if (all.n < MIN_N) {
+        h += `<div class="panel de-empty"><h2>Poucas partidas para mostrar o estilo</h2><p>Há ${all.n} ${all.n === 1 ? 'partida' : 'partidas'} com lances completos (mínimo ${MIN_N}). Contam as partidas contra a IA e online salvas neste site, com pelo menos 10 lances, e as do Chess.com buscadas em <a href="#/desempenho">Desempenho por abertura</a>.</p></div>`;
+      } else {
+        h += `<div class="panel"><h2>Seu estilo (${all.n} partidas)</h2><ul class="es-list">${METRICS.filter((m) => all[m.k] != null).map((m) => `<li><span>${esc(m.label)}</span><b>${fmt(all[m.k], m.unit)}</b></li>`).join('')}</ul>${all.n < 15 ? '<p class="de-warn">Amostra pequena: com 15 ou mais partidas os números ficam mais estáveis.</p>' : ''}</div>`;
+        const W = summarize(list.filter((x) => x.side === 'w').map((x) => x.st)), B = summarize(list.filter((x) => x.side === 'b').map((x) => x.st));
+        h += W.n >= MIN_N && B.n >= MIN_N ? `<div class="panel"><h2>Brancas × pretas</h2>${this.table(compare(W, B, 'brancas', 'pretas'), `Brancas (${W.n})`, `Pretas (${B.n})`)}</div>`
+          : `<div class="panel"><h2>Brancas × pretas</h2><p class="muted">Precisa de ${MIN_N}+ partidas de cada cor (hoje: ${W.n} de brancas e ${B.n} de pretas).</p></div>`;
+        const lim = Date.now() - 30 * DAY;
+        const R = summarize(list.filter((x) => x.when >= lim).map((x) => x.st)), O = summarize(list.filter((x) => x.when < lim).map((x) => x.st));
+        h += R.n >= MIN_N && O.n >= MIN_N ? `<div class="panel"><h2>Últimos 30 dias × antes</h2>${this.table(compare(O, R, 'antes', 'recente'), `Antes (${O.n})`, `Últimos 30 dias (${R.n})`)}</div>`
+          : `<div class="panel"><h2>Últimos 30 dias × antes</h2><p class="muted">Precisa de ${MIN_N}+ partidas em cada período (hoje: ${R.n} recentes e ${O.n} antigas).</p></div>`;
+        this._all = all;
+      }
+      if (ccSem) h += `<p class="muted small">${ccSem} de ${ccTotal} partidas do Chess.com ainda não têm o resumo de estilo. Toque em “Atualizar” em <a href="#/desempenho">Desempenho por abertura</a> para completar.</p>`;
+      h += `<div class="panel"><h2>Comparar com um adversário</h2><p class="muted small">Lê as partidas dele dos últimos ${MONTHS} meses no Chess.com (até ${MAX_ADV}) e compara com as suas. Nada dele é guardado.</p>
+        <label class="field"><span>Usuário dele no Chess.com</span><input id="es-user" type="text" maxlength="25" placeholder="usuario" value="${esc(userPrefill || '')}" autocomplete="off" autocapitalize="none"></label>
+        <div class="row"><button class="btn primary" id="es-go" type="button">🧬 Comparar</button></div><p id="es-msg" class="muted small" role="status"></p><div id="es-out"></div></div>`;
+      $('es-box').innerHTML = h;
+    },
+    msg(t, err) { const m = $('es-msg'); if (m) { m.textContent = t; m.classList.toggle('err', !!err); } },
+
+    async compareWith() {
+      if (this.running) return;
+      const u = String($('es-user').value || '').trim();
+      if (!XD.ChessCom.USER_RE.test(u)) { this.msg('Digite um usuário válido do Chess.com (3 a 25 letras, números, _ ou -).', true); return; }
+      const user = u.toLowerCase(), tk = ++this.token; this.running = true; $('es-go').disabled = true; $('es-out').innerHTML = '';
+      try {
+        const mine = this.mine().list; const A = summarize(mine.map((x) => x.st));
+        if (A.n < MIN_N) throw new Error(`Você ainda tem poucas partidas com resumo de estilo (${A.n}; mínimo ${MIN_N}).`);
+        this.msg('Buscando as partidas dele…');
+        const cl = XD.ChessCom.createClient({});
+        const arch = await cl.archives(user); if (tk !== this.token) return;
+        if (!arch.length) throw new Error('Esse jogador não tem partidas no Chess.com.');
+        const sts = [], seen = new Set(), urls = arch.slice(-MONTHS).reverse();
+        for (let i = 0; i < urls.length && sts.length < MAX_ADV; i++) {
+          this.msg(`Lendo o mês ${i + 1} de ${urls.length} (${sts.length} partidas)…`);
+          const raw = await cl.month(urls[i]); if (tk !== this.token) return;
+          let k = 0;
+          for (const x of raw) {
+            if (sts.length >= MAX_ADV) break;
+            const n = XD.ChessCom.normalizeGame(x, user);
+            if (!n || !n.supported || !n.id || n.rules !== 'chess' || seen.has(n.id)) continue;
+            let st; try { st = gameMetrics(XD.ChessCom.parsePgn(n.pgn).sans, n.color); } catch (e) { st = null; }
+            if (st) { seen.add(n.id); sts.push(st); }
+            if (++k % 15 === 0) { await new Promise((r) => setTimeout(r, 0)); if (tk !== this.token) return; }
+          }
+        }
+        const B = summarize(sts);
+        if (B.n < MIN_N) throw new Error(`Só achei ${B.n} partidas de xadrez normal dele nos últimos ${MONTHS} meses (mínimo ${MIN_N}).`);
+        this.msg(`${B.n} partidas dele analisadas.`);
+        $('es-out').innerHTML = this.table(compare(A, B, 'você', user), `Você (${A.n})`, `${user} (${B.n})`);
+      } catch (e) { if (tk === this.token) this.msg(e && e.message ? e.message : String(e), true); }
+      finally { if (tk === this.token) { this.running = false; const b = $('es-go'); if (b) b.disabled = false; } }
+    }
+  };
+  XD.Estilo = Estilo;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+  <script>
+/*
+ * duelo.js — Duelo contra o seu "eu do passado": a IA joga as ABERTURAS que você jogava antes (as suas partidas
+ * mais antigas que N dias, do site e do Chess.com) e, quando sai dessas linhas, volta a ser o motor normal no nível
+ * escolhido. É um "livro" feito só com lances seus que de fato existiram: nada é inventado e a força fora do livro
+ * é a do nível da IA, não uma cópia do seu rating de antes.
+ *
+ * Parte pura (testada em Node): epd, windowRecs, buildBook, pick, sanitizeLog, tally.
+ * Parte de tela: painel em "Jogar contra a IA" (XD.Duelo.mount) + ganchos em XD.Play (livro, resultado).
+ * Histórico dos duelos: xadrez.duelo.v1 (lista pequena de resultados).
+ */
+(function (root) {
+  'use strict';
+  const KEY = 'xadrez.duelo.v1', DAY = 86400000, MIN_GAMES = 5, MAX_LOG = 200, DAYS = [7, 30, 90];
+  const epd = (fen) => String(fen).split(' ').slice(0, 4).join(' ');
+  const other = (c) => (c === 'w' ? 'b' : 'w');
+  const Chess = () => root.Chess || (typeof require !== 'undefined' ? require('./engine.js').Chess : null);
+
+  /** Partidas mais antigas que `days` dias. */
+  function windowRecs(recs, days, now) { const t = (now == null ? Date.now() : now) - days * DAY; return recs.filter((r) => r.when && r.when < t); }
+
+  /**
+   * Livro do "eu do passado": Map(posição → Map(SAN → vezes)) com os lances que VOCÊ jogou com a cor `aiColor`.
+   * recs: { side, sans }. Só entram lances legais; uma partida com lance ilegal é ignorada inteira.
+   */
+  function buildBook(recs, aiColor, ChessCls) {
+    const C = ChessCls || Chess(), book = new Map(); let used = 0;
+    for (const r of recs) {
+      if (r.side !== aiColor) continue;
+      const g = new C(), found = [];
+      let bad = false;
+      for (let i = 0; i < r.sans.length; i++) {
+        const turn = i % 2 === 0 ? 'w' : 'b';
+        if (turn === aiColor) found.push([epd(g.fen()), r.sans[i]]);
+        let mv; try { mv = g.move(r.sans[i]); } catch (e) { mv = null; }
+        if (!mv) { bad = true; break; }
+      }
+      if (bad) continue;
+      used++;
+      for (const [k, san] of found) { let m = book.get(k); if (!m) book.set(k, (m = new Map())); m.set(san, (m.get(san) || 0) + 1); }
+    }
+    return { map: book, games: used };
+  }
+
+  /** Escolhe um lance do livro para a posição (sorteio ponderado pelo quanto você jogava). null se a posição não está no livro. */
+  function pick(book, fen, rnd) {
+    const m = book && book.map && book.map.get(epd(fen)); if (!m) return null;
+    const items = [...m.entries()], total = items.reduce((a, x) => a + x[1], 0);
+    let t = (rnd ? rnd() : Math.random()) * total;
+    for (const [san, n] of items) { if ((t -= n) < 0) return san; }
+    return items[items.length - 1][0];
+  }
+
+  function sanitizeLog(d) {
+    const out = [];
+    for (const x of Array.isArray(d) ? d : []) {
+      if (!x || !Number.isFinite(x.when) || !DAYS.includes(x.days) || !['w', 'b'].includes(x.side) || !['w', 'd', 'l'].includes(x.res)) continue;
+      out.push({ when: x.when, days: x.days, side: x.side, res: x.res, book: Number.isInteger(x.book) ? Math.max(0, Math.min(99, x.book)) : 0 });
+    }
+    return out.slice(-MAX_LOG);
+  }
+  function tally(log, days) {
+    const L = log.filter((x) => days == null || x.days === days);
+    return { n: L.length, w: L.filter((x) => x.res === 'w').length, d: L.filter((x) => x.res === 'd').length, l: L.filter((x) => x.res === 'l').length };
+  }
+
+  const api = { KEY, MIN_GAMES, DAYS, epd, windowRecs, buildBook, pick, sanitizeLog, tally };
+  if (typeof module !== 'undefined' && module.exports) { module.exports = api; return; }
+
+  /* ===================================================================== tela */
+  const XD = root.XD = root.XD || {};
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => XD.ui.esc(s);
+
+  const Duelo = {
+    api, days: 30,
+    loadLog() { let d = null; try { d = JSON.parse(XD.Store.raw.get(KEY) || 'null'); } catch (e) { d = null; } return sanitizeLog(d); },
+    saveLog(l) { try { XD.Store.raw.set(KEY, JSON.stringify(l)); } catch (e) { /* sem espaço: o duelo continua valendo */ } },
+    pick(book, fen) { return pick(book, fen); },
+    record(x) { const l = this.loadLog(); l.push(x); this.saveLog(sanitizeLog(l)); },
+
+    /** Partidas suas (site + Chess.com) com os primeiros lances. */
+    records() { return XD.Desempenho.records(); },
+
+    counts(days) {
+      const w = windowRecs(this.records(), days);
+      return { w: w.filter((r) => r.side === 'w').length, b: w.filter((r) => r.side === 'b').length };
+    },
+
+    mount() {
+      const box = $('gh-panel'); if (!box) return;
+      const render = () => {
+        const c = this.counts(this.days), t = tally(this.loadLog(), this.days);
+        box.innerHTML = `<h2>👻 Duelo contra o meu eu do passado</h2>
+          <p class="muted small">A IA joga as aberturas que <b>você</b> jogava antes. Quando sai delas, volta a ser o motor, no nível e com a cor escolhidos acima.</p>
+          <div class="chips" role="group" aria-label="Quanto tempo atrás">${DAYS.map((d) => `<button class="chip${d === this.days ? ' on' : ''}" data-gh="${d}" type="button" aria-pressed="${d === this.days}">Antes de ${d} dias</button>`).join('')}</div>
+          <p class="small" id="gh-info">Partidas suas nesse período: <b>${c.w}</b> de brancas e <b>${c.b}</b> de pretas (mínimo ${MIN_GAMES} da cor que a IA vai jogar).${t.n ? ` Seu histórico neste duelo: <b>${t.w}V ${t.d}E ${t.l}D</b>.` : ''}</p>
+          <button class="btn" id="gh-go" type="button"${XD.Play && XD.Play.engine && ['ready', 'fallback'].includes(XD.Play.engine.status.state) ? '' : ' disabled'}>👻 Começar duelo</button>`;
+        box.querySelectorAll('[data-gh]').forEach((b) => b.addEventListener('click', () => { this.days = +b.dataset.gh; render(); }));
+        $('gh-go').addEventListener('click', () => this.start());
+      };
+      this.render = render; render();
+    },
+
+    start() {
+      const P = XD.Play, color = P.setup.color === 'r' ? (Math.random() < 0.5 ? 'w' : 'b') : P.setup.color, ai = other(color);
+      const recs = windowRecs(this.records(), this.days).filter((r) => r.side === ai);
+      if (recs.length < MIN_GAMES) { XD.ui.toast(`Você tem só ${recs.length} partidas de ${ai === 'w' ? 'brancas' : 'pretas'} antes de ${this.days} dias (mínimo ${MIN_GAMES}). Escolha outro prazo ou outra cor.`, 'erro'); return; }
+      const book = buildBook(recs, ai);
+      if (!book.games) { XD.ui.toast('Não consegui montar o livro com essas partidas.', 'erro'); return; }
+      P.startWith(new XD.GameSession(), P.setup.level, color, { duelo: { days: this.days, book, games: book.games } });
+    },
+
+    summaryHtml(days) {
+      const t = tally(this.loadLog(), days);
+      return `<p class="small">👻 Duelo contra o seu eu de antes de ${days} dias · seu histórico: <b>${t.w}V ${t.d}E ${t.l}D</b> em ${t.n} ${t.n === 1 ? 'duelo' : 'duelos'}.</p>`;
+    }
+  };
+  XD.Duelo = Duelo;
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -9320,6 +10422,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
           ${p.name ? `<p class="ex-name">${esc(p.name)}</p>` : ''}
           <p class="small muted">${p.country ? `${flag(p.country.code)} ${esc(p.country.name)}` : ''}${p.country && p.joined ? ' · ' : ''}${p.joined ? 'No Chess.com desde ' + esc(fmtDay(p.joined)) : ''}</p>
           ${p.username ? `<button class="btn ex-me-btn${this.me() === p.username.toLowerCase() ? ' on' : ''}" type="button" data-me="${esc(p.username.toLowerCase())}" aria-pressed="${this.me() === p.username.toLowerCase()}">${this.me() === p.username.toLowerCase() ? '✓ Meu perfil' : '👤 Este sou eu'}</button>` : ''}
+          ${p.username ? `<a class="btn ex-prep-btn" href="#/preparacao/${encodeURIComponent(p.username.toLowerCase())}">🎯 Preparar-me contra ele</a>` : ''}
           ${p.url ? `<a class="small" href="${esc(p.url)}" target="_blank" rel="noopener noreferrer">Abrir perfil no Chess.com ↗</a>` : ''}
         </div></div>`;
       const img = box.querySelector('.ex-ava img');
@@ -9756,6 +10859,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
         onMove: (from, to) => this.tryMove(from, to)
       });
       this.renderSetup();
+      if (XD.Duelo) XD.Duelo.mount();
       $('ia-engine-retry').addEventListener('click', () => this.loadEngine(true));
       $('ia-start').addEventListener('click', () => this.startFromSetup());
       $('ia-undo').addEventListener('click', () => this.undo());
@@ -9772,7 +10876,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (this.engine.status.state === 'idle' || this.engine.status.state === 'error') this.loadEngine(true);
       if (pending) this.startWith(pending.session, pending.level, pending.color);
       else if (this.inGame) { this.show('game'); this.update(); this.maybeAiMove(); }   // voltou à partida em andamento
-      else this.show('setup');
+      else { this.show('setup'); if (XD.Duelo && XD.Duelo.render) XD.Duelo.render(); }
       this.onEngineStatus(this.engine.status);
     },
 
@@ -9800,6 +10904,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       const usable = s.state === 'ready' || s.state === 'fallback';
       const start = $('ia-start');
       start.disabled = !usable;
+      const gh = $('gh-go'); if (gh) gh.disabled = !usable;
       start.textContent = usable ? 'Começar partida' : (s.state === 'loading' ? 'Aguarde o motor carregar…' : 'Motor indisponível');
       if (usable) this.maybeAiMove();      // havia uma jogada da IA esperando o motor
     },
@@ -9822,8 +10927,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     },
 
     /** Começa (ou retoma) uma partida com a sessão dada. */
-    startWith(session, level, color) {
+    startWith(session, level, color, extra) {
       this.invalidate();
+      this.duelo = extra && extra.duelo ? Object.assign({ out: false, bookMoves: 0 }, extra.duelo) : null;   // duelo contra o eu do passado (livro de aberturas)
       this.session = session; this.level = level || 2; this.playerColor = color === 'b' ? 'b' : 'w';
       this.abandoned = false; this.inGame = true; this.gameId = (this.gameId || 0) + 1; this.resKey = null; this.savedId = null;
       if (XD.Eco) XD.Eco.prepare().catch(() => { /* a falha aparece no fim da partida, sem atrapalhar o jogo */ });
@@ -9864,6 +10970,17 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     /** Se for a vez da IA, pede um lance ao motor. */
     async maybeAiMove() {
       if (!this.inGame || !this.session || this.thinking || this.isOver() || this.session.turn === this.playerColor) return;
+      if (this.duelo && !this.duelo.out) {                      // duelo: enquanto houver lance do "eu do passado", ele joga
+        const s0 = this.session, san = XD.Duelo.pick(this.duelo.book, s0.fen());
+        const lm = san && s0.chess.moves({ verbose: true }).find((m) => m.san === san);
+        if (lm) {
+          const my0 = this.gen; this.thinking = true; this.update();
+          await sleep(MIN_THINK_MS + 250); if (my0 !== this.gen) return;
+          try { s0.play({ from: lm.from, to: lm.to, promotion: lm.promotion }); this.duelo.bookMoves++; this.stats.aiMoves++; } catch (e) { this.duelo.out = true; }
+          this.thinking = false; this.update(); return;
+        }
+        this.duelo.out = true;
+      }
       const st = this.engine.status.state;
       if (st !== 'ready' && st !== 'fallback') return;          // espera o motor; onEngineStatus chama de novo
       const my = this.gen, s = this.session;
@@ -9927,7 +11044,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (!this.session) return;
       if (this.session.length && !this.isOver() &&
           !(await XD.ui.confirmBox('Reiniciar a partida?', 'Os lances serão apagados e a partida recomeça com o mesmo nível e a mesma cor.', 'Reiniciar', true))) return;
-      this.startWith(new XD.GameSession(), this.level, this.playerColor);
+      this.startWith(new XD.GameSession(), this.level, this.playerColor, this.duelo ? { duelo: { days: this.duelo.days, book: this.duelo.book, games: this.duelo.games } } : undefined);
     },
 
     async resign() {
@@ -9942,8 +11059,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (this.inGame && !this.isOver() && this.session.length &&
           !(await XD.ui.confirmBox('Sair desta partida?', 'A partida em andamento será descartada se você não salvá-la.', 'Nova partida', true))) return;
       this.invalidate();
-      this.inGame = false; this.session = null; this.abandoned = false;
+      this.inGame = false; this.session = null; this.abandoned = false; this.duelo = null;
       this.show('setup');
+      if (XD.Duelo && XD.Duelo.render) XD.Duelo.render();
     },
 
     async save() {
@@ -10037,10 +11155,12 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (this.resKey === key) return;
       this.resKey = key; this.autoSave();
       const r = this.resultInfo(), esc = XD.ui.esc;
+      if (this.duelo && XD.Duelo) XD.Duelo.record({ when: Date.now(), days: this.duelo.days, side: this.playerColor, res: r.tipo === 'vitoria' ? 'w' : r.tipo === 'empate' ? 'd' : 'l', book: this.duelo.bookMoves });
       if (XD.Sound) XD.Sound.play(r.tipo === 'vitoria' ? 'win' : r.tipo === 'derrota' ? 'lose' : 'draw');
       const sans = s.moves.slice(0, s.cursor).map((m) => m.san);
       const shell = (inner) => `<h2>Resultado da partida</h2>
         <p class="res res-${r.tipo}"><b>${r.titulo}</b>${r.motivo ? ' · ' + esc(r.motivo) : ''}</p>
+        ${this.duelo && XD.Duelo ? XD.Duelo.summaryHtml(this.duelo.days) : ''}
         <div class="op-box"><h3>Abertura</h3><div id="ia-op-body">${inner}</div></div>
         <div class="row"><button class="btn" id="ia-review" type="button">♟ Consultar a partida no tabuleiro</button></div>`;
       box.hidden = false;
@@ -10066,7 +11186,8 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       const el = $('ia-info');
       if (!this.session) { el.textContent = ''; return; }
       const lvl = XD.AiLevels.byId(this.level), k = this.engine.kind;
-      el.innerHTML = `<strong>${XD.ui.esc(lvl.nome)}</strong> · você joga de ${this.playerColor === 'w' ? 'brancas' : 'pretas'} · motor: ${k === 'stockfish' ? 'Stockfish' : k === 'builtin' ? 'interno' : '—'}`;
+      el.innerHTML = `<strong>${XD.ui.esc(lvl.nome)}</strong> · você joga de ${this.playerColor === 'w' ? 'brancas' : 'pretas'} · motor: ${k === 'stockfish' ? 'Stockfish' : k === 'builtin' ? 'interno' : '—'}`
+        + (this.duelo ? `<br>👻 Duelo: seu eu de antes de ${this.duelo.days} dias (${this.duelo.games} partidas). ${this.duelo.out ? `Saiu do livro depois de ${this.duelo.bookMoves} ${this.duelo.bookMoves === 1 ? 'lance' : 'lances'}: agora joga o motor.` : `Lances do livro até agora: ${this.duelo.bookMoves}.`}` : '');
     },
 
     update() {
@@ -10987,7 +12108,7 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
   // Peças SVG disponíveis para todo o site
   document.body.insertAdjacentHTML('afterbegin', XD.Pieces.spriteMarkup());
 
-  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla', 'online', 'erros', 'relogio', 'explorador', 'favoritos'];
+  const VIEWS = ['home', 'livre', 'aberturas', 'abertura', 'partidas', 'partida', 'laboratorio', 'ia', 'academia', 'academia-op', 'repertorio', 'backup', 'ajustes', 'dupla', 'online', 'erros', 'desempenho', 'preparacao', 'estilo', 'relogio', 'explorador', 'favoritos'];
 
   /** Tela inicial: contadores reais e atalho para a partida em andamento. */
   XD.refreshHome = function () {
@@ -11041,6 +12162,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
     if (XD.Explorador) XD.Explorador.leave();
     if (XD.Relogio) XD.Relogio.leave();   // pausa o relógio de xadrez e fecha a tela cheia
     if (XD.Erros) XD.Erros.leave();
+    if (XD.Desempenho) XD.Desempenho.leave();
+    if (XD.Preparacao) XD.Preparacao.leave();
+    if (XD.Estilo) XD.Estilo.leave();
     if (XD.Online) XD.Online.leave();
     if (XD.Dupla) XD.Dupla.leave();    // pausa o relógio ao sair da tela
     if (XD.Play) XD.Play.leave();      // cancela a IA se ela estiver pensando em outra tela
@@ -11050,6 +12174,9 @@ button.mv.q-gafe { box-shadow: inset 0 -3px 0 #e8625a; }
       if (!section) { XD.refreshHome(); show('home', 'home'); document.title = 'Meu Xadrez'; }
       else if (section === 'dupla') { show('dupla', 'dupla'); document.title = 'Dois jogadores · Meu Xadrez'; XD.Dupla.enter(); }
       else if (section === 'erros') { show('erros', 'erros'); document.title = 'Treinar meus erros · Meu Xadrez'; XD.Erros.enter(); }
+      else if (section === 'desempenho') { show('desempenho', 'desempenho'); document.title = 'Desempenho por abertura · Meu Xadrez'; XD.Desempenho.enter(id, parts.slice(2).join('/')); }
+      else if (section === 'preparacao') { show('preparacao', 'desempenho'); document.title = 'Preparação · Meu Xadrez'; XD.Preparacao.enter(id); }
+      else if (section === 'estilo') { show('estilo', 'desempenho'); document.title = 'Meu estilo de jogo · Meu Xadrez'; XD.Estilo.enter(id); }
       else if (section === 'online') { show('online', 'online'); document.title = 'Jogar online · Meu Xadrez'; XD.Online.enter(id); }
       else if (section === 'relogio') { show('relogio', 'relogio'); document.title = 'Relógio de xadrez · Meu Xadrez'; XD.Relogio.enter(id); }
       else if (section === 'livre') {

@@ -1,5 +1,5 @@
 /* Service worker do Meu Xadrez Plus: deixa o app funcionar sem internet. a versão é trocada no build. */
-const CACHE = 'meu-xadrez-cabe21d296';
+const CACHE = 'meu-xadrez-f6881b2062';
 const ARQUIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './maskable-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', (e) => { e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ARQUIVOS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', (e) => { e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith('meu-xadrez-') && k !== CACHE).map((k) => caches.delete(k)))).then(() => self.clients.claim())); });
